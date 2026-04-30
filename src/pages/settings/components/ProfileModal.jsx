@@ -1,3 +1,4 @@
+import { Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
 
 function getInitials(value) {
@@ -14,7 +15,14 @@ function getInitials(value) {
     .toUpperCase();
 }
 
-export default function ProfileModal({ open, onClose, name, setName }) {
+export default function ProfileModal({
+  open,
+  onClose,
+  name,
+  setName,
+  avatarPreview,
+  onRemoveAvatar,
+}) {
   const [draftName, setDraftName] = useState(name);
   const [message, setMessage] = useState("");
 
@@ -33,7 +41,12 @@ export default function ProfileModal({ open, onClose, name, setName }) {
 
     setName(draftName.trim());
     setDraftName(draftName.trim());
-    setMessage("Name saved for this preview.");
+    setMessage("Name saved.");
+  };
+
+  const handleRemoveAvatar = () => {
+    onRemoveAvatar?.();
+    setMessage("Avatar removed.");
   };
 
   const handleCancel = () => {
@@ -50,8 +63,16 @@ export default function ProfileModal({ open, onClose, name, setName }) {
         <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-white/20" />
 
         <div className="flex items-center gap-3">
-          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.06] text-sm font-black tracking-tight text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
-            {initials}
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-white/[0.06] text-sm font-black tracking-tight text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
+            {avatarPreview ? (
+              <img
+                src={avatarPreview}
+                alt="Profile avatar"
+                className="h-full w-full object-cover"
+              />
+            ) : (
+              initials
+            )}
           </div>
 
           <div className="min-w-0 flex-1">
@@ -64,6 +85,17 @@ export default function ProfileModal({ open, onClose, name, setName }) {
             </p>
           </div>
         </div>
+
+        {avatarPreview && (
+          <button
+            type="button"
+            onClick={handleRemoveAvatar}
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl border border-red-400/15 bg-red-500/[0.07] px-3 py-2.5 text-xs font-semibold text-red-200 transition active:scale-[0.98]"
+          >
+            <Trash2 size={14} />
+            Remove avatar
+          </button>
+        )}
 
         {message && (
           <div className="mt-4 rounded-2xl border border-emerald-300/15 bg-emerald-400/10 px-3 py-2 text-xs text-emerald-100/80">
