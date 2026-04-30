@@ -78,7 +78,7 @@ export default function DashboardQuickOrb({
   };
 
   return (
-    <div className="fixed bottom-6 left-1/2 z-50 -translate-x-1/2">
+    <div className="fixed left-1/2 z-50 -translate-x-1/2 bottom-[clamp(72px,10.5vh,104px)] sm:bottom-[clamp(76px,9vh,110px)]">
       {open && (
         <button
           type="button"
@@ -89,7 +89,7 @@ export default function DashboardQuickOrb({
       )}
 
       <div
-        className={`absolute bottom-[82px] left-1/2 w-[320px] max-w-[calc(100vw-32px)] -translate-x-1/2 overflow-hidden rounded-[30px] border border-white/12 bg-[#071018]/80 p-3 text-white shadow-[0_24px_80px_rgba(0,0,0,0.55)] backdrop-blur-2xl transition-all duration-300 ease-out ${
+        className={`absolute bottom-[78px] left-1/2 w-[320px] max-w-[calc(100vw-32px)] -translate-x-1/2 overflow-hidden rounded-[30px] border border-white/12 bg-[#071018]/80 p-3 text-white shadow-[0_24px_80px_rgba(0,0,0,0.55)] backdrop-blur-2xl transition-all duration-300 ease-out ${
           open
             ? "translate-y-0 scale-100 opacity-100"
             : "pointer-events-none translate-y-5 scale-95 opacity-0"
