@@ -6,7 +6,7 @@ import SavingsGoalCard from "../financial-cards/SavingsCard";
 import InvestmentFundCard from "../financial-cards/InvestmentCard";
 import DebtObligationCard from "../financial-cards/ObligationDebtCard";
 
-const SLIDE_WIDTH_RATIO = 0.96;
+const SLIDE_WIDTH_RATIO = 1;
 const SLIDE_GAP = 12;
 
 export default function DashboardFinancialCarousel({
@@ -102,7 +102,7 @@ export default function DashboardFinancialCarousel({
                 transform: `translate3d(${translateX}px, ${translateY}px, 0) scale(${scale}) rotate(${rotate}deg)`,
                 zIndex: isActive ? 10 : Math.max(1, 8 - Math.round(absDistance * 3)),
               }}
-              className={`flex h-[306px] w-[96%] min-w-[96%] flex-shrink-0 snap-center transition-[opacity,transform,filter] duration-200 ease-out will-change-transform ${
+              className={`flex h-[306px] w-full min-w-full flex-shrink-0 snap-center transition-[opacity,transform,filter] duration-200 ease-out will-change-transform ${
                 isActive
                   ? "drop-shadow-[0_20px_38px_rgba(0,0,0,0.34)]"
                   : "drop-shadow-[0_10px_22px_rgba(0,0,0,0.18)]"
