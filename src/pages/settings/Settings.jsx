@@ -23,9 +23,24 @@ function Pill({ children, active = false, danger = false }) {
   );
 }
 
+function getInitials(value) {
+  const clean = value.trim();
+  if (!clean) return "CU";
+  return clean
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((p) => p[0])
+    .join("")
+    .toUpperCase();
+}
+
 export default function Settings() {
   const navigate = useNavigate();
   const [profileOpen, setProfileOpen] = useState(false);
+
+  // 🔥 lifted state
+  const [name, setName] = useState("CLARA User");
 
   const handleOpenTheme = () => {
     navigate("/settings/theme");
@@ -43,6 +58,8 @@ export default function Settings() {
     window.location.href = "/login";
   };
 
+  const initials = getInitials(name);
+
   return (
     <ClaraPageShell>
       <div className="space-y-5 pb-6">
@@ -57,6 +74,21 @@ export default function Settings() {
             </p>
           </div>
         </header>
+
+        <section className="rounded-[24px] border border-white/10 bg-white/[0.045] p-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-lg font-bold">
+              {initials}
+            </div>
+
+            <div className="min-w-0 flex-1">
+              <h2 className="truncate text-sm font-semibold text-white">
+                {name}
+              </h2>
+              <p className="text-xs text-white/50">Profile</p>
+            </div>
+          </div>
+        </section>
 
         <Section title="ACCOUNT">
           <Item
@@ -194,7 +226,12 @@ export default function Settings() {
         </section>
       </div>
 
-      <ProfileModal open={profileOpen} onClose={handleCloseProfile} />
+      <ProfileModal
+        open={profileOpen}
+        onClose={handleCloseProfile}
+        name={name}
+        setName={setName}
+      />
     </ClaraPageShell>
   );
 }
