@@ -1,5 +1,5 @@
-import { ChevronRight, LogOut } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Camera, ChevronRight, LogOut } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ClaraPageShell from "../../components/shared/layout/ClaraPageShell";
 import Item from "./components/Item";
@@ -27,6 +27,7 @@ function Pill({ children, active = false, danger = false }) {
 function getInitials(value) {
   const clean = value.trim();
   if (!clean) return "CU";
+
   return clean
     .split(" ")
     .filter(Boolean)
@@ -38,7 +39,10 @@ function getInitials(value) {
 
 export default function Settings() {
   const navigate = useNavigate();
+  const fileRef = useRef(null);
+
   const [profileOpen, setProfileOpen] = useState(false);
+  const [avatarPreview, setAvatarPreview] = useState(null);
 
   const [name, setName] = useState("CLARA User");
   const [hydrated, setHydrated] = useState(false);
@@ -88,6 +92,18 @@ export default function Settings() {
     window.location.href = "/login";
   };
 
+  const handlePickAvatar = () => {
+    fileRef.current?.click();
+  };
+
+  const handleAvatarChange = (event) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const previewUrl = URL.createObjectURL(file);
+    setAvatarPreview(previewUrl);
+  };
+
   const initials = getInitials(name);
 
   return (
@@ -107,16 +123,44 @@ export default function Settings() {
 
         <section className="rounded-[24px] border border-white/10 bg-white/[0.045] p-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-lg font-bold">
-              {initials}
-            </div>
+            <button
+              type="button"
+              onClick={handlePickAvatar}
+              className="group relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-white/15 bg-white/10 text-lg font-bold text-white transition active:scale-95"
+            >
+              {avatarPreview ? (
+                <img
+                  src={avatarPreview}
+                  alt="Profile avatar"
+                  className="h-full w-full object-cover"
+                />
+              ) : (
+                <span>{initials}</span>
+              )}
 
-            <div className="min-w-0 flex-1">
+              <div className="absolute inset-0 flex items-center justify-center bg-black/45 opacity-0 transition group-hover:opacity-100">
+                <Camera size={16} className="text-white" />
+              </div>
+            </button>
+
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*"
+              onChange={handleAvatarChange}
+              className="hidden"
+            />
+
+            <button
+              type="button"
+              onClick={handleOpenProfile}
+              className="min-w-0 flex-1 text-left"
+            >
               <h2 className="truncate text-sm font-semibold text-white">
                 {name}
               </h2>
               <p className="text-xs text-white/50">Profile</p>
-            </div>
+            </button>
           </div>
         </section>
 
