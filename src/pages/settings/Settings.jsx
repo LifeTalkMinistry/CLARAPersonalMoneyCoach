@@ -3,7 +3,7 @@ import ClaraPageShell from "../../components/shared/layout/ClaraPageShell";
 import Item from "./components/Item";
 import Section from "./components/Section";
 import ToggleSwitch from "./components/ToggleSwitch";
-import ProfileCard from "./components/ProfileCard";
+import { supabase } from "../../lib/supabaseClient";
 
 function Pill({ children, active = false, danger = false }) {
   return (
@@ -22,9 +22,26 @@ function Pill({ children, active = false, danger = false }) {
 }
 
 export default function Settings() {
+
+  // ✅ LOGOUT HANDLER
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut();
+
+      // optional: small delay for smooth UX
+      setTimeout(() => {
+        window.location.href = "/login";
+      }, 200);
+
+    } catch (err) {
+      console.error("Logout error:", err);
+    }
+  };
+
   return (
     <ClaraPageShell>
       <div className="space-y-5 pb-6">
+        {/* HEADER */}
         <div className="px-1 pt-1">
           <p className="text-[11px] font-black uppercase tracking-[0.26em] text-emerald-300/45">
             CLARA
@@ -39,8 +56,7 @@ export default function Settings() {
           </p>
         </div>
 
-        <ProfileCard />
-
+        {/* ACCOUNT */}
         <Section title="ACCOUNT">
           <Item
             title="Profile information"
@@ -67,6 +83,7 @@ export default function Settings() {
           />
         </Section>
 
+        {/* PREFERENCES */}
         <Section title="PREFERENCES">
           <Item
             title="Theme & appearance"
@@ -84,17 +101,18 @@ export default function Settings() {
             title="Performance Mode"
             description="Static visuals with no animation"
             icon={<span>🚀</span>}
-            right={<ToggleSwitch defaultChecked={false} />}
+            right={<ToggleSwitch checked={false} />}
           />
 
           <Item
             title="Notifications"
             description="Reminders, alerts, and program updates"
             icon={<span>🔔</span>}
-            right={<ToggleSwitch defaultChecked />}
+            right={<ToggleSwitch checked />}
           />
         </Section>
 
+        {/* PROGRAM */}
         <Section title="PROGRAM">
           <Item
             title="Plan & billing"
@@ -145,6 +163,7 @@ export default function Settings() {
           />
         </Section>
 
+        {/* LOGOUT */}
         <section className="space-y-2">
           <p className="px-3 text-[10px] font-black uppercase tracking-[0.24em] text-white/25">
             SESSION
@@ -153,6 +172,7 @@ export default function Settings() {
           <div className="overflow-hidden rounded-[28px] border border-red-400/15 bg-red-500/[0.055] shadow-[0_18px_60px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
             <button
               type="button"
+              onClick={handleLogout} // ✅ CONNECTED HERE
               className="group flex w-full items-center gap-3 px-4 py-3.5 text-left transition hover:bg-red-500/[0.06] active:bg-red-500/[0.09]"
             >
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] border border-red-400/20 bg-red-500/10 text-red-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition group-active:scale-95">
@@ -164,7 +184,7 @@ export default function Settings() {
                   Log out
                 </h3>
                 <p className="mt-0.5 text-[12px] leading-5 text-red-200/45">
-                  Function will be connected later
+                  End your current session securely
                 </p>
               </div>
 
