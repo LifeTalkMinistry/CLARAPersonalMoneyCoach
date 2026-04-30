@@ -65,13 +65,13 @@ export default function Dashboard() {
 
   return (
     <ClaraPageShell compactHeader floatingAction={<DashboardQuickOrb />}>
-      <div className="space-y-3 pt-0 pb-1 overflow-hidden">
+      <div className="space-y-3 overflow-hidden pb-24 pt-0">
 
         <section className="transition duration-300 active:scale-[0.99]">
           <DashboardBillboard />
         </section>
 
-        <section className="-mx-4 transition duration-300 active:scale-[0.99]">
+        <section className="transition duration-300 active:scale-[0.99]">
           <DashboardFinancialCarousel
             budgetData={budget}
             emergencyFundData={{
