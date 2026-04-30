@@ -21,9 +21,15 @@ export default function ProfileModal({ open, onClose }) {
     setMessage("Name saved for this preview.");
   };
 
+  const handleCancel = () => {
+    setName(savedName);
+    setMessage("");
+    onClose();
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm">
-      <div className="absolute inset-0" onClick={onClose} />
+      <div className="absolute inset-0" onClick={handleCancel} />
 
       <div className="relative w-full max-w-md rounded-t-[28px] border border-white/10 bg-[#0c1117] p-5">
         <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-white/20" />
@@ -81,7 +87,7 @@ export default function ProfileModal({ open, onClose }) {
         <div className="mt-6 flex gap-3">
           <button
             type="button"
-            onClick={onClose}
+            onClick={handleCancel}
             className="flex-1 rounded-xl border border-white/10 py-3 text-sm text-white/60"
           >
             Cancel
