@@ -12,10 +12,7 @@ button {
   font-family: inherit;
 }
 
-.clara-no-scrollbar {
+.clara-no-scrollbar,
+.scrollbar-none {
   scrollbar-width: none;
-}
-
-.clara-no-scrollbar::-webkit-scrollbar {
-  display: none;
 }
