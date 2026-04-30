@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 import BudgetCard from "../financial-cards/BudgetCard";
 import EmergencyFundCard from "../financial-cards/EmergencyFundCard";
@@ -8,6 +8,8 @@ import DebtObligationCard from "../financial-cards/ObligationDebtCard";
 
 const SLIDE_WIDTH_RATIO = 0.9;
 const SLIDE_GAP = 12;
+const DRAG_THRESHOLD = 4;
+const MOMENTUM_POWER = 14;
 
 export default function DashboardFinancialCarousel({
   budgetData,
@@ -18,8 +20,22 @@ export default function DashboardFinancialCarousel({
 }) {
   const carouselRef = useRef(null);
   const frameRef = useRef(null);
+  const dragFrameRef = useRef(null);
+  const dragStateRef = useRef({
+    pointerId: null,
+    isDown: false,
+    isDragging: false,
+    startX: 0,
+    startY: 0,
+    startScrollLeft: 0,
+    lastX: 0,
+    lastTime: 0,
+    velocity: 0,
+  });
+
   const [activeSlide, setActiveSlide] = useState(0);
   const [scrollProgress, setScrollProgress] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
 
   const items = [
     { label: "Budget", content: <BudgetCard data={budgetData} /> },
@@ -35,7 +51,21 @@ export default function DashboardFinancialCarousel({
     return el.offsetWidth * SLIDE_WIDTH_RATIO + SLIDE_GAP;
   };
 
-  const scrollToSlide = (index) => {
+  const syncSlideState = () => {
+    const el = carouselRef.current;
+    if (!el) return;
+
+    const step = getSlideStep();
+    const progress = step ? el.scrollLeft / step : 0;
+    const index = Math.round(progress);
+    const boundedIndex = Math.min(Math.max(index, 0), items.length - 1);
+    const boundedProgress = Math.min(Math.max(progress, 0), items.length - 1);
+
+    setScrollProgress(boundedProgress);
+    setActiveSlide(boundedIndex);
+  };
+
+  const scrollToSlide = (index, behavior = "smooth") => {
     const el = carouselRef.current;
     if (!el) return;
 
@@ -44,29 +74,124 @@ export default function DashboardFinancialCarousel({
     setScrollProgress(nextIndex);
     el.scrollTo({
       left: nextIndex * getSlideStep(),
-      behavior: "smooth",
+      behavior,
     });
   };
 
-  const handleScroll = () => {
+  const snapToNearestSlide = (extraVelocity = 0) => {
     const el = carouselRef.current;
     if (!el) return;
 
+    const step = getSlideStep();
+    const projectedLeft = el.scrollLeft - extraVelocity * MOMENTUM_POWER;
+    const projectedIndex = Math.round(projectedLeft / step);
+
+    scrollToSlide(projectedIndex);
+  };
+
+  const handleScroll = () => {
     if (frameRef.current) {
       window.cancelAnimationFrame(frameRef.current);
     }
 
-    frameRef.current = window.requestAnimationFrame(() => {
-      const step = getSlideStep();
-      const progress = step ? el.scrollLeft / step : 0;
-      const index = Math.round(progress);
-      const boundedIndex = Math.min(Math.max(index, 0), items.length - 1);
-      const boundedProgress = Math.min(Math.max(progress, 0), items.length - 1);
-
-      setScrollProgress(boundedProgress);
-      setActiveSlide(boundedIndex);
-    });
+    frameRef.current = window.requestAnimationFrame(syncSlideState);
   };
+
+  const handlePointerDown = (event) => {
+    const el = carouselRef.current;
+    if (!el || event.button > 0) return;
+
+    if (dragFrameRef.current) {
+      window.cancelAnimationFrame(dragFrameRef.current);
+    }
+
+    dragStateRef.current = {
+      pointerId: event.pointerId,
+      isDown: true,
+      isDragging: false,
+      startX: event.clientX,
+      startY: event.clientY,
+      startScrollLeft: el.scrollLeft,
+      lastX: event.clientX,
+      lastTime: performance.now(),
+      velocity: 0,
+    };
+
+    el.setPointerCapture?.(event.pointerId);
+  };
+
+  const handlePointerMove = (event) => {
+    const el = carouselRef.current;
+    const drag = dragStateRef.current;
+
+    if (!el || !drag.isDown || drag.pointerId !== event.pointerId) return;
+
+    const deltaX = event.clientX - drag.startX;
+    const deltaY = event.clientY - drag.startY;
+
+    if (!drag.isDragging) {
+      if (Math.abs(deltaX) < DRAG_THRESHOLD) return;
+      if (Math.abs(deltaY) > Math.abs(deltaX)) return;
+
+      drag.isDragging = true;
+      setIsDragging(true);
+    }
+
+    event.preventDefault();
+
+    const now = performance.now();
+    const elapsed = Math.max(now - drag.lastTime, 1);
+    drag.velocity = (event.clientX - drag.lastX) / elapsed;
+    drag.lastX = event.clientX;
+    drag.lastTime = now;
+
+    el.scrollLeft = drag.startScrollLeft - deltaX;
+    syncSlideState();
+  };
+
+  const endDrag = (event) => {
+    const el = carouselRef.current;
+    const drag = dragStateRef.current;
+
+    if (!el || !drag.isDown || drag.pointerId !== event.pointerId) return;
+
+    el.releasePointerCapture?.(event.pointerId);
+
+    const wasDragging = drag.isDragging;
+    const velocity = drag.velocity;
+
+    dragStateRef.current = {
+      pointerId: null,
+      isDown: false,
+      isDragging: false,
+      startX: 0,
+      startY: 0,
+      startScrollLeft: 0,
+      lastX: 0,
+      lastTime: 0,
+      velocity: 0,
+    };
+
+    setIsDragging(false);
+
+    if (wasDragging) {
+      dragFrameRef.current = window.requestAnimationFrame(() => {
+        snapToNearestSlide(velocity);
+      });
+    }
+  };
+
+  useEffect(() => {
+    return () => {
+      if (frameRef.current) {
+        window.cancelAnimationFrame(frameRef.current);
+      }
+
+      if (dragFrameRef.current) {
+        window.cancelAnimationFrame(dragFrameRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="relative mt-2 overflow-hidden rounded-[30px] py-1">
@@ -80,8 +205,19 @@ export default function DashboardFinancialCarousel({
       <section
         ref={carouselRef}
         onScroll={handleScroll}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={endDrag}
+        onPointerCancel={endDrag}
+        onPointerLeave={(event) => {
+          if (dragStateRef.current.isDragging) {
+            endDrag(event);
+          }
+        }}
         aria-label="Financial dashboard cards"
-        className="relative -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth px-4 pb-2 pt-1 scrollbar-none"
+        className={`relative -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth px-4 pb-2 pt-1 scrollbar-none [touch-action:pan-y] ${
+          isDragging ? "cursor-grabbing select-none snap-none" : "cursor-grab"
+        }`}
       >
         {items.map((item, index) => {
           const distance = index - scrollProgress;
