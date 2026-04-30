@@ -1,7 +1,9 @@
 import { ChevronRight, LogOut } from "lucide-react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ClaraPageShell from "../../components/shared/layout/ClaraPageShell";
 import Item from "./components/Item";
+import ProfileModal from "./components/ProfileModal";
 import Section from "./components/Section";
 import ToggleSwitch from "./components/ToggleSwitch";
 
@@ -23,9 +25,18 @@ function Pill({ children, active = false, danger = false }) {
 
 export default function Settings() {
   const navigate = useNavigate();
+  const [profileOpen, setProfileOpen] = useState(false);
 
   const handleOpenTheme = () => {
     navigate("/settings/theme");
+  };
+
+  const handleOpenProfile = () => {
+    setProfileOpen(true);
+  };
+
+  const handleCloseProfile = () => {
+    setProfileOpen(false);
   };
 
   const handleLogout = () => {
@@ -52,6 +63,7 @@ export default function Settings() {
             title="Profile information"
             description="Name, email, account identity"
             icon={<span>🏠</span>}
+            onClick={handleOpenProfile}
             right={
               <div className="flex items-center gap-2">
                 <Pill>Edit</Pill>
@@ -181,6 +193,8 @@ export default function Settings() {
           </div>
         </section>
       </div>
+
+      <ProfileModal open={profileOpen} onClose={handleCloseProfile} />
     </ClaraPageShell>
   );
 }
