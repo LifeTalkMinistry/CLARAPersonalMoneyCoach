@@ -9,6 +9,22 @@ import ToggleSwitch from "./components/ToggleSwitch";
 import Avatar from "../../components/shared/Avatar";
 import { useAvatar } from "../../context/AvatarContext";
 
+function Pill({ children, active = false, danger = false }) {
+  return (
+    <span
+      className={`rounded-full border px-3 py-1 text-[10px] font-black ${
+        danger
+          ? "border-red-400/25 bg-red-500/10 text-red-300"
+          : active
+            ? "border-emerald-400/25 bg-emerald-400/10 text-emerald-300"
+            : "border-white/10 bg-white/[0.08] text-white/55"
+      }`}
+    >
+      {children}
+    </span>
+  );
+}
+
 export default function Settings() {
   const navigate = useNavigate();
   const { avatar, updateAvatar } = useAvatar();
@@ -46,13 +62,51 @@ export default function Settings() {
           </p>
         </header>
 
+        <section className="rounded-[24px] border border-white/10 bg-white/[0.045] p-4 shadow-[0_18px_60px_rgba(0,0,0,0.22)] backdrop-blur-2xl">
+          <button
+            type="button"
+            onClick={handleOpenProfile}
+            className="flex w-full items-center gap-3 text-left transition duration-200 active:scale-[0.99]"
+          >
+            <Avatar size={56} />
+
+            <div className="min-w-0 flex-1">
+              <h2 className="truncate text-[15px] font-black tracking-[-0.02em] text-white">
+                {profileName}
+              </h2>
+              <p className="mt-0.5 truncate text-xs text-white/45">
+                Profile
+              </p>
+            </div>
+
+            <Pill active>Pro 99</Pill>
+          </button>
+        </section>
+
         <Section title="ACCOUNT">
           <Item
             title="Profile information"
             description="Name, email, account identity"
             icon={<Avatar size={40} />}
             onClick={handleOpenProfile}
-            right={<ChevronRight size={16} className="text-white/25" />}
+            right={
+              <div className="flex items-center gap-2">
+                <Pill>Edit</Pill>
+                <ChevronRight size={16} className="text-white/25" />
+              </div>
+            }
+          />
+
+          <Item
+            title="Security & privacy"
+            description="Session status and safe preferences"
+            icon={<span>🛡️</span>}
+            right={
+              <div className="flex items-center gap-2">
+                <Pill>Safe</Pill>
+                <ChevronRight size={16} className="text-white/25" />
+              </div>
+            }
           />
         </Section>
 
@@ -62,14 +116,86 @@ export default function Settings() {
             description="Colors, visual style, and dashboard look"
             icon={<span>🎨</span>}
             onClick={handleOpenTheme}
-            right={<ChevronRight size={16} className="text-white/25" />}
+            right={
+              <div className="flex items-center gap-2">
+                <Pill>Customize</Pill>
+                <ChevronRight size={16} className="text-white/25" />
+              </div>
+            }
           />
 
           <Item
             title="Performance Mode"
             description="Static visuals with no animation"
             icon={<span>🚀</span>}
-            right={<ToggleSwitch checked={false} />}
+            right={
+              <div className="flex items-center gap-2">
+                <Pill>Off</Pill>
+                <ToggleSwitch checked={false} />
+              </div>
+            }
+          />
+
+          <Item
+            title="Notifications"
+            description="Reminders, alerts, and program updates"
+            icon={<span>🔔</span>}
+            right={
+              <div className="flex items-center gap-2">
+                <Pill active>On</Pill>
+                <ChevronRight size={16} className="text-white/25" />
+              </div>
+            }
+          />
+        </Section>
+
+        <Section title="PROGRAM">
+          <Item
+            title="Plan & billing"
+            description="Enrollment, payment, and access"
+            icon={<span>💳</span>}
+            right={
+              <div className="flex items-center gap-2">
+                <Pill active>Pro 99</Pill>
+                <ChevronRight size={16} className="text-white/25" />
+              </div>
+            }
+          />
+
+          <Item
+            title="Help & support"
+            description="Message support or report an issue"
+            icon={<span>💬</span>}
+            right={
+              <div className="flex items-center gap-2">
+                <Pill>Help</Pill>
+                <ChevronRight size={16} className="text-white/25" />
+              </div>
+            }
+          />
+
+          <Item
+            title="About CLARA"
+            description="Mission, vision, app info, and legal"
+            icon={<span>📘</span>}
+            right={
+              <div className="flex items-center gap-2">
+                <Pill>Info</Pill>
+                <ChevronRight size={16} className="text-white/25" />
+              </div>
+            }
+          />
+
+          <Item
+            title="Admin Panel"
+            description="Manage users, access, and CLARA system"
+            icon={<span>🛡️</span>}
+            right={
+              <div className="flex items-center gap-2">
+                <Pill>Admin</Pill>
+                <ChevronRight size={16} className="text-white/25" />
+              </div>
+            }
           />
         </Section>
 
@@ -78,14 +204,26 @@ export default function Settings() {
             SESSION
           </p>
 
-          <div className="rounded-[28px] border border-red-400/15 bg-red-500/[0.055]">
+          <div className="overflow-hidden rounded-[28px] border border-red-400/15 bg-red-500/[0.055] shadow-[0_18px_60px_rgba(0,0,0,0.22)] backdrop-blur-2xl">
             <button
               type="button"
               onClick={handleLogout}
-              className="flex w-full items-center gap-3 px-4 py-3.5 transition duration-200 active:scale-[0.99]"
+              className="group flex w-full items-center gap-3 px-4 py-3.5 text-left transition duration-200 hover:bg-red-500/[0.06] active:scale-[0.99] active:bg-red-500/[0.09]"
             >
-              <LogOut size={17} className="text-red-300" />
-              <span className="text-red-300">Log out</span>
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] border border-red-400/20 bg-red-500/10 text-red-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition group-active:scale-95">
+                <LogOut size={17} />
+              </div>
+
+              <div className="min-w-0 flex-1">
+                <h3 className="text-[14px] font-semibold tracking-[-0.01em] text-red-300">
+                  Log out
+                </h3>
+                <p className="mt-0.5 text-[12px] leading-5 text-red-200/45">
+                  End your current session
+                </p>
+              </div>
+
+              <ChevronRight size={16} className="text-red-200/25" />
             </button>
           </div>
         </section>
