@@ -1,11 +1,12 @@
 import { ChevronRight, LogOut } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ClaraPageShell from "../../components/shared/layout/ClaraPageShell";
 import Item from "./components/Item";
 import ProfileModal from "./components/ProfileModal";
 import Section from "./components/Section";
 import ToggleSwitch from "./components/ToggleSwitch";
+import { getStoredProfileName, saveStoredProfileName } from "./profileStorage";
 
 function Pill({ children, active = false, danger = false }) {
   return (
@@ -39,8 +40,37 @@ export default function Settings() {
   const navigate = useNavigate();
   const [profileOpen, setProfileOpen] = useState(false);
 
-  // 🔥 lifted state
   const [name, setName] = useState("CLARA User");
+  const [hydrated, setHydrated] = useState(false);
+
+  useEffect(() => {
+    async function loadName() {
+      try {
+        const storedName = await getStoredProfileName();
+        if (storedName) setName(storedName);
+      } catch (err) {
+        console.warn("Failed to load profile name", err);
+      } finally {
+        setHydrated(true);
+      }
+    }
+
+    loadName();
+  }, []);
+
+  useEffect(() => {
+    if (!hydrated) return;
+
+    async function persistName() {
+      try {
+        await saveStoredProfileName(name);
+      } catch (err) {
+        console.warn("Failed to save profile name", err);
+      }
+    }
+
+    persistName();
+  }, [name, hydrated]);
 
   const handleOpenTheme = () => {
     navigate("/settings/theme");
