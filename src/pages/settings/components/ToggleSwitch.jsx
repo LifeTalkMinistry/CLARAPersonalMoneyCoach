@@ -1,6 +1,12 @@
-export default function ToggleSwitch({ checked = false }) {
+import { useState } from "react";
+
+export default function ToggleSwitch({ defaultChecked = false }) {
+  const [checked, setChecked] = useState(defaultChecked);
+
   return (
-    <div
+    <button
+      type="button"
+      onClick={() => setChecked(!checked)}
       className={`relative h-7 w-[50px] rounded-full border transition-all duration-300 active:scale-95 ${
         checked
           ? "border-emerald-300/35 bg-emerald-400/30 shadow-[0_0_24px_rgba(52,211,153,0.22)]"
@@ -14,6 +20,6 @@ export default function ToggleSwitch({ checked = false }) {
             : "left-1"
         }`}
       />
-    </div>
+    </button>
   );
 }
