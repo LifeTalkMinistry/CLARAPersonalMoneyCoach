@@ -36,35 +36,69 @@ export default function DashboardQuickOrb({
   onLongPressEnd,
 }) {
   const [open, setOpen] = useState(false);
+  const [position, setPosition] = useState(null);
   const longPressTimer = useRef(null);
   const didLongPress = useRef(false);
+  const dragData = useRef(null);
+  const dragging = useRef(false);
 
   const openMenu = () => setOpen(true);
   const closeMenu = () => setOpen(false);
   const toggleMenu = () => setOpen((current) => !current);
 
-  const handlePointerDown = () => {
+  const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
+  const handlePointerDown = (event) => {
     didLongPress.current = false;
+    dragging.current = false;
+    const rect = event.currentTarget.getBoundingClientRect();
+    dragData.current = {
+      startX: event.clientX,
+      startY: event.clientY,
+      offsetX: event.clientX - rect.left,
+      offsetY: event.clientY - rect.top,
+    };
     onLongPressStart?.();
 
     longPressTimer.current = window.setTimeout(() => {
+      if (dragging.current) return;
       didLongPress.current = true;
       openMenu();
     }, 420);
   };
 
-  const handlePointerUp = () => {
-    if (longPressTimer.current) window.clearTimeout(longPressTimer.current);
-    onLongPressEnd?.();
+  const handlePointerMove = (event) => {
+    if (!dragData.current) return;
+
+    const movedX = Math.abs(event.clientX - dragData.current.startX);
+    const movedY = Math.abs(event.clientY - dragData.current.startY);
+
+    if (movedX > 7 || movedY > 7) {
+      dragging.current = true;
+      closeMenu();
+      if (longPressTimer.current) window.clearTimeout(longPressTimer.current);
+    }
+
+    if (!dragging.current) return;
+
+    setPosition({
+      x: clamp(event.clientX - dragData.current.offsetX, 18, window.innerWidth - 78),
+      y: clamp(event.clientY - dragData.current.offsetY, 18, window.innerHeight - 78),
+    });
   };
 
-  const handlePointerLeave = () => {
+  const handlePointerEnd = () => {
     if (longPressTimer.current) window.clearTimeout(longPressTimer.current);
     onLongPressEnd?.();
+
+    window.setTimeout(() => {
+      dragging.current = false;
+      dragData.current = null;
+    }, 0);
   };
 
   const handleOrbClick = () => {
-    if (didLongPress.current) return;
+    if (didLongPress.current || dragging.current) return;
     toggleMenu();
     onTap?.();
   };
@@ -77,8 +111,16 @@ export default function DashboardQuickOrb({
     if (index === 2) onDoubleTap?.();
   };
 
+  const wrapperClass = position
+    ? "fixed z-50"
+    : "fixed left-1/2 z-50 -translate-x-1/2 bottom-[calc(16px+env(safe-area-inset-bottom))] sm:bottom-[calc(18px+env(safe-area-inset-bottom))]";
+
+  const wrapperStyle = position
+    ? { left: `${position.x}px`, top: `${position.y}px` }
+    : undefined;
+
   return (
-    <div className="fixed left-1/2 z-50 -translate-x-1/2 bottom-[calc(16px+env(safe-area-inset-bottom))] sm:bottom-[calc(18px+env(safe-area-inset-bottom))]">
+    <div className={wrapperClass} style={wrapperStyle}>
       {open && (
         <button
           type="button"
@@ -89,7 +131,7 @@ export default function DashboardQuickOrb({
       )}
 
       <div
-        className={`absolute bottom-[78px] left-1/2 w-[320px] max-w-[calc(100vw-32px)] -translate-x-1/2 overflow-hidden rounded-[30px] border border-white/12 bg-[#071018]/80 p-3 text-white shadow-[0_24px_80px_rgba(0,0,0,0.55)] backdrop-blur-2xl transition-all duration-300 ease-out ${
+        className={`absolute bottom-[72px] left-1/2 w-[320px] max-w-[calc(100vw-32px)] -translate-x-1/2 overflow-hidden rounded-[30px] border border-white/12 bg-[#071018]/80 p-3 text-white shadow-[0_24px_80px_rgba(0,0,0,0.55)] backdrop-blur-2xl transition-all duration-300 ease-out ${
           open
             ? "translate-y-0 scale-100 opacity-100"
             : "pointer-events-none translate-y-5 scale-95 opacity-0"
@@ -138,9 +180,11 @@ export default function DashboardQuickOrb({
         onClick={handleOrbClick}
         onDoubleClick={onDoubleTap}
         onPointerDown={handlePointerDown}
-        onPointerUp={handlePointerUp}
-        onPointerLeave={handlePointerLeave}
-        className={`group relative flex h-[68px] w-[68px] items-center justify-center rounded-full border border-white/15 bg-white/[0.08] text-white shadow-[0_18px_55px_rgba(0,0,0,0.45)] backdrop-blur-2xl transition-all duration-300 ease-out active:scale-95 ${
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerEnd}
+        onPointerCancel={handlePointerEnd}
+        onPointerLeave={handlePointerEnd}
+        className={`touch-none group relative flex h-[60px] w-[60px] items-center justify-center rounded-full border border-white/15 bg-white/[0.08] text-white shadow-[0_16px_44px_rgba(0,0,0,0.45)] backdrop-blur-2xl transition-all duration-300 ease-out active:scale-95 ${
           open ? "scale-105" : "scale-100"
         }`}
         aria-label="CLARA quick action"
@@ -150,13 +194,13 @@ export default function DashboardQuickOrb({
         <span className="absolute inset-0 rounded-full bg-gradient-to-br from-white/18 via-white/[0.06] to-cyan-400/10 shadow-[inset_0_1px_0_rgba(255,255,255,0.22)]" />
         <span className="absolute inset-[5px] rounded-full border border-white/12 bg-[#07131a]/65" />
 
-        <span className="relative flex h-[52px] w-[52px] items-center justify-center rounded-full bg-gradient-to-br from-cyan-200 via-emerald-300 to-sky-400 text-[#041018] shadow-[0_0_28px_rgba(45,212,191,0.28),inset_0_1px_0_rgba(255,255,255,0.55)] transition duration-300 group-active:scale-95">
+        <span className="relative flex h-[46px] w-[46px] items-center justify-center rounded-full bg-gradient-to-br from-cyan-200 via-emerald-300 to-sky-400 text-[#041018] shadow-[0_0_24px_rgba(45,212,191,0.28),inset_0_1px_0_rgba(255,255,255,0.55)] transition duration-300 group-active:scale-95">
           <Plus
             className={`h-5 w-5 stroke-[2.4] transition duration-300 ${
               open ? "rotate-45" : "rotate-0"
             }`}
           />
-          <Sparkles className="absolute -right-1 -top-1 h-4 w-4 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+          <Sparkles className="absolute -right-1 -top-1 h-3.5 w-3.5 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
         </span>
       </button>
     </div>
