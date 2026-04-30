@@ -12,10 +12,9 @@ export default function Dashboard() {
     useFinancialData();
 
   const now = new Date();
-  const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
-    2,
-    "0"
-  )}`;
+  const monthKey = `${now.getFullYear()}-${String(
+    now.getMonth() + 1
+  ).padStart(2, "0")}`;
 
   const totalMoney =
     wallets?.reduce((sum, w) => sum + (w.balance || 0), 0) || 0;
@@ -24,10 +23,9 @@ export default function Dashboard() {
     expenses
       ?.filter((e) => {
         const d = new Date(e.created_at);
-        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(
-          2,
-          "0"
-        )}`;
+        const key = `${d.getFullYear()}-${String(
+          d.getMonth() + 1
+        ).padStart(2, "0")}`;
         return key === monthKey;
       })
       .reduce((sum, e) => sum + (e.amount || 0), 0) || 0;
@@ -64,13 +62,18 @@ export default function Dashboard() {
   }
 
   return (
-    <ClaraPageShell compactHeader floatingAction={<DashboardQuickOrb />}>
-      <div className="space-y-2 sm:space-y-3 overflow-hidden pb-[calc(88px+env(safe-area-inset-bottom))] pt-0">
+    <ClaraPageShell
+      compactHeader
+      floatingAction={<DashboardQuickOrb />}
+    >
+      <div className="space-y-[10px] sm:space-y-3 overflow-hidden pb-[calc(88px+env(safe-area-inset-bottom))]">
 
+        {/* BILLBOARD */}
         <section className="transition duration-300 active:scale-[0.99]">
           <DashboardBillboard />
         </section>
 
+        {/* CAROUSEL */}
         <section className="transition duration-300 active:scale-[0.99]">
           <DashboardFinancialCarousel
             budgetData={budget}
@@ -84,7 +87,8 @@ export default function Dashboard() {
           />
         </section>
 
-        <section className="transition duration-300 active:scale-[0.99]">
+        {/* MONEY SUMMARY */}
+        <section className="mt-1 transition duration-300 active:scale-[0.99]">
           <DashboardMoneySummary
             moneyLeft={totalMoney - totalExpenses}
             totalExpenses={totalExpenses}
