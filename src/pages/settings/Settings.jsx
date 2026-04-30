@@ -1,12 +1,13 @@
 import ClaraPageShell from "../../components/shared/layout/ClaraPageShell";
 import Item from "./components/Item";
+import Section from "./components/Section";
 import { ChevronRight } from "lucide-react";
 
 export default function Settings() {
   return (
     <ClaraPageShell>
       <div className="space-y-4">
-        
+
         {/* HEADER */}
         <div>
           <h1 className="text-2xl font-semibold tracking-tight">
@@ -21,7 +22,7 @@ export default function Settings() {
         {/* PROFILE CARD */}
         <section className="rounded-[24px] border border-white/10 bg-white/[0.045] p-4">
           <div className="flex items-center gap-3">
-            
+
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-lg font-bold">
               JM
             </div>
@@ -42,8 +43,8 @@ export default function Settings() {
           </div>
         </section>
 
-        {/* SETTINGS ITEMS */}
-        <div className="space-y-3">
+        {/* ACCOUNT */}
+        <Section title="ACCOUNT">
 
           <Item
             title="Profile information"
@@ -63,7 +64,26 @@ export default function Settings() {
             }
           />
 
-        </div>
+        </Section>
+
+        {/* PREFERENCES */}
+        <Section title="PREFERENCES">
+
+          <Item
+            title="Theme & appearance"
+            description="Colors, visual style, and dashboard look"
+            icon={<span>🎨</span>}
+            right={<ChevronRight size={18} className="text-white/40" />}
+          />
+
+          <Item
+            title="Notifications"
+            description="Manage alerts and reminders"
+            icon={<span>🔔</span>}
+            right={<ChevronRight size={18} className="text-white/40" />}
+          />
+
+        </Section>
 
       </div>
     </ClaraPageShell>
