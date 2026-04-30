@@ -70,9 +70,18 @@ export default function DashboardFinancialCarousel({
 
   return (
     <div className="relative mt-2 overflow-hidden rounded-[30px] py-1">
-      <div className="pointer-events-none absolute -inset-x-6 top-4 h-28 rounded-full bg-emerald-400/[0.055] blur-3xl" />
-      <div className="pointer-events-none absolute -left-10 top-12 h-28 w-28 rounded-full bg-sky-400/[0.05] blur-3xl" />
-      <div className="pointer-events-none absolute -right-10 bottom-8 h-28 w-28 rounded-full bg-fuchsia-400/[0.045] blur-3xl" />
+      <div
+        className="pointer-events-none absolute -inset-x-8 top-4 h-32 rounded-full bg-emerald-400/[0.055] blur-3xl transition-transform duration-500 ease-out"
+        style={{ transform: `translate3d(${(scrollProgress - activeSlide) * 16}px, 0, 0)` }}
+      />
+      <div
+        className="pointer-events-none absolute -left-10 top-12 h-28 w-28 rounded-full bg-sky-400/[0.05] blur-3xl transition-transform duration-500 ease-out"
+        style={{ transform: `translate3d(${scrollProgress * 8}px, 0, 0)` }}
+      />
+      <div
+        className="pointer-events-none absolute -right-10 bottom-8 h-28 w-28 rounded-full bg-fuchsia-400/[0.045] blur-3xl transition-transform duration-500 ease-out"
+        style={{ transform: `translate3d(${-scrollProgress * 8}px, 0, 0)` }}
+      />
 
       <div className="pointer-events-none absolute -left-4 top-2 z-20 h-[calc(100%-34px)] w-8 bg-gradient-to-r from-[#070b10] via-[#070b10]/80 to-transparent" />
       <div className="pointer-events-none absolute -right-4 top-2 z-20 h-[calc(100%-34px)] w-8 bg-gradient-to-l from-[#070b10] via-[#070b10]/80 to-transparent" />
@@ -87,11 +96,12 @@ export default function DashboardFinancialCarousel({
           const distance = index - scrollProgress;
           const absDistance = Math.min(Math.abs(distance), 2);
           const isActive = activeSlide === index;
-          const scale = 1 - absDistance * 0.035;
-          const opacity = Math.max(1 - absDistance * 0.22, 0.55);
-          const translateY = absDistance * 10;
-          const rotate = Math.max(Math.min(distance * 1.1, 1.35), -1.35);
-          const translateX = distance * -4;
+          const scale = isActive ? 1 : 1 - absDistance * 0.045;
+          const opacity = isActive ? 1 : Math.max(1 - absDistance * 0.28, 0.5);
+          const translateY = isActive ? 0 : absDistance * 12;
+          const rotate = Math.max(Math.min(distance * 1.15, 1.4), -1.4);
+          const translateX = distance * -3;
+          const blur = isActive ? 0 : Math.min(absDistance * 0.35, 0.7);
 
           return (
             <div
@@ -99,12 +109,13 @@ export default function DashboardFinancialCarousel({
               aria-label={item.label}
               style={{
                 opacity,
+                filter: `blur(${blur}px)`,
                 transform: `translate3d(${translateX}px, ${translateY}px, 0) scale(${scale}) rotate(${rotate}deg)`,
                 zIndex: isActive ? 10 : Math.max(1, 8 - Math.round(absDistance * 3)),
               }}
-              className={`flex h-[306px] w-full min-w-full flex-shrink-0 snap-center transition-[opacity,transform,filter] duration-200 ease-out will-change-transform ${
+              className={`flex h-[306px] w-full min-w-full flex-shrink-0 snap-center transition-[opacity,transform,filter] duration-300 ease-out will-change-transform ${
                 isActive
-                  ? "drop-shadow-[0_20px_38px_rgba(0,0,0,0.34)]"
+                  ? "drop-shadow-[0_24px_46px_rgba(0,0,0,0.42)]"
                   : "drop-shadow-[0_10px_22px_rgba(0,0,0,0.18)]"
               } ${index === items.length - 1 ? "mr-4" : ""}`}
             >
