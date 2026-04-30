@@ -6,7 +6,12 @@ import Item from "./components/Item";
 import ProfileModal from "./components/ProfileModal";
 import Section from "./components/Section";
 import ToggleSwitch from "./components/ToggleSwitch";
-import { getStoredProfileName, saveStoredProfileName } from "./profileStorage";
+import {
+  getStoredProfileAvatar,
+  getStoredProfileName,
+  saveStoredProfileAvatar,
+  saveStoredProfileName,
+} from "./profileStorage";
 
 function Pill({ children, active = false, danger = false }) {
   return (
@@ -37,6 +42,16 @@ function getInitials(value) {
     .toUpperCase();
 }
 
+function fileToDataUrl(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = () => reject(reader.error);
+    reader.readAsDataURL(file);
+  });
+}
+
 export default function Settings() {
   const navigate = useNavigate();
   const fileRef = useRef(null);
@@ -48,18 +63,23 @@ export default function Settings() {
   const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
-    async function loadName() {
+    async function loadProfile() {
       try {
-        const storedName = await getStoredProfileName();
+        const [storedName, storedAvatar] = await Promise.all([
+          getStoredProfileName(),
+          getStoredProfileAvatar(),
+        ]);
+
         if (storedName) setName(storedName);
+        if (storedAvatar) setAvatarPreview(storedAvatar);
       } catch (err) {
-        console.warn("Failed to load profile name", err);
+        console.warn("Failed to load profile", err);
       } finally {
         setHydrated(true);
       }
     }
 
-    loadName();
+    loadProfile();
   }, []);
 
   useEffect(() => {
@@ -96,12 +116,18 @@ export default function Settings() {
     fileRef.current?.click();
   };
 
-  const handleAvatarChange = (event) => {
+  const handleAvatarChange = async (event) => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    const previewUrl = URL.createObjectURL(file);
-    setAvatarPreview(previewUrl);
+    try {
+      const avatarDataUrl = await fileToDataUrl(file);
+
+      setAvatarPreview(avatarDataUrl);
+      await saveStoredProfileAvatar(avatarDataUrl);
+    } catch (err) {
+      console.warn("Failed to save profile avatar", err);
+    }
   };
 
   const initials = getInitials(name);
