@@ -1,6 +1,18 @@
 import { useLocation, useNavigate } from "react-router-dom";
 import { topNavItems } from "./navConfig";
 
+const PROFILE_NAME = "CLARA User";
+const PROFILE_PLAN = "Free";
+
+function getInitials(name = "CLARA User") {
+  return name
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part.charAt(0).toUpperCase())
+    .join("") || "CU";
+}
+
 export default function TopNavigationBar() {
   const location = useLocation();
   const navigate = useNavigate();
@@ -10,8 +22,53 @@ export default function TopNavigationBar() {
     topNavItems.findIndex((item) => item.path === location.pathname)
   );
 
+  const initials = getInitials(PROFILE_NAME);
+
   return (
     <header className="px-4 pt-4">
+      <div className="mb-3 flex items-center justify-between gap-3">
+        <button
+          type="button"
+          onClick={() => navigate("/")}
+          className="group flex min-w-0 items-center gap-3 text-left active:scale-[0.98]"
+          aria-label="Go to dashboard"
+        >
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-amber-300/25 bg-gradient-to-br from-white/12 via-white/[0.06] to-amber-400/10 text-sm font-black tracking-tight text-amber-50 shadow-[0_0_22px_rgba(245,158,11,0.12)] transition group-hover:scale-105">
+            C
+          </div>
+
+          <div className="min-w-0">
+            <p className="truncate text-sm font-semibold leading-tight text-white">
+              CLARA
+            </p>
+            <p className="truncate text-[10px] font-medium uppercase tracking-[0.18em] text-white/40">
+              Personal Money Coach
+            </p>
+          </div>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => navigate("/settings")}
+          className="group relative flex shrink-0 items-center gap-2 rounded-[22px] border border-white/10 bg-white/[0.055] px-2.5 py-2 text-left backdrop-blur-xl transition hover:bg-white/[0.08] active:scale-95"
+          aria-label="Open profile settings"
+        >
+          <span className="relative flex h-10 w-10 items-center justify-center rounded-2xl border border-amber-200/35 bg-gradient-to-br from-amber-200/25 via-white/10 to-slate-900/60 text-[13px] font-black text-white shadow-[0_0_22px_rgba(245,158,11,0.16)] transition group-hover:scale-105">
+            {initials}
+            <span className="absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full border-2 border-[#070b10] bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.9)]" />
+          </span>
+
+          <span className="hidden min-w-0 sm:block">
+            <span className="block max-w-[84px] truncate text-xs font-semibold text-white/85">
+              {PROFILE_NAME.split(" ")[0]}
+            </span>
+            <span className="mt-0.5 inline-flex rounded-full border border-amber-300/25 bg-amber-300/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em] text-amber-100">
+              {PROFILE_PLAN}
+            </span>
+          </span>
+        </button>
+      </div>
+
       <div className="relative overflow-hidden rounded-[28px] border border-amber-400/30 bg-gradient-to-br from-white/10 via-slate-900/80 to-amber-950/30 p-1.5 backdrop-blur-2xl shadow-[0_0_35px_rgba(245,158,11,0.15)]">
         <nav className="relative grid grid-cols-4 gap-2">
           <div
