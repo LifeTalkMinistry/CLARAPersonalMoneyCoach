@@ -38,7 +38,7 @@ export default function EmergencyFundCard({
 
   return (
     <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] p-5 shadow-[0_0_30px_rgba(0,0,0,0.3)] backdrop-blur-xl">
-      {/* HEADER */}
+      {/* OVERVIEW */}
       <div className="mb-3 flex items-start justify-between">
         <div>
           <p className="text-xs text-white/50">Emergency Fund</p>
@@ -50,7 +50,6 @@ export default function EmergencyFundCard({
         </p>
       </div>
 
-      {/* AMOUNT */}
       <h1 className="text-2xl font-bold text-white">
         ₱{currentAmount.toLocaleString()}
       </h1>
@@ -59,7 +58,6 @@ export default function EmergencyFundCard({
         Target: ₱{targetAmount.toLocaleString()}
       </p>
 
-      {/* PROGRESS */}
       <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-white/10">
         <div
           className={`h-full ${barColor} transition-all duration-500`}
@@ -67,7 +65,11 @@ export default function EmergencyFundCard({
         />
       </div>
 
-      {/* INSIGHT */}
+      <div className="mt-2 flex items-center justify-between text-[11px] text-white/40">
+        <span>₱0</span>
+        <span>₱{targetAmount.toLocaleString()}</span>
+      </div>
+
       <p className="mt-3 text-xs text-white/60">
         {progress < 40
           ? "You're still building your safety net. Focus on consistency."
@@ -76,7 +78,7 @@ export default function EmergencyFundCard({
           : "Strong position. You're close to full emergency readiness."}
       </p>
 
-      {/* DETAILS EXPANDER */}
+      {/* SHOW MORE / TOOLS */}
       <div className="mt-4">
         <button
           type="button"
@@ -88,7 +90,7 @@ export default function EmergencyFundCard({
           }`}
         >
           <span className="font-medium">
-            {expanded ? "Hide details" : "Show details"}
+            {expanded ? "Hide tools" : "Show more"}
           </span>
 
           <span
@@ -103,16 +105,36 @@ export default function EmergencyFundCard({
 
         <div
           className={`overflow-hidden transition-all duration-500 ease-in-out ${
-            expanded ? "mt-3 max-h-[260px] opacity-100" : "max-h-0 opacity-0"
+            expanded ? "mt-3 max-h-[360px] opacity-100" : "max-h-0 opacity-0"
           }`}
         >
-          <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-xs text-white/60">
-            <div className="mb-3 flex items-center justify-between gap-3">
-              <p className="font-semibold text-white/80">Emergency details</p>
+          <div className="space-y-3 rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-xs text-white/60">
+            <div className="flex items-center justify-between gap-3">
+              <p className="font-semibold text-white/80">Emergency tools</p>
               <span className={`font-semibold ${statusColor}`}>{detailTone}</span>
             </div>
 
-            <div className="space-y-2">
+            <div className="grid grid-cols-2 gap-2">
+              <button
+                type="button"
+                onClick={onAddFunds}
+                className="rounded-2xl border border-white/10 bg-white/[0.075] px-3 py-3 text-left transition hover:bg-white/[0.11]"
+              >
+                <p className="font-semibold text-white">Add money</p>
+                <p className="mt-1 text-[11px] text-white/45">Increase saved fund</p>
+              </button>
+
+              <button
+                type="button"
+                onClick={onSetTarget}
+                className="rounded-2xl border border-white/10 bg-white/[0.045] px-3 py-3 text-left transition hover:bg-white/[0.08]"
+              >
+                <p className="font-semibold text-white">Edit target</p>
+                <p className="mt-1 text-[11px] text-white/45">Adjust goal amount</p>
+              </button>
+            </div>
+
+            <div className="space-y-2 rounded-2xl border border-white/10 bg-black/10 p-3">
               <div className="flex items-center justify-between gap-4">
                 <span className="text-white/45">Saved amount</span>
                 <span className="font-medium text-white">
@@ -135,31 +157,12 @@ export default function EmergencyFundCard({
               </div>
             </div>
 
-            <p className="mt-3 border-t border-white/10 pt-3 leading-relaxed text-white/45">
-              Keep building this fund until it can protect you from urgent expenses
-              without touching your daily budget.
+            <p className="leading-relaxed text-white/45">
+              Use these tools when you want to update the fund. The main card stays
+              clean and shows only your overview.
             </p>
           </div>
         </div>
-      </div>
-
-      {/* ACTIONS */}
-      <div className="mt-4 flex gap-2">
-        <button
-          type="button"
-          onClick={onAddFunds}
-          className="flex-1 rounded-xl bg-white/10 py-2 text-sm text-white transition hover:bg-white/20"
-        >
-          Add Funds
-        </button>
-
-        <button
-          type="button"
-          onClick={onSetTarget}
-          className="flex-1 rounded-xl bg-white/5 py-2 text-sm text-white/70 transition hover:bg-white/10"
-        >
-          Set Target
-        </button>
       </div>
     </div>
   );
