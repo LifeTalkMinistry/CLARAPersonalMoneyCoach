@@ -1,9 +1,25 @@
 import { useEffect, useState } from "react";
 
+function getInitials(value) {
+  const cleanValue = value.trim();
+
+  if (!cleanValue) return "CU";
+
+  return cleanValue
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase();
+}
+
 export default function ProfileModal({ open, onClose }) {
   const [savedName, setSavedName] = useState("CLARA User");
   const [name, setName] = useState(savedName);
   const [message, setMessage] = useState("");
+
+  const initials = getInitials(name);
 
   useEffect(() => {
     if (!open) return;
@@ -34,13 +50,21 @@ export default function ProfileModal({ open, onClose }) {
       <div className="relative w-full max-w-md rounded-t-[28px] border border-white/10 bg-[#0c1117] p-5">
         <div className="mx-auto mb-4 h-1.5 w-12 rounded-full bg-white/20" />
 
-        <h2 className="text-lg font-semibold text-white">
-          Profile Information
-        </h2>
+        <div className="flex items-center gap-3">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.06] text-sm font-black tracking-tight text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
+            {initials}
+          </div>
 
-        <p className="mt-1 text-xs text-white/50">
-          Update your basic details
-        </p>
+          <div className="min-w-0 flex-1">
+            <h2 className="text-lg font-semibold text-white">
+              Profile Information
+            </h2>
+
+            <p className="mt-1 text-xs text-white/50">
+              Update your basic details
+            </p>
+          </div>
+        </div>
 
         {message && (
           <div className="mt-4 rounded-2xl border border-emerald-300/15 bg-emerald-400/10 px-3 py-2 text-xs text-emerald-100/80">
