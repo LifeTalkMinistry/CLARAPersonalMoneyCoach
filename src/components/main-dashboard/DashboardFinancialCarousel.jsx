@@ -81,7 +81,7 @@ export default function DashboardFinancialCarousel({
         ref={carouselRef}
         onScroll={handleScroll}
         aria-label="Financial dashboard cards"
-        className="relative -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth px-4 pb-2 pt-1 scrollbar-none"
+        className="relative flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth pl-4 pr-0 pb-2 pt-1 scrollbar-none"
       >
         {items.map((item, index) => {
           const distance = index - scrollProgress;
@@ -106,7 +106,7 @@ export default function DashboardFinancialCarousel({
                 isActive
                   ? "drop-shadow-[0_20px_38px_rgba(0,0,0,0.34)]"
                   : "drop-shadow-[0_10px_22px_rgba(0,0,0,0.18)]"
-              }`}
+              } ${index === items.length - 1 ? "mr-4" : ""}`}
             >
               <div className="transition-transform duration-300 ease-out active:scale-[0.985]">
                 {item.content}
