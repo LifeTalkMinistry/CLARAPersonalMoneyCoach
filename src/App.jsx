@@ -4,6 +4,7 @@ import Dashboard from "./pages/Dashboard";
 import Feed from "./pages/Feed";
 import Messages from "./pages/Messages";
 import Settings from "./pages/settings/Settings";
+import ThemeAppearance from "./pages/settings/ThemeAppearance";
 
 export default function App() {
   return (
@@ -13,6 +14,7 @@ export default function App() {
         <Route path="/feed" element={<Feed />} />
         <Route path="/messages" element={<Messages />} />
         <Route path="/settings" element={<Settings />} />
+        <Route path="/settings/theme" element={<ThemeAppearance />} />
       </Routes>
     </HashRouter>
   );
