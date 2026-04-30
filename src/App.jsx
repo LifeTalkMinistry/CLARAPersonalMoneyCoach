@@ -3,7 +3,7 @@ import { HashRouter, Routes, Route } from "react-router-dom";
 import Dashboard from "./pages/Dashboard";
 import Feed from "./pages/Feed";
 import Messages from "./pages/Messages";
-import Settings from "./pages/Settings";
+import Settings from "./pages/settings/Settings";
 
 export default function App() {
   return (
