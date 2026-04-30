@@ -102,13 +102,13 @@ export default function DashboardFinancialCarousel({
                 transform: `translate3d(${translateX}px, ${translateY}px, 0) scale(${scale}) rotate(${rotate}deg)`,
                 zIndex: isActive ? 10 : Math.max(1, 8 - Math.round(absDistance * 3)),
               }}
-              className={`w-[90%] min-w-[90%] flex-shrink-0 snap-center transition-[opacity,transform,filter] duration-200 ease-out will-change-transform ${
+              className={`flex h-[306px] w-[90%] min-w-[90%] flex-shrink-0 snap-center transition-[opacity,transform,filter] duration-200 ease-out will-change-transform ${
                 isActive
                   ? "drop-shadow-[0_20px_38px_rgba(0,0,0,0.34)]"
                   : "drop-shadow-[0_10px_22px_rgba(0,0,0,0.18)]"
               } ${index === items.length - 1 ? "mr-4" : ""}`}
             >
-              <div className="transition-transform duration-300 ease-out active:scale-[0.985]">
+              <div className="flex h-full w-full transition-transform duration-300 ease-out active:scale-[0.985]">
                 {item.content}
               </div>
             </div>
