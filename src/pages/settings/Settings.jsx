@@ -1,17 +1,13 @@
 import { Camera, ChevronRight, LogOut } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ClaraPageShell from "../../components/shared/layout/ClaraPageShell";
 import Item from "./components/Item";
 import ProfileModal from "./components/ProfileModal";
 import Section from "./components/Section";
 import ToggleSwitch from "./components/ToggleSwitch";
-import {
-  getStoredProfileAvatar,
-  getStoredProfileName,
-  saveStoredProfileAvatar,
-  saveStoredProfileName,
-} from "./profileStorage";
+import Avatar from "../../components/shared/Avatar";
+import { useAvatar } from "../../context/AvatarContext";
 
 function Pill({ children, active = false, danger = false }) {
   return (
@@ -29,23 +25,9 @@ function Pill({ children, active = false, danger = false }) {
   );
 }
 
-function getInitials(value) {
-  const clean = value.trim();
-  if (!clean) return "CU";
-
-  return clean
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((p) => p[0])
-    .join("")
-    .toUpperCase();
-}
-
 function fileToDataUrl(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-
     reader.onload = () => resolve(reader.result);
     reader.onerror = () => reject(reader.error);
     reader.readAsDataURL(file);
@@ -56,65 +38,16 @@ export default function Settings() {
   const navigate = useNavigate();
   const fileRef = useRef(null);
 
+  const { avatar, updateAvatar } = useAvatar();
+
   const [profileOpen, setProfileOpen] = useState(false);
-  const [avatarPreview, setAvatarPreview] = useState(null);
 
-  const [name, setName] = useState("CLARA User");
-  const [hydrated, setHydrated] = useState(false);
+  const handleOpenTheme = () => navigate("/settings/theme");
+  const handleOpenProfile = () => setProfileOpen(true);
+  const handleCloseProfile = () => setProfileOpen(false);
+  const handleLogout = () => (window.location.href = "/login");
 
-  useEffect(() => {
-    async function loadProfile() {
-      try {
-        const [storedName, storedAvatar] = await Promise.all([
-          getStoredProfileName(),
-          getStoredProfileAvatar(),
-        ]);
-
-        if (storedName) setName(storedName);
-        if (storedAvatar) setAvatarPreview(storedAvatar);
-      } catch (err) {
-        console.warn("Failed to load profile", err);
-      } finally {
-        setHydrated(true);
-      }
-    }
-
-    loadProfile();
-  }, []);
-
-  useEffect(() => {
-    if (!hydrated) return;
-
-    async function persistName() {
-      try {
-        await saveStoredProfileName(name);
-      } catch (err) {
-        console.warn("Failed to save profile name", err);
-      }
-    }
-
-    persistName();
-  }, [name, hydrated]);
-
-  const handleOpenTheme = () => {
-    navigate("/settings/theme");
-  };
-
-  const handleOpenProfile = () => {
-    setProfileOpen(true);
-  };
-
-  const handleCloseProfile = () => {
-    setProfileOpen(false);
-  };
-
-  const handleLogout = () => {
-    window.location.href = "/login";
-  };
-
-  const handlePickAvatar = () => {
-    fileRef.current?.click();
-  };
+  const handlePickAvatar = () => fileRef.current?.click();
 
   const handleAvatarChange = async (event) => {
     const file = event.target.files?.[0];
@@ -122,42 +55,31 @@ export default function Settings() {
 
     try {
       const avatarDataUrl = await fileToDataUrl(file);
-
-      setAvatarPreview(avatarDataUrl);
-      await saveStoredProfileAvatar(avatarDataUrl);
+      await updateAvatar({ image: avatarDataUrl });
     } catch (err) {
-      console.warn("Failed to save profile avatar", err);
+      console.warn("Failed to update avatar", err);
     }
   };
 
   const handleRemoveAvatar = async () => {
     try {
-      setAvatarPreview(null);
-      await saveStoredProfileAvatar(null);
-
-      if (fileRef.current) {
-        fileRef.current.value = "";
-      }
+      await updateAvatar({ image: null });
+      if (fileRef.current) fileRef.current.value = "";
     } catch (err) {
-      console.warn("Failed to remove profile avatar", err);
+      console.warn("Failed to remove avatar", err);
     }
   };
 
-  const initials = getInitials(name);
+  const handleSetName = (nextName) => {
+    updateAvatar({ name: nextName });
+  };
 
   return (
     <ClaraPageShell>
       <div className="space-y-5 pb-6">
         <header className="px-1 pt-1">
-          <div className="min-w-0">
-            <h1 className="text-[30px] font-black tracking-[-0.04em] text-white">
-              Settings
-            </h1>
-
-            <p className="mt-1 text-sm leading-5 text-white/45">
-              Manage your account and preferences.
-            </p>
-          </div>
+          <h1 className="text-[30px] font-black tracking-[-0.04em] text-white">Settings</h1>
+          <p className="mt-1 text-sm text-white/45">Manage your account and preferences.</p>
         </header>
 
         <section className="rounded-[24px] border border-white/10 bg-white/[0.045] p-4">
@@ -165,19 +87,11 @@ export default function Settings() {
             <button
               type="button"
               onClick={handlePickAvatar}
-              className="group relative flex h-14 w-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl border border-white/15 bg-white/10 text-lg font-bold text-white transition active:scale-95"
+              className="group relative h-14 w-14"
             >
-              {avatarPreview ? (
-                <img
-                  src={avatarPreview}
-                  alt="Profile avatar"
-                  className="h-full w-full object-cover"
-                />
-              ) : (
-                <span>{initials}</span>
-              )}
+              <Avatar size={56} />
 
-              <div className="absolute inset-0 flex items-center justify-center bg-black/45 opacity-0 transition group-hover:opacity-100">
+              <div className="absolute inset-0 flex items-center justify-center bg-black/45 opacity-0 transition group-hover:opacity-100 rounded-2xl">
                 <Camera size={16} className="text-white" />
               </div>
             </button>
@@ -193,11 +107,9 @@ export default function Settings() {
             <button
               type="button"
               onClick={handleOpenProfile}
-              className="min-w-0 flex-1 text-left"
+              className="flex-1 text-left"
             >
-              <h2 className="truncate text-sm font-semibold text-white">
-                {name}
-              </h2>
+              <h2 className="truncate text-sm font-semibold text-white">{avatar.name}</h2>
               <p className="text-xs text-white/50">Profile</p>
             </button>
           </div>
@@ -209,24 +121,7 @@ export default function Settings() {
             description="Name, email, account identity"
             icon={<span>🏠</span>}
             onClick={handleOpenProfile}
-            right={
-              <div className="flex items-center gap-2">
-                <Pill>Edit</Pill>
-                <ChevronRight size={16} className="text-white/25" />
-              </div>
-            }
-          />
-
-          <Item
-            title="Security & privacy"
-            description="Session status and safe preferences"
-            icon={<span>🛡️</span>}
-            right={
-              <div className="flex items-center gap-2">
-                <Pill>Safe</Pill>
-                <ChevronRight size={16} className="text-white/25" />
-              </div>
-            }
+            right={<ChevronRight size={16} className="text-white/25" />}
           />
         </Section>
 
@@ -236,12 +131,7 @@ export default function Settings() {
             description="Colors, visual style, and dashboard look"
             icon={<span>🎨</span>}
             onClick={handleOpenTheme}
-            right={
-              <div className="flex items-center gap-2">
-                <Pill>Customize</Pill>
-                <ChevronRight size={16} className="text-white/25" />
-              </div>
-            }
+            right={<ChevronRight size={16} className="text-white/25" />}
           />
 
           <Item
@@ -250,90 +140,19 @@ export default function Settings() {
             icon={<span>🚀</span>}
             right={<ToggleSwitch checked={false} />}
           />
-
-          <Item
-            title="Notifications"
-            description="Reminders, alerts, and program updates"
-            icon={<span>🔔</span>}
-            right={<ToggleSwitch checked />}
-          />
-        </Section>
-
-        <Section title="PROGRAM">
-          <Item
-            title="Plan & billing"
-            description="Enrollment, payment, and access"
-            icon={<span>📄</span>}
-            right={
-              <div className="flex items-center gap-2">
-                <Pill active>Pro 99</Pill>
-                <ChevronRight size={16} className="text-white/25" />
-              </div>
-            }
-          />
-
-          <Item
-            title="Help & support"
-            description="Message support or report an issue"
-            icon={<span>💬</span>}
-            right={
-              <div className="flex items-center gap-2">
-                <Pill>Help</Pill>
-                <ChevronRight size={16} className="text-white/25" />
-              </div>
-            }
-          />
-
-          <Item
-            title="About CLARA"
-            description="Mission, vision, app info, and legal"
-            icon={<span>📘</span>}
-            right={
-              <div className="flex items-center gap-2">
-                <Pill>Info</Pill>
-                <ChevronRight size={16} className="text-white/25" />
-              </div>
-            }
-          />
-
-          <Item
-            title="Admin Panel"
-            description="Manage users, access, and CLARA system"
-            icon={<span>🛡️</span>}
-            right={
-              <div className="flex items-center gap-2">
-                <Pill>Admin</Pill>
-                <ChevronRight size={16} className="text-white/25" />
-              </div>
-            }
-          />
         </Section>
 
         <section className="space-y-2">
-          <p className="px-3 text-[10px] font-black uppercase tracking-[0.24em] text-white/25">
-            SESSION
-          </p>
+          <p className="px-3 text-[10px] font-black uppercase tracking-[0.24em] text-white/25">SESSION</p>
 
-          <div className="overflow-hidden rounded-[28px] border border-red-400/15 bg-red-500/[0.055] shadow-[0_18px_60px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
+          <div className="rounded-[28px] border border-red-400/15 bg-red-500/[0.055]">
             <button
               type="button"
               onClick={handleLogout}
-              className="group flex w-full items-center gap-3 px-4 py-3.5 text-left transition hover:bg-red-500/[0.06] active:bg-red-500/[0.09]"
+              className="flex w-full items-center gap-3 px-4 py-3.5"
             >
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] border border-red-400/20 bg-red-500/10 text-red-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition group-active:scale-95">
-                <LogOut size={17} />
-              </div>
-
-              <div className="min-w-0 flex-1">
-                <h3 className="text-[14px] font-semibold tracking-[-0.01em] text-red-300">
-                  Log out
-                </h3>
-                <p className="mt-0.5 text-[12px] leading-5 text-red-200/45">
-                  End your current session
-                </p>
-              </div>
-
-              <ChevronRight size={16} className="text-red-200/25" />
+              <LogOut size={17} className="text-red-300" />
+              <span className="text-red-300">Log out</span>
             </button>
           </div>
         </section>
@@ -342,9 +161,9 @@ export default function Settings() {
       <ProfileModal
         open={profileOpen}
         onClose={handleCloseProfile}
-        name={name}
-        setName={setName}
-        avatarPreview={avatarPreview}
+        name={avatar.name}
+        setName={handleSetName}
+        avatarPreview={avatar.image}
         onRemoveAvatar={handleRemoveAvatar}
       />
     </ClaraPageShell>
