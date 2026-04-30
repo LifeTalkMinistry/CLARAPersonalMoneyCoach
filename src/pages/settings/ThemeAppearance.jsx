@@ -1,11 +1,13 @@
-import { Check } from "lucide-react";
+import { Check, ChevronLeft } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import ClaraPageShell from "../../components/shared/layout/ClaraPageShell";
 import { useClaraTheme } from "./theme/ThemeContext";
 
 const themeCategories = ["All", "Classic", "Premium", "Aesthetic"];
 
 export default function ThemeAppearance() {
+  const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState("All");
   const { themes, selectedThemeId, setThemeId } = useClaraTheme();
 
@@ -17,7 +19,18 @@ export default function ThemeAppearance() {
   return (
     <ClaraPageShell>
       <div className="space-y-5 pb-6">
-        <div className="px-1 pt-1">
+
+        {/* BACK BUTTON */}
+        <button
+          type="button"
+          onClick={() => navigate("/settings")}
+          className="flex items-center gap-2 px-1 text-white/60 hover:text-white transition"
+        >
+          <ChevronLeft size={18} />
+          <span className="text-sm">Back</span>
+        </button>
+
+        <div className="px-1">
           <p
             className="text-[11px] font-black uppercase tracking-[0.26em]"
             style={{ color: "var(--clara-accent-text)" }}
