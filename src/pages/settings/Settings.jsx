@@ -1,7 +1,5 @@
-import { useNavigate } from "react-router-dom";
 import { ChevronRight, LogOut } from "lucide-react";
 import ClaraPageShell from "../../components/shared/layout/ClaraPageShell";
-import { supabase } from "../../../lib/supabaseClient"; // ✅ FIXED PATH
 import Item from "./components/Item";
 import Section from "./components/Section";
 
@@ -20,24 +18,12 @@ function Pill({ children, active = false }) {
 }
 
 export default function Settings() {
-  const navigate = useNavigate();
-
-  const handleLogout = async () => {
-    const confirmed = window.confirm("Are you sure you want to log out?");
-    if (!confirmed) return;
-
-    await supabase.auth.signOut();
-    navigate("/login", { replace: true });
-  };
-
   return (
     <ClaraPageShell>
       <div className="space-y-4">
         {/* HEADER */}
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Settings
-          </h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
           <p className="mt-1 text-sm text-white/50">
             Manage your account and preferences
           </p>
@@ -51,9 +37,7 @@ export default function Settings() {
             </div>
 
             <div className="min-w-0 flex-1">
-              <h2 className="truncate text-sm font-bold">
-                Jerome Mirabuenos
-              </h2>
+              <h2 className="truncate text-sm font-bold">Jerome Mirabuenos</h2>
               <p className="truncate text-xs text-white/45">
                 maxemorej62@gmail.com
               </p>
@@ -180,11 +164,10 @@ export default function Settings() {
           />
         </Section>
 
-        {/* LOGOUT */}
+        {/* LOGOUT DESIGN ONLY */}
         <section className="rounded-[24px] border border-red-400/20 bg-red-500/[0.055] p-4">
           <button
             type="button"
-            onClick={handleLogout}
             className="flex w-full items-center justify-between rounded-2xl border border-red-400/25 bg-red-500/10 px-4 py-3 text-sm font-bold text-red-300 transition hover:bg-red-500/15 active:scale-[0.99]"
           >
             <span>Log out</span>
@@ -192,7 +175,7 @@ export default function Settings() {
           </button>
 
           <p className="mt-3 text-center text-[11px] text-white/35">
-            This will end your current CLARA session.
+            Logout function will be connected later.
           </p>
         </section>
       </div>
