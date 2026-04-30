@@ -130,6 +130,19 @@ export default function Settings() {
     }
   };
 
+  const handleRemoveAvatar = async () => {
+    try {
+      setAvatarPreview(null);
+      await saveStoredProfileAvatar(null);
+
+      if (fileRef.current) {
+        fileRef.current.value = "";
+      }
+    } catch (err) {
+      console.warn("Failed to remove profile avatar", err);
+    }
+  };
+
   const initials = getInitials(name);
 
   return (
@@ -331,6 +344,8 @@ export default function Settings() {
         onClose={handleCloseProfile}
         name={name}
         setName={setName}
+        avatarPreview={avatarPreview}
+        onRemoveAvatar={handleRemoveAvatar}
       />
     </ClaraPageShell>
   );
