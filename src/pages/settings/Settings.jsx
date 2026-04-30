@@ -21,12 +21,9 @@ export default function Settings() {
   return (
     <ClaraPageShell>
       <div className="space-y-4">
-
         {/* HEADER */}
         <div>
-          <h1 className="text-2xl font-semibold tracking-tight">
-            Settings
-          </h1>
+          <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
           <p className="mt-1 text-sm text-white/50">
             Manage your account and preferences
           </p>
@@ -40,9 +37,7 @@ export default function Settings() {
             </div>
 
             <div className="min-w-0 flex-1">
-              <h2 className="truncate text-sm font-bold">
-                Jerome Mirabuenos
-              </h2>
+              <h2 className="truncate text-sm font-bold">Jerome Mirabuenos</h2>
               <p className="truncate text-xs text-white/45">
                 maxemorej62@gmail.com
               </p>
@@ -54,7 +49,6 @@ export default function Settings() {
 
         {/* ACCOUNT */}
         <Section title="ACCOUNT">
-
           <Item
             title="Profile information"
             description="Name, email, account identity"
@@ -78,12 +72,10 @@ export default function Settings() {
               </div>
             }
           />
-
         </Section>
 
         {/* PREFERENCES */}
         <Section title="PREFERENCES">
-
           <Item
             title="Theme & appearance"
             description="Colors, visual style, and dashboard look"
@@ -119,12 +111,10 @@ export default function Settings() {
               </div>
             }
           />
-
         </Section>
 
         {/* PROGRAM */}
         <Section title="PROGRAM">
-
           <Item
             title="Plan & billing"
             description="Enrollment, payment, and access"
@@ -172,9 +162,20 @@ export default function Settings() {
               </div>
             }
           />
-
         </Section>
 
+        {/* LOGOUT */}
+        <button
+          type="button"
+          className="w-full rounded-[22px] border border-rose-400/20 bg-rose-400/10 p-4 text-sm font-bold text-rose-300 transition hover:bg-rose-400/15"
+        >
+          Log out
+        </button>
+
+        {/* FOOTER */}
+        <p className="pb-4 text-center text-[11px] text-white/30">
+          CLARA Personal Money Coach · v1.0
+        </p>
       </div>
     </ClaraPageShell>
   );
