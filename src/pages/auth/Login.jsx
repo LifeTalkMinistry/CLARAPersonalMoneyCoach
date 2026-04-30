@@ -1,19 +1,27 @@
-export default function Login() {
-  return (
-    <main className="min-h-screen bg-[#05080d] text-white">
-      <div className="mx-auto flex min-h-screen w-full max-w-[390px] flex-col px-6 py-8">
-        <p className="text-[11px] font-black uppercase tracking-[0.28em] text-emerald-300/45">
-          CLARA
-        </p>
+<div className="mt-10 space-y-4">
 
-        <h1 className="mt-4 text-[34px] font-black tracking-[-0.05em] text-white">
-          Welcome back
-        </h1>
+  {/* EMAIL */}
+  <div className="rounded-[22px] border border-white/10 bg-white/[0.04] px-4 py-3">
+    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">
+      Email
+    </p>
+    <input
+      type="email"
+      placeholder="you@example.com"
+      className="mt-1 w-full bg-transparent text-sm text-white outline-none placeholder:text-white/25"
+    />
+  </div>
 
-        <p className="mt-2 text-sm leading-6 text-white/45">
-          Your money system is waiting.
-        </p>
-      </div>
-    </main>
-  );
-}
+  {/* PASSWORD */}
+  <div className="rounded-[22px] border border-white/10 bg-white/[0.04] px-4 py-3">
+    <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/40">
+      Password
+    </p>
+    <input
+      type="password"
+      placeholder="••••••••"
+      className="mt-1 w-full bg-transparent text-sm text-white outline-none placeholder:text-white/25"
+    />
+  </div>
+
+</div>
