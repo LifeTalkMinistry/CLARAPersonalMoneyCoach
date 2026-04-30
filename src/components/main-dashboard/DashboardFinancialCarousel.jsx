@@ -54,30 +54,48 @@ export default function DashboardFinancialCarousel({
   };
 
   return (
-    <div className="relative mt-2">
-      <div className="pointer-events-none absolute -inset-x-2 -top-4 h-24 rounded-full bg-emerald-400/[0.06] blur-3xl" />
-      <div className="pointer-events-none absolute -left-4 top-2 z-20 h-[calc(100%-28px)] w-8 bg-gradient-to-r from-[#070b10] via-[#070b10]/80 to-transparent" />
-      <div className="pointer-events-none absolute -right-4 top-2 z-20 h-[calc(100%-28px)] w-8 bg-gradient-to-l from-[#070b10] via-[#070b10]/80 to-transparent" />
+    <div className="relative mt-2 overflow-hidden rounded-[30px] py-1">
+      <div className="pointer-events-none absolute -inset-x-6 top-4 h-28 rounded-full bg-emerald-400/[0.055] blur-3xl" />
+      <div className="pointer-events-none absolute -left-10 top-12 h-28 w-28 rounded-full bg-sky-400/[0.05] blur-3xl" />
+      <div className="pointer-events-none absolute -right-10 bottom-8 h-28 w-28 rounded-full bg-fuchsia-400/[0.045] blur-3xl" />
+
+      <div className="pointer-events-none absolute -left-4 top-2 z-20 h-[calc(100%-34px)] w-8 bg-gradient-to-r from-[#070b10] via-[#070b10]/80 to-transparent" />
+      <div className="pointer-events-none absolute -right-4 top-2 z-20 h-[calc(100%-34px)] w-8 bg-gradient-to-l from-[#070b10] via-[#070b10]/80 to-transparent" />
 
       <section
         ref={carouselRef}
         onScroll={handleScroll}
         aria-label="Financial dashboard cards"
-        className="relative -mx-4 flex gap-3 overflow-x-auto scroll-smooth snap-x snap-mandatory px-4 pb-2 pt-1 scrollbar-none"
+        className="relative -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth px-4 pb-2 pt-1 scrollbar-none"
       >
-        {items.map((item, index) => (
-          <div
-            key={item.label}
-            aria-label={item.label}
-            className={`w-[90%] min-w-[90%] flex-shrink-0 snap-center transition-all duration-300 ease-out will-change-transform ${
-              activeSlide === index
-                ? "scale-100 opacity-100 drop-shadow-[0_18px_34px_rgba(0,0,0,0.30)]"
-                : "scale-[0.975] opacity-70"
-            }`}
-          >
-            {item.content}
-          </div>
-        ))}
+        {items.map((item, index) => {
+          const distance = Math.abs(activeSlide - index);
+          const isActive = activeSlide === index;
+          const translateY = isActive ? "translate-y-0" : "translate-y-2";
+          const rotate =
+            index < activeSlide
+              ? "-rotate-[0.8deg]"
+              : index > activeSlide
+                ? "rotate-[0.8deg]"
+                : "rotate-0";
+          const depth = distance > 1 ? "scale-[0.94] opacity-55" : "scale-[0.972] opacity-72";
+
+          return (
+            <div
+              key={item.label}
+              aria-label={item.label}
+              className={`w-[90%] min-w-[90%] flex-shrink-0 snap-center transition-all duration-300 ease-out will-change-transform ${
+                isActive
+                  ? "translate-y-0 scale-100 rotate-0 opacity-100 drop-shadow-[0_18px_34px_rgba(0,0,0,0.30)]"
+                  : `${translateY} ${rotate} ${depth}`
+              }`}
+            >
+              <div className="transition-transform duration-300 ease-out active:scale-[0.985]">
+                {item.content}
+              </div>
+            </div>
+          );
+        })}
       </section>
 
       <div className="mt-2 flex items-center justify-center gap-2">
