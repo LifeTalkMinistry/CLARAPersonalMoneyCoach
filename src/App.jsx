@@ -7,7 +7,7 @@ import Settings from "./pages/Settings";
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/CLARAPersonalMoneyCoach/">
       <Routes>
         <Route path="/" element={<Dashboard />} />
         <Route path="/feed" element={<Feed />} />
