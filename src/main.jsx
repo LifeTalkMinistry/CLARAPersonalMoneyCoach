@@ -3,11 +3,14 @@ import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
 import { ClaraThemeProvider } from './pages/settings/theme/ThemeContext'
+import { AvatarProvider } from './context/AvatarContext'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <ClaraThemeProvider>
-      <App />
+      <AvatarProvider>
+        <App />
+      </AvatarProvider>
     </ClaraThemeProvider>
   </StrictMode>,
 )
