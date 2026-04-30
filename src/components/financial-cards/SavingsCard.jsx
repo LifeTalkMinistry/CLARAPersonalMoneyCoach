@@ -42,7 +42,7 @@ export default function SavingsCard({
   return (
     <>
       <div
-        className={`relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] p-5 shadow-[0_0_30px_rgba(0,0,0,0.3)] backdrop-blur-xl transition duration-300 ${
+        className={`relative flex h-full min-h-[236px] flex-col overflow-hidden rounded-[30px] border border-white/10 bg-white/[0.04] p-5 shadow-[0_0_30px_rgba(0,0,0,0.3)] backdrop-blur-xl transition duration-300 ${
           panelOpen ? "scale-[0.98] opacity-80" : "scale-100 opacity-100"
         }`}
       >
@@ -78,9 +78,9 @@ export default function SavingsCard({
           <span>₱{targetAmount.toLocaleString()}</span>
         </div>
 
-        <p className="mt-3 text-xs text-white/60">{insight}</p>
+        <p className="mt-3 min-h-[34px] text-xs leading-relaxed text-white/60">{insight}</p>
 
-        <div className="mt-4">
+        <div className="mt-auto pt-4">
           <button
             type="button"
             onClick={() => setPanelOpen(true)}
