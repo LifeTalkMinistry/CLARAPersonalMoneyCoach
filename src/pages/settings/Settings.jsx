@@ -3,13 +3,15 @@ import ClaraPageShell from "../../components/shared/layout/ClaraPageShell";
 import Item from "./components/Item";
 import Section from "./components/Section";
 
-function Pill({ children, active = false }) {
+function Pill({ children, active = false, danger = false }) {
   return (
     <span
-      className={`rounded-full border px-3 py-1 text-[10px] font-bold ${
-        active
-          ? "border-emerald-400/25 bg-emerald-400/10 text-emerald-300"
-          : "border-white/10 bg-white/10 text-white/60"
+      className={`rounded-full border px-3 py-1 text-[10px] font-black ${
+        danger
+          ? "border-red-400/25 bg-red-500/10 text-red-300"
+          : active
+            ? "border-emerald-400/25 bg-emerald-400/10 text-emerald-300"
+            : "border-white/10 bg-white/[0.08] text-white/55"
       }`}
     >
       {children}
@@ -20,30 +22,48 @@ function Pill({ children, active = false }) {
 export default function Settings() {
   return (
     <ClaraPageShell>
-      <div className="space-y-4">
+      <div className="space-y-5 pb-6">
         {/* HEADER */}
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
-          <p className="mt-1 text-sm text-white/50">
-            Manage your account and preferences
+        <div className="px-1 pt-1">
+          <p className="text-[11px] font-black uppercase tracking-[0.26em] text-emerald-300/45">
+            CLARA
+          </p>
+
+          <h1 className="mt-1 text-[30px] font-black tracking-[-0.04em] text-white">
+            Settings
+          </h1>
+
+          <p className="mt-1 text-sm leading-5 text-white/45">
+            Manage your account, access, and app preferences.
           </p>
         </div>
 
         {/* PROFILE CARD */}
-        <section className="rounded-[24px] border border-white/10 bg-white/[0.045] p-4">
-          <div className="flex items-center gap-3">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-lg font-bold">
+        <section className="relative overflow-hidden rounded-[32px] border border-white/10 bg-white/[0.055] p-4 shadow-[0_22px_80px_rgba(0,0,0,0.35)] backdrop-blur-2xl">
+          <div className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-emerald-400/15 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-12 -left-10 h-32 w-32 rounded-full bg-cyan-400/10 blur-3xl" />
+
+          <div className="relative flex items-center gap-4">
+            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-[24px] border border-white/15 bg-white/[0.09] text-xl font-black text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.10)]">
               JM
             </div>
 
             <div className="min-w-0 flex-1">
-              <h2 className="truncate text-sm font-bold">Jerome Mirabuenos</h2>
-              <p className="truncate text-xs text-white/45">
+              <h2 className="truncate text-[16px] font-black tracking-[-0.02em] text-white">
+                Jerome Mirabuenos
+              </h2>
+
+              <p className="mt-0.5 truncate text-xs text-white/45">
                 maxemorej62@gmail.com
               </p>
+
+              <div className="mt-2 flex items-center gap-2">
+                <Pill active>Pro 99</Pill>
+                <Pill>Active</Pill>
+              </div>
             </div>
 
-            <Pill active>Pro 99</Pill>
+            <ChevronRight size={18} className="text-white/25" />
           </div>
         </section>
 
@@ -56,7 +76,7 @@ export default function Settings() {
             right={
               <div className="flex items-center gap-2">
                 <Pill>Edit</Pill>
-                <ChevronRight size={16} className="text-white/30" />
+                <ChevronRight size={16} className="text-white/25" />
               </div>
             }
           />
@@ -68,7 +88,7 @@ export default function Settings() {
             right={
               <div className="flex items-center gap-2">
                 <Pill>Safe</Pill>
-                <ChevronRight size={16} className="text-white/30" />
+                <ChevronRight size={16} className="text-white/25" />
               </div>
             }
           />
@@ -83,7 +103,7 @@ export default function Settings() {
             right={
               <div className="flex items-center gap-2">
                 <Pill>Customize</Pill>
-                <ChevronRight size={16} className="text-white/30" />
+                <ChevronRight size={16} className="text-white/25" />
               </div>
             }
           />
@@ -95,7 +115,7 @@ export default function Settings() {
             right={
               <div className="flex items-center gap-2">
                 <Pill>Off</Pill>
-                <ChevronRight size={16} className="text-white/30" />
+                <ChevronRight size={16} className="text-white/25" />
               </div>
             }
           />
@@ -107,7 +127,7 @@ export default function Settings() {
             right={
               <div className="flex items-center gap-2">
                 <Pill>On</Pill>
-                <ChevronRight size={16} className="text-white/30" />
+                <ChevronRight size={16} className="text-white/25" />
               </div>
             }
           />
@@ -122,7 +142,7 @@ export default function Settings() {
             right={
               <div className="flex items-center gap-2">
                 <Pill active>Pro 99</Pill>
-                <ChevronRight size={16} className="text-white/30" />
+                <ChevronRight size={16} className="text-white/25" />
               </div>
             }
           />
@@ -134,7 +154,7 @@ export default function Settings() {
             right={
               <div className="flex items-center gap-2">
                 <Pill>Help</Pill>
-                <ChevronRight size={16} className="text-white/30" />
+                <ChevronRight size={16} className="text-white/25" />
               </div>
             }
           />
@@ -146,7 +166,7 @@ export default function Settings() {
             right={
               <div className="flex items-center gap-2">
                 <Pill>Info</Pill>
-                <ChevronRight size={16} className="text-white/30" />
+                <ChevronRight size={16} className="text-white/25" />
               </div>
             }
           />
@@ -158,25 +178,39 @@ export default function Settings() {
             right={
               <div className="flex items-center gap-2">
                 <Pill>Admin</Pill>
-                <ChevronRight size={16} className="text-white/30" />
+                <ChevronRight size={16} className="text-white/25" />
               </div>
             }
           />
         </Section>
 
         {/* LOGOUT DESIGN ONLY */}
-        <section className="rounded-[24px] border border-red-400/20 bg-red-500/[0.055] p-4">
-          <button
-            type="button"
-            className="flex w-full items-center justify-between rounded-2xl border border-red-400/25 bg-red-500/10 px-4 py-3 text-sm font-bold text-red-300 transition hover:bg-red-500/15 active:scale-[0.99]"
-          >
-            <span>Log out</span>
-            <LogOut size={17} />
-          </button>
-
-          <p className="mt-3 text-center text-[11px] text-white/35">
-            Logout function will be connected later.
+        <section className="space-y-2">
+          <p className="px-3 text-[10px] font-black uppercase tracking-[0.24em] text-white/25">
+            SESSION
           </p>
+
+          <div className="overflow-hidden rounded-[28px] border border-red-400/15 bg-red-500/[0.055] shadow-[0_18px_60px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
+            <button
+              type="button"
+              className="group flex w-full items-center gap-3 px-4 py-3.5 text-left transition hover:bg-red-500/[0.06] active:bg-red-500/[0.09]"
+            >
+              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] border border-red-400/20 bg-red-500/10 text-red-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition group-active:scale-95">
+                <LogOut size={17} />
+              </div>
+
+              <div className="min-w-0 flex-1">
+                <h3 className="text-[14px] font-semibold tracking-[-0.01em] text-red-300">
+                  Log out
+                </h3>
+                <p className="mt-0.5 text-[12px] leading-5 text-red-200/45">
+                  Function will be connected later
+                </p>
+              </div>
+
+              <ChevronRight size={16} className="text-red-200/25" />
+            </button>
+          </div>
         </section>
       </div>
     </ClaraPageShell>
