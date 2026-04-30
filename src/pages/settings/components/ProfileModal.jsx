@@ -14,31 +14,30 @@ function getInitials(value) {
     .toUpperCase();
 }
 
-export default function ProfileModal({ open, onClose }) {
-  const [savedName, setSavedName] = useState("CLARA User");
-  const [name, setName] = useState(savedName);
+export default function ProfileModal({ open, onClose, name, setName }) {
+  const [draftName, setDraftName] = useState(name);
   const [message, setMessage] = useState("");
 
-  const initials = getInitials(name);
+  const initials = getInitials(draftName);
 
   useEffect(() => {
     if (!open) return;
-    setName(savedName);
+    setDraftName(name);
     setMessage("");
-  }, [open, savedName]);
+  }, [open, name]);
 
   if (!open) return null;
 
   const handleSaveName = () => {
-    if (!name.trim()) return;
+    if (!draftName.trim()) return;
 
-    setSavedName(name.trim());
-    setName(name.trim());
+    setName(draftName.trim());
+    setDraftName(draftName.trim());
     setMessage("Name saved for this preview.");
   };
 
   const handleCancel = () => {
-    setName(savedName);
+    setDraftName(name);
     setMessage("");
     onClose();
   };
@@ -77,9 +76,9 @@ export default function ProfileModal({ open, onClose }) {
             <p className="text-[10px] uppercase text-white/40">Name</p>
             <input
               type="text"
-              value={name}
+              value={draftName}
               onChange={(event) => {
-                setName(event.target.value);
+                setDraftName(event.target.value);
                 setMessage("");
               }}
               placeholder="Your name"
@@ -120,7 +119,7 @@ export default function ProfileModal({ open, onClose }) {
           <button
             type="button"
             onClick={handleSaveName}
-            disabled={!name.trim()}
+            disabled={!draftName.trim()}
             className="flex-1 rounded-xl bg-white py-3 text-sm font-medium text-black disabled:cursor-not-allowed disabled:bg-white/30 disabled:text-white/40"
           >
             Save Name
