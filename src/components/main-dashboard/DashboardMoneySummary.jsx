@@ -15,35 +15,49 @@ export default function DashboardMoneySummary({
   const handleTap = () => {
     const now = Date.now();
     if (now - lastTap.current < 300) {
-      navigate("/transactions"); // make sure route exists
+      navigate("/transactions");
     }
     lastTap.current = now;
+  };
+
+  const handleVisibilityToggle = (event) => {
+    event.stopPropagation();
+    onToggleMoneyVisible?.();
   };
 
   return (
     <section
       onClick={handleTap}
-      className="relative overflow-hidden rounded-[26px] border border-white/[0.10] bg-[#0b1118]/88 shadow-[0_18px_45px_rgba(0,0,0,0.32)] backdrop-blur-2xl active:scale-[0.99] transition"
+      className="relative overflow-hidden rounded-[26px] border border-white/[0.10] bg-[#0b1118]/88 shadow-[0_18px_45px_rgba(0,0,0,0.32)] backdrop-blur-2xl transition active:scale-[0.99]"
     >
-      {/* subtle minimal glow */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(255,255,255,0.05),transparent_40%)]" />
 
-      <div className="grid grid-cols-2 divide-x divide-white/[0.08]">
-
+      <div className="relative grid grid-cols-2 divide-x divide-white/[0.08]">
         {/* TOTAL MONEY */}
-        <div className="min-h-[90px] px-4 pb-3 pt-3">
-          <div className="flex items-center justify-between">
-            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/45">
-              Total Money
+        <div className="min-h-[90px] px-4 pb-3 pt-4">
+          <p className="h-4 whitespace-nowrap text-[10px] font-black uppercase leading-4 tracking-[0.22em] text-white/45">
+            Total Money
+          </p>
+
+          <p className="mt-2 text-[24px] font-black leading-none tracking-tight text-white">
+            {moneyVisible ? formatMoney(moneyLeft) : "₱••••"}
+          </p>
+
+          <p className="mt-2 text-[11px] leading-none text-white/50">Available</p>
+        </div>
+
+        {/* TOTAL EXPENSE */}
+        <div className="min-h-[90px] px-4 pb-3 pt-4">
+          <div className="flex h-4 items-center justify-between gap-2">
+            <p className="whitespace-nowrap text-[10px] font-black uppercase leading-4 tracking-[0.22em] text-white/45">
+              Total Expense
             </p>
 
             <button
               type="button"
-              onClick={(e) => {
-                e.stopPropagation(); // prevent double tap trigger
-                onToggleMoneyVisible?.();
-              }}
-              className="rounded-full border border-white/10 bg-white/[0.05] p-1.5 text-white/60 transition hover:text-white hover:bg-white/[0.10]"
+              onClick={handleVisibilityToggle}
+              aria-label={moneyVisible ? "Hide totals" : "Show totals"}
+              className="-mt-0.5 shrink-0 rounded-full border border-white/10 bg-white/[0.05] p-1.5 text-white/60 transition hover:bg-white/[0.10] hover:text-white active:scale-95"
             >
               {moneyVisible ? (
                 <EyeOff className="h-3.5 w-3.5" />
@@ -53,26 +67,12 @@ export default function DashboardMoneySummary({
             </button>
           </div>
 
-          <p className="mt-1.5 text-[24px] font-black tracking-tight text-white">
-            {moneyVisible ? formatMoney(moneyLeft) : "₱••••"}
-          </p>
-
-          <p className="mt-1 text-[11px] text-white/50">Available</p>
-        </div>
-
-        {/* TOTAL EXPENSE */}
-        <div className="min-h-[90px] px-4 pb-3 pt-3">
-          <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/45">
-            Total Expense
-          </p>
-
-          <p className="mt-1.5 text-[24px] font-black tracking-tight text-white">
+          <p className="mt-2 text-[24px] font-black leading-none tracking-tight text-white">
             {moneyVisible ? formatMoney(totalExpenses) : "₱••••"}
           </p>
 
-          <p className="mt-1 text-[11px] text-white/50">This month</p>
+          <p className="mt-2 text-[11px] leading-none text-white/50">This month</p>
         </div>
-
       </div>
     </section>
   );
