@@ -1,9 +1,14 @@
+import { useState } from "react";
 import ClaraPageShell from "../../components/shared/layout/ClaraPageShell";
 import Item from "./components/Item";
 import Section from "./components/Section";
+import Toggle from "./components/Toggle";
 import { ChevronRight } from "lucide-react";
 
 export default function Settings() {
+  const [performanceMode, setPerformanceMode] = useState(true);
+  const [notifications, setNotifications] = useState(true);
+
   return (
     <ClaraPageShell>
       <div className="space-y-4">
@@ -77,10 +82,27 @@ export default function Settings() {
           />
 
           <Item
+            title="Performance Mode"
+            description="Reduce animations for faster loading"
+            icon={<span>⚡</span>}
+            right={
+              <Toggle
+                checked={performanceMode}
+                onClick={() => setPerformanceMode((prev) => !prev)}
+              />
+            }
+          />
+
+          <Item
             title="Notifications"
             description="Manage alerts and reminders"
             icon={<span>🔔</span>}
-            right={<ChevronRight size={18} className="text-white/40" />}
+            right={
+              <Toggle
+                checked={notifications}
+                onClick={() => setNotifications((prev) => !prev)}
+              />
+            }
           />
 
         </Section>
