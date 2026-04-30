@@ -1,5 +1,21 @@
-import { Plus } from "lucide-react";
-import { useEffect, useMemo, useRef, useState } from "react";
+import {
+  Bot,
+  Plus,
+  Sparkles,
+  TrendingUp,
+  WalletCards,
+  Target,
+  ShieldCheck,
+} from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+
+const commandItems = [
+  { label: "Ask CLARA", description: "Open money coach", icon: Bot },
+  { label: "Quick expense", description: "Log spending fast", icon: WalletCards },
+  { label: "Spending insight", description: "Check your pattern", icon: TrendingUp },
+  { label: "Savings plan", description: "Build your next move", icon: Target },
+  { label: "Emergency fund", description: "Protect your base", icon: ShieldCheck },
+];
 
 const ORB_SIZE = 60;
 const EDGE_PADDING = 18;
@@ -9,122 +25,238 @@ const BOTTOM_SAFE = 96;
 export default function DashboardQuickOrb({
   onTap,
   onDoubleTap,
+  onLongPressStart,
+  onLongPressEnd,
 }) {
+  const [open, setOpen] = useState(false);
   const [position, setPosition] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dockSide, setDockSide] = useState("right");
 
-  const drag = useRef(null);
+  const dragData = useRef(null);
+  const longPressTimer = useRef(null);
+  const didLongPress = useRef(false);
+  const dragging = useRef(false);
 
-  const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
+  const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
-  const safe = (x, y) => ({
+  const getSafePosition = (x, y) => ({
     x: clamp(x, EDGE_PADDING, window.innerWidth - ORB_SIZE - EDGE_PADDING),
     y: clamp(y, TOP_SAFE, window.innerHeight - ORB_SIZE - BOTTOM_SAFE),
   });
 
-  const snap = (pos) => {
+  const snapToNearestCorner = (pos) => {
     const points = [
-      safe(EDGE_PADDING, window.innerHeight * 0.55),
-      safe(window.innerWidth - ORB_SIZE - EDGE_PADDING, window.innerHeight * 0.55),
-      safe(EDGE_PADDING, window.innerHeight - ORB_SIZE - BOTTOM_SAFE),
-      safe(window.innerWidth - ORB_SIZE - EDGE_PADDING, window.innerHeight - ORB_SIZE - BOTTOM_SAFE),
+      getSafePosition(EDGE_PADDING, window.innerHeight * 0.55),
+      getSafePosition(
+        window.innerWidth - ORB_SIZE - EDGE_PADDING,
+        window.innerHeight * 0.55
+      ),
+      getSafePosition(EDGE_PADDING, window.innerHeight - ORB_SIZE - BOTTOM_SAFE),
+      getSafePosition(
+        window.innerWidth - ORB_SIZE - EDGE_PADDING,
+        window.innerHeight - ORB_SIZE - BOTTOM_SAFE
+      ),
     ];
 
     return points.reduce((nearest, point) => {
-      const d1 = Math.hypot(pos.x - nearest.x, pos.y - nearest.y);
-      const d2 = Math.hypot(pos.x - point.x, pos.y - point.y);
-      return d2 < d1 ? point : nearest;
+      const nearestDistance = Math.hypot(pos.x - nearest.x, pos.y - nearest.y);
+      const pointDistance = Math.hypot(pos.x - point.x, pos.y - point.y);
+      return pointDistance < nearestDistance ? point : nearest;
     });
   };
 
   useEffect(() => {
-    // default bottom-right
     setPosition(
-      safe(
+      getSafePosition(
         window.innerWidth - ORB_SIZE - EDGE_PADDING,
         window.innerHeight - ORB_SIZE - BOTTOM_SAFE
       )
     );
   }, []);
 
-  const handleDown = (e) => {
-    drag.current = {
-      startX: e.clientX,
-      startY: e.clientY,
-      originX: position?.x || 0,
-      originY: position?.y || 0,
+  const closeMenu = () => setOpen(false);
+  const toggleMenu = () => setOpen((current) => !current);
+
+  const handlePointerDown = (event) => {
+    didLongPress.current = false;
+    dragging.current = false;
+    setIsDragging(false);
+
+    const rect = event.currentTarget.getBoundingClientRect();
+
+    dragData.current = {
+      startX: event.clientX,
+      startY: event.clientY,
+      offsetX: event.clientX - rect.left,
+      offsetY: event.clientY - rect.top,
+      lastPosition: position,
     };
+
+    onLongPressStart?.();
+
+    longPressTimer.current = window.setTimeout(() => {
+      if (dragging.current) return;
+      didLongPress.current = true;
+      setOpen(true);
+    }, 420);
   };
 
-  const handleMove = (e) => {
-    if (!drag.current) return;
+  const handlePointerMove = (event) => {
+    if (!dragData.current) return;
 
-    setIsDragging(true);
+    const movedX = Math.abs(event.clientX - dragData.current.startX);
+    const movedY = Math.abs(event.clientY - dragData.current.startY);
 
-    const dx = e.clientX - drag.current.startX;
-    const dy = e.clientY - drag.current.startY;
+    if (movedX > 7 || movedY > 7) {
+      dragging.current = true;
+      setIsDragging(true);
+      closeMenu();
 
-    const next = safe(
-      drag.current.originX + dx,
-      drag.current.originY + dy
+      if (longPressTimer.current) {
+        window.clearTimeout(longPressTimer.current);
+      }
+    }
+
+    if (!dragging.current) return;
+
+    const nextPosition = getSafePosition(
+      event.clientX - dragData.current.offsetX,
+      event.clientY - dragData.current.offsetY
     );
 
-    setPosition(next);
-    setDockSide(next.x < window.innerWidth / 2 ? "left" : "right");
+    dragData.current.lastPosition = nextPosition;
+    setPosition(nextPosition);
+    setDockSide(nextPosition.x < window.innerWidth / 2 ? "left" : "right");
   };
 
-  const handleUp = () => {
-    if (!drag.current) return;
+  const handlePointerEnd = () => {
+    if (longPressTimer.current) {
+      window.clearTimeout(longPressTimer.current);
+    }
 
-    setPosition((prev) => snap(prev));
-    drag.current = null;
+    onLongPressEnd?.();
 
-    setTimeout(() => setIsDragging(false), 200);
+    if (dragging.current && dragData.current?.lastPosition) {
+      const snappedPosition = snapToNearestCorner(dragData.current.lastPosition);
+      setPosition(snappedPosition);
+      setDockSide(snappedPosition.x < window.innerWidth / 2 ? "left" : "right");
+    }
+
+    setTimeout(() => {
+      dragging.current = false;
+      dragData.current = null;
+      setIsDragging(false);
+    }, 250);
   };
 
-  const menuAlign = useMemo(() => {
-    return dockSide === "left"
+  const handleOrbClick = () => {
+    if (didLongPress.current || dragging.current || isDragging) return;
+    toggleMenu();
+    onTap?.();
+  };
+
+  const handleCommandClick = (index) => {
+    closeMenu();
+
+    if (index === 0) onLongPressStart?.();
+    if (index === 1) onTap?.();
+    if (index === 2) onDoubleTap?.();
+  };
+
+  const menuAlignment =
+    dockSide === "left"
       ? "left-0 origin-bottom-left"
       : "right-0 origin-bottom-right";
-  }, [dockSide]);
 
   return (
     <div
-      className="fixed z-50 transition-[left,top] duration-300 ease-out"
-      style={position ? { left: position.x, top: position.y } : {}}
+      className={`fixed z-50 ${
+        isDragging
+          ? "transition-none"
+          : "transition-[left,top] duration-300 ease-out"
+      }`}
+      style={position ? { left: position.x, top: position.y } : undefined}
     >
-      {/* COMMAND MENU (you already have this, keep it) */}
-      <div
-        className={`absolute bottom-[72px] ${menuAlign} transition-all duration-300`}
-      >
-        {/* keep your existing menu here */}
-      </div>
+      {open && (
+        <button
+          type="button"
+          aria-label="Close CLARA command menu"
+          onClick={closeMenu}
+          className="fixed inset-0 -z-10 bg-black/20 backdrop-blur-[1px]"
+        />
+      )}
 
-      {/* ORB */}
-      <button
-        onClick={onTap}
-        onDoubleClick={onDoubleTap}
-        onPointerDown={handleDown}
-        onPointerMove={handleMove}
-        onPointerUp={handleUp}
-        onPointerCancel={handleUp}
-        className={`group relative flex h-[60px] w-[60px] items-center justify-center rounded-full border border-white/15 bg-white/[0.08] text-white backdrop-blur-2xl transition-all duration-300 ${
-          isDragging
-            ? "scale-95 cursor-grabbing shadow-[0_18px_60px_rgba(34,211,238,0.25)]"
-            : "cursor-grab active:scale-95 shadow-[0_16px_44px_rgba(0,0,0,0.45)]"
+      <div
+        className={`absolute bottom-[72px] ${menuAlignment} w-[320px] max-w-[calc(100vw-32px)] overflow-hidden rounded-[30px] border border-white/12 bg-[#071018]/80 p-3 text-white shadow-[0_24px_80px_rgba(0,0,0,0.55)] backdrop-blur-2xl transition-all duration-300 ease-out ${
+          open
+            ? "translate-y-0 scale-100 opacity-100"
+            : "pointer-events-none translate-y-5 scale-95 opacity-0"
         }`}
       >
-        {/* glow */}
-        <span
-          className={`absolute -inset-3 rounded-full blur-2xl transition ${
-            isDragging ? "bg-cyan-300/20" : "bg-cyan-300/10"
-          }`}
-        />
+        <div className="mb-2 px-2 py-1">
+          <p className="text-[11px] font-black uppercase tracking-[0.24em] text-cyan-100/45">
+            CLARA AI Command
+          </p>
+          <h3 className="mt-1 text-lg font-black tracking-[-0.03em] text-white">
+            What do you need?
+          </h3>
+        </div>
 
-        {/* inner orb */}
+        <div className="space-y-1.5">
+          {commandItems.map((item, index) => {
+            const Icon = item.icon;
+
+            return (
+              <button
+                key={item.label}
+                type="button"
+                onClick={() => handleCommandClick(index)}
+                className="group flex w-full items-center gap-3 rounded-[22px] border border-white/[0.06] bg-white/[0.045] px-3 py-3 text-left transition duration-200 hover:bg-white/[0.075] active:scale-[0.98]"
+              >
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-cyan-100/12 bg-cyan-200/[0.08] text-cyan-100">
+                  <Icon size={18} strokeWidth={1.9} />
+                </span>
+
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-bold text-white">
+                    {item.label}
+                  </span>
+                  <span className="mt-0.5 block truncate text-xs text-white/42">
+                    {item.description}
+                  </span>
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      <button
+        type="button"
+        onClick={handleOrbClick}
+        onDoubleClick={onDoubleTap}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerEnd}
+        onPointerCancel={handlePointerEnd}
+        className={`touch-none group relative flex h-[60px] w-[60px] items-center justify-center rounded-full border border-white/15 bg-white/[0.08] text-white shadow-[0_16px_44px_rgba(0,0,0,0.45)] backdrop-blur-2xl transition-all duration-300 ease-out ${
+          isDragging ? "scale-95 cursor-grabbing" : "cursor-grab active:scale-95"
+        } ${open ? "scale-105" : "scale-100"}`}
+        aria-label="CLARA quick action"
+        aria-expanded={open}
+      >
+        <span className="absolute -inset-3 rounded-full bg-cyan-300/10 blur-2xl" />
+        <span className="absolute inset-0 rounded-full bg-gradient-to-br from-white/18 via-white/[0.06] to-cyan-400/10" />
+        <span className="absolute inset-[5px] rounded-full border border-white/12 bg-[#07131a]/65" />
+
         <span className="relative flex h-[46px] w-[46px] items-center justify-center rounded-full bg-gradient-to-br from-cyan-200 via-emerald-300 to-sky-400 text-[#041018]">
-          <Plus className="h-5 w-5 stroke-[2.4]" />
+          <Plus
+            className={`h-5 w-5 stroke-[2.4] transition duration-300 ${
+              open ? "rotate-45" : "rotate-0"
+            }`}
+          />
+          <Sparkles className="absolute -right-1 -top-1 h-3.5 w-3.5 text-white" />
         </span>
       </button>
     </div>
