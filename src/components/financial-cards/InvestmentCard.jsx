@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import FinancialCardShell from "./FinancialCardShell";
 import FinancialFocusPanel from "./FinancialFocusPanel";
 
 export default function InvestmentCard({
@@ -10,24 +11,40 @@ export default function InvestmentCard({
 
   const value = data?.value || 0;
 
-  const statusColor = useMemo(() => {
-    if (value < 10000) return "text-amber-400";
-    if (value < 50000) return "text-emerald-400";
-    return "text-cyan-400";
-  }, [value]);
-
-  const barColor = useMemo(() => {
-    if (value < 10000) return "bg-amber-400";
-    if (value < 50000) return "bg-emerald-400";
-    return "bg-cyan-400";
-  }, [value]);
-
   const progress = useMemo(() => {
     return Math.min((value / 100000) * 100, 100);
   }, [value]);
 
   const status =
     value < 10000 ? "Starting" : value < 50000 ? "Growing" : "Strong";
+
+  const badgeClassName =
+    value < 10000
+      ? "text-amber-300 bg-amber-400/10 border-amber-300/20"
+      : value < 50000
+      ? "text-emerald-300 bg-emerald-400/10 border-emerald-300/20"
+      : "text-cyan-300 bg-cyan-400/10 border-cyan-300/20";
+
+  const panelBadgeClassName =
+    value < 10000
+      ? "text-amber-400"
+      : value < 50000
+      ? "text-emerald-400"
+      : "text-cyan-400";
+
+  const progressClassName =
+    value < 10000
+      ? "from-amber-300 to-amber-500"
+      : value < 50000
+      ? "from-emerald-300 to-emerald-500"
+      : "from-cyan-300 to-cyan-500";
+
+  const panelProgressClassName =
+    value < 10000
+      ? "bg-amber-400"
+      : value < 50000
+      ? "bg-emerald-400"
+      : "bg-cyan-400";
 
   const insight =
     value < 10000
@@ -39,52 +56,34 @@ export default function InvestmentCard({
   return (
     <>
       <div
-        className={`relative flex h-full w-full min-h-[236px] flex-col overflow-hidden rounded-[26px] border border-white/10 bg-white/[0.04] p-4 shadow-[0_0_30px_rgba(0,0,0,0.3)] backdrop-blur-xl transition duration-300 ${
-          panelOpen ? "scale-[0.98] opacity-80" : "scale-100 opacity-100"
+        className={`h-full w-full ${
+          panelOpen
+            ? "scale-[0.98] opacity-80 transition duration-300"
+            : "transition duration-300"
         }`}
       >
-        <div className="mb-3 flex items-start justify-between">
-          <div>
-            <p className="text-xs text-white/50">Investments</p>
-            <h2 className="text-lg font-semibold text-white">
-              Portfolio Growth
-            </h2>
-          </div>
-
-          <p className={`text-xs font-semibold ${statusColor}`}>
-            {status}
-          </p>
-        </div>
-
-        <h1 className="text-2xl font-bold text-white">
-          ₱{value.toLocaleString()}
-        </h1>
-
-        <p className="mt-1 text-sm text-white/50">
-          Total Portfolio Value
-        </p>
-
-        <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-white/10">
-          <div
-            className={`h-full ${barColor} transition-all duration-500`}
-            style={{ width: `${progress}%` }}
-          />
-        </div>
-
-        <p className="mt-3 min-h-[34px] text-xs leading-relaxed text-white/60">{insight}</p>
-
-        <div className="mt-auto pt-4">
+        <FinancialCardShell
+          eyebrow="Investments"
+          title="Portfolio Growth"
+          icon="₱"
+          badge={status}
+          badgeClassName={badgeClassName}
+          accentClassName="from-cyan-300/28 via-emerald-300/10 to-transparent"
+          hero={`₱${value.toLocaleString()}`}
+          heroSubtext="Total Portfolio Value"
+          progress={progress}
+          progressClassName={progressClassName}
+          insight={insight}
+        >
           <button
             type="button"
             onClick={() => setPanelOpen(true)}
             className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-left text-sm text-white/70 transition duration-300 hover:bg-white/[0.06] hover:text-white"
           >
             <span className="font-medium">Show more</span>
-            <span className="text-lg leading-none text-white/60" aria-hidden="true">
-              ⌄
-            </span>
+            <span className="text-lg leading-none text-white/60">⌄</span>
           </button>
-        </div>
+        </FinancialCardShell>
       </div>
 
       <FinancialFocusPanel
@@ -95,9 +94,9 @@ export default function InvestmentCard({
         primaryLabel="Portfolio value"
         primaryValue={`₱${value.toLocaleString()}`}
         badge={status}
-        badgeClassName={statusColor}
+        badgeClassName={panelBadgeClassName}
         progress={progress}
-        progressClassName={barColor}
+        progressClassName={panelProgressClassName}
         insight={insight}
         actions={[
           {
