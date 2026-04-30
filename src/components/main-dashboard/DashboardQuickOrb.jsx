@@ -78,7 +78,7 @@ export default function DashboardQuickOrb({
   };
 
   return (
-    <div className="fixed left-1/2 z-50 -translate-x-1/2 bottom-[clamp(72px,10.5vh,104px)] sm:bottom-[clamp(76px,9vh,110px)]">
+    <div className="fixed bottom-[50px] left-1/2 z-50 -translate-x-1/2 sm:bottom-[58px]">
       {open && (
         <button
           type="button"
