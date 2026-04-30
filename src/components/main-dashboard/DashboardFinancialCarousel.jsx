@@ -14,7 +14,15 @@ export default function DashboardFinancialCarousel({
   debtData,
 }) {
   const carouselRef = useRef(null);
+  const dragRef = useRef({
+    startX: 0,
+    startScrollLeft: 0,
+    startTime: 0,
+    isPointerDown: false,
+  });
+
   const [activeSlide, setActiveSlide] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
 
   const items = [
     { label: "Budget", content: <BudgetCard data={budgetData} /> },
@@ -24,13 +32,22 @@ export default function DashboardFinancialCarousel({
     { label: "Debt / Obligation", content: <DebtObligationCard data={debtData} /> },
   ];
 
+  const clampSlide = (index) => Math.min(Math.max(index, 0), items.length - 1);
+
+  const getSlideWidth = () => {
+    const el = carouselRef.current;
+    if (!el) return 1;
+    return el.offsetWidth;
+  };
+
   const scrollToSlide = (index) => {
     const el = carouselRef.current;
     if (!el) return;
 
-    setActiveSlide(index);
+    const nextIndex = clampSlide(index);
+    setActiveSlide(nextIndex);
     el.scrollTo({
-      left: index * el.offsetWidth,
+      left: nextIndex * getSlideWidth(),
       behavior: "smooth",
     });
   };
@@ -39,8 +56,70 @@ export default function DashboardFinancialCarousel({
     const el = carouselRef.current;
     if (!el) return;
 
-    const index = Math.round(el.scrollLeft / el.offsetWidth);
-    setActiveSlide(Math.min(Math.max(index, 0), items.length - 1));
+    const index = Math.round(el.scrollLeft / getSlideWidth());
+    setActiveSlide(clampSlide(index));
+  };
+
+  const settleToNearestSlide = () => {
+    const el = carouselRef.current;
+    if (!el) return;
+
+    const drag = dragRef.current;
+    const width = getSlideWidth();
+    const elapsed = Math.max(Date.now() - drag.startTime, 1);
+    const draggedDistance = el.scrollLeft - drag.startScrollLeft;
+    const velocity = draggedDistance / elapsed;
+
+    let nextIndex = Math.round(el.scrollLeft / width);
+
+    if (Math.abs(velocity) > 0.55 || Math.abs(draggedDistance) > width * 0.18) {
+      nextIndex = activeSlide + (draggedDistance > 0 ? 1 : -1);
+    }
+
+    scrollToSlide(clampSlide(nextIndex));
+  };
+
+  const handlePointerDown = (event) => {
+    if (event.pointerType === "touch") return;
+
+    const el = carouselRef.current;
+    if (!el) return;
+
+    dragRef.current = {
+      startX: event.clientX,
+      startScrollLeft: el.scrollLeft,
+      startTime: Date.now(),
+      isPointerDown: true,
+    };
+
+    setIsDragging(true);
+    el.setPointerCapture?.(event.pointerId);
+  };
+
+  const handlePointerMove = (event) => {
+    const el = carouselRef.current;
+    const drag = dragRef.current;
+
+    if (!el || !drag.isPointerDown) return;
+
+    const deltaX = event.clientX - drag.startX;
+    el.scrollLeft = drag.startScrollLeft - deltaX;
+  };
+
+  const handlePointerUp = (event) => {
+    const el = carouselRef.current;
+    const drag = dragRef.current;
+
+    if (!el || !drag.isPointerDown) return;
+
+    dragRef.current.isPointerDown = false;
+    setIsDragging(false);
+    el.releasePointerCapture?.(event.pointerId);
+    settleToNearestSlide();
+  };
+
+  const handleTouchEnd = () => {
+    window.setTimeout(settleToNearestSlide, 80);
   };
 
   return (
@@ -50,20 +129,47 @@ export default function DashboardFinancialCarousel({
       <section
         ref={carouselRef}
         onScroll={handleScroll}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
+        onTouchStart={() => {
+          const el = carouselRef.current;
+          if (!el) return;
+          dragRef.current = {
+            startX: 0,
+            startScrollLeft: el.scrollLeft,
+            startTime: Date.now(),
+            isPointerDown: false,
+          };
+        }}
+        onTouchEnd={handleTouchEnd}
         aria-label="Financial dashboard cards"
-        className="relative -mx-1 flex gap-3 overflow-x-auto scroll-smooth snap-x snap-mandatory px-1 pb-1 scrollbar-none"
+        style={{ WebkitOverflowScrolling: "touch" }}
+        className={`relative -mx-1 flex gap-3 overflow-x-auto overscroll-x-contain scroll-smooth snap-x snap-mandatory px-1 pb-1 scrollbar-none touch-pan-y select-none ${
+          isDragging ? "cursor-grabbing snap-none" : "cursor-grab"
+        }`}
       >
-        {items.map((item, index) => (
-          <div
-            key={item.label}
-            aria-label={item.label}
-            className={`min-w-full flex-shrink-0 snap-center transition duration-300 ${
-              activeSlide === index ? "scale-100 opacity-100" : "scale-[0.985] opacity-75"
-            }`}
-          >
-            {item.content}
-          </div>
-        ))}
+        {items.map((item, index) => {
+          const distance = Math.abs(activeSlide - index);
+          const isActive = activeSlide === index;
+
+          return (
+            <div
+              key={item.label}
+              aria-label={item.label}
+              className={`min-w-full flex-shrink-0 snap-center transition-all duration-500 ease-out will-change-transform ${
+                isActive
+                  ? "scale-100 opacity-100"
+                  : distance === 1
+                    ? "scale-[0.975] opacity-78"
+                    : "scale-[0.955] opacity-60"
+              }`}
+            >
+              {item.content}
+            </div>
+          );
+        })}
       </section>
 
       <div className="mt-3 flex items-center justify-center gap-2">
