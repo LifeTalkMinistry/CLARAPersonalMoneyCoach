@@ -35,19 +35,30 @@ export default function Settings() {
   return (
     <ClaraPageShell>
       <div className="space-y-5 pb-6">
-        <div className="px-1 pt-1">
-          <p className="text-[11px] font-black uppercase tracking-[0.26em] text-emerald-300/45">
-            CLARA
-          </p>
+        <header className="px-1 pt-1">
+          <div className="flex items-end justify-between gap-3">
+            <div className="min-w-0">
+              <h1 className="text-[30px] font-black tracking-[-0.04em] text-white">
+                Settings
+              </h1>
 
-          <h1 className="mt-1 text-[30px] font-black tracking-[-0.04em] text-white">
-            Settings
-          </h1>
+              <p className="mt-1 text-sm leading-5 text-white/45">
+                Manage your account and preferences.
+              </p>
+            </div>
 
-          <p className="mt-1 text-sm leading-5 text-white/45">
-            Manage your account, access, and app preferences.
-          </p>
-        </div>
+            <span
+              className="mb-1 shrink-0 rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.18em]"
+              style={{
+                borderColor: "var(--clara-accent-border)",
+                background: "var(--clara-accent-soft)",
+                color: "var(--clara-accent-text)",
+              }}
+            >
+              CLARA
+            </span>
+          </div>
+        </header>
 
         <Section title="ACCOUNT">
           <Item
