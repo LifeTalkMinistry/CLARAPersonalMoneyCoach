@@ -6,8 +6,9 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "deploy": "npm run build && gh-pages -d dist",
+    "preview": "vite preview",
+    "lint": "eslint ."
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.4",
@@ -29,6 +30,7 @@
     "globals": "^17.5.0",
     "postcss": "^8.5.12",
     "tailwindcss": "^4.2.4",
-    "vite": "^8.0.10"
+    "vite": "^8.0.10",
+    "gh-pages": "^6.1.1"
   }
 }
