@@ -1,4 +1,33 @@
+import { useEffect, useState } from "react";
+import { supabase } from "../../../lib/supabaseClient";
+
 export default function ProfileModal({ open, onClose }) {
+  const [email, setEmail] = useState("");
+  const [loadingUser, setLoadingUser] = useState(false);
+
+  useEffect(() => {
+    if (!open) return;
+
+    let mounted = true;
+
+    async function loadCurrentUser() {
+      setLoadingUser(true);
+
+      const { data } = await supabase.auth.getUser();
+
+      if (!mounted) return;
+
+      setEmail(data?.user?.email || "");
+      setLoadingUser(false);
+    }
+
+    loadCurrentUser();
+
+    return () => {
+      mounted = false;
+    };
+  }, [open]);
+
   if (!open) return null;
 
   return (
@@ -30,8 +59,10 @@ export default function ProfileModal({ open, onClose }) {
             <p className="text-[10px] uppercase text-white/40">Email</p>
             <input
               type="email"
-              placeholder="you@email.com"
-              className="mt-1 w-full bg-transparent text-sm text-white outline-none placeholder:text-white/25"
+              value={email}
+              readOnly
+              placeholder={loadingUser ? "Loading email..." : "you@email.com"}
+              className="mt-1 w-full bg-transparent text-sm text-white/75 outline-none placeholder:text-white/25"
             />
           </div>
 
