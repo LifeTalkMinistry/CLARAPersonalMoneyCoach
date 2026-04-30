@@ -19,8 +19,8 @@ const commandItems = [
 
 const ORB_SIZE = 60;
 const EDGE_PADDING = 18;
-const TOP_SAFE = 92;
-const BOTTOM_SAFE = 96;
+const TOP_SAFE = 24;
+const BOTTOM_SAFE = 24;
 
 export default function DashboardQuickOrb({
   onTap,
@@ -45,38 +45,27 @@ export default function DashboardQuickOrb({
     y: clamp(y, TOP_SAFE, window.innerHeight - ORB_SIZE - BOTTOM_SAFE),
   });
 
-  const snapToNearestCorner = (pos) => {
-    const points = [
-      getSafePosition(EDGE_PADDING, window.innerHeight * 0.55),
-      getSafePosition(
-        window.innerWidth - ORB_SIZE - EDGE_PADDING,
-        window.innerHeight * 0.55
-      ),
-      getSafePosition(EDGE_PADDING, window.innerHeight - ORB_SIZE - BOTTOM_SAFE),
-      getSafePosition(
-        window.innerWidth - ORB_SIZE - EDGE_PADDING,
-        window.innerHeight - ORB_SIZE - BOTTOM_SAFE
-      ),
-    ];
+  const snapToNearestEdge = (pos) => {
+    const shouldDockLeft = pos.x + ORB_SIZE / 2 < window.innerWidth / 2;
 
-    return points.reduce((nearest, point) => {
-      const nearestDistance = Math.hypot(pos.x - nearest.x, pos.y - nearest.y);
-      const pointDistance = Math.hypot(pos.x - point.x, pos.y - point.y);
-      return pointDistance < nearestDistance ? point : nearest;
-    });
+    return getSafePosition(
+      shouldDockLeft
+        ? EDGE_PADDING
+        : window.innerWidth - ORB_SIZE - EDGE_PADDING,
+      pos.y
+    );
   };
 
   useEffect(() => {
     setPosition(
       getSafePosition(
         window.innerWidth - ORB_SIZE - EDGE_PADDING,
-        window.innerHeight - ORB_SIZE - BOTTOM_SAFE
+        window.innerHeight - ORB_SIZE - 110
       )
     );
   }, []);
 
   const closeMenu = () => setOpen(false);
-  const toggleMenu = () => setOpen((current) => !current);
 
   const handlePointerDown = (event) => {
     didLongPress.current = false;
@@ -138,7 +127,7 @@ export default function DashboardQuickOrb({
     onLongPressEnd?.();
 
     if (dragging.current && dragData.current?.lastPosition) {
-      const snappedPosition = snapToNearestCorner(dragData.current.lastPosition);
+      const snappedPosition = snapToNearestEdge(dragData.current.lastPosition);
       setPosition(snappedPosition);
       setDockSide(snappedPosition.x < window.innerWidth / 2 ? "left" : "right");
     }
@@ -147,12 +136,12 @@ export default function DashboardQuickOrb({
       dragging.current = false;
       dragData.current = null;
       setIsDragging(false);
-    }, 250);
+    }, 220);
   };
 
   const handleOrbClick = () => {
     if (didLongPress.current || dragging.current || isDragging) return;
-    toggleMenu();
+    setOpen((current) => !current);
     onTap?.();
   };
 
@@ -183,23 +172,23 @@ export default function DashboardQuickOrb({
           type="button"
           aria-label="Close CLARA command menu"
           onClick={closeMenu}
-          className="fixed inset-0 -z-10 bg-black/20 backdrop-blur-[1px]"
+          className="fixed inset-0 -z-10 bg-black/25 backdrop-blur-[1px]"
         />
       )}
 
       <div
-        className={`absolute bottom-[72px] ${menuAlignment} w-[320px] max-w-[calc(100vw-32px)] overflow-hidden rounded-[30px] border border-white/12 bg-[#071018]/80 p-3 text-white shadow-[0_24px_80px_rgba(0,0,0,0.55)] backdrop-blur-2xl transition-all duration-300 ease-out ${
+        className={`absolute bottom-[76px] ${menuAlignment} w-[320px] max-w-[calc(100vw-32px)] overflow-hidden rounded-[30px] border border-lime-300/20 bg-[#071008]/90 p-3 text-white shadow-[0_24px_90px_rgba(132,204,22,0.18)] backdrop-blur-2xl transition-all duration-300 ease-out ${
           open
             ? "translate-y-0 scale-100 opacity-100"
             : "pointer-events-none translate-y-5 scale-95 opacity-0"
         }`}
       >
-        <div className="mb-2 px-2 py-1">
-          <p className="text-[11px] font-black uppercase tracking-[0.24em] text-cyan-100/45">
-            CLARA AI Command
+        <div className="mb-2 rounded-[22px] border border-lime-300/10 bg-lime-300/[0.06] px-3 py-3">
+          <p className="text-[10px] font-black uppercase tracking-[0.24em] text-lime-200/60">
+            CLARA Command
           </p>
           <h3 className="mt-1 text-lg font-black tracking-[-0.03em] text-white">
-            What do you need?
+            Ask before you act
           </h3>
         </div>
 
@@ -212,9 +201,9 @@ export default function DashboardQuickOrb({
                 key={item.label}
                 type="button"
                 onClick={() => handleCommandClick(index)}
-                className="group flex w-full items-center gap-3 rounded-[22px] border border-white/[0.06] bg-white/[0.045] px-3 py-3 text-left transition duration-200 hover:bg-white/[0.075] active:scale-[0.98]"
+                className="group flex w-full items-center gap-3 rounded-[22px] border border-lime-300/[0.08] bg-white/[0.045] px-3 py-3 text-left transition duration-200 hover:bg-lime-300/[0.08] active:scale-[0.98]"
               >
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-cyan-100/12 bg-cyan-200/[0.08] text-cyan-100">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-lime-300/15 bg-lime-300/[0.10] text-lime-200 shadow-[0_0_18px_rgba(132,204,22,0.12)]">
                   <Icon size={18} strokeWidth={1.9} />
                 </span>
 
@@ -222,7 +211,7 @@ export default function DashboardQuickOrb({
                   <span className="block truncate text-sm font-bold text-white">
                     {item.label}
                   </span>
-                  <span className="mt-0.5 block truncate text-xs text-white/42">
+                  <span className="mt-0.5 block truncate text-xs text-white/45">
                     {item.description}
                   </span>
                 </span>
@@ -240,23 +229,25 @@ export default function DashboardQuickOrb({
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerEnd}
         onPointerCancel={handlePointerEnd}
-        className={`touch-none group relative flex h-[60px] w-[60px] items-center justify-center rounded-full border border-white/15 bg-white/[0.08] text-white shadow-[0_16px_44px_rgba(0,0,0,0.45)] backdrop-blur-2xl transition-all duration-300 ease-out ${
+        className={`touch-none group relative flex h-[60px] w-[60px] items-center justify-center rounded-full border border-lime-200/25 bg-[#0b1307]/80 text-white shadow-[0_16px_44px_rgba(0,0,0,0.45)] backdrop-blur-2xl transition-all duration-300 ease-out ${
           isDragging ? "scale-95 cursor-grabbing" : "cursor-grab active:scale-95"
         } ${open ? "scale-105" : "scale-100"}`}
         aria-label="CLARA quick action"
         aria-expanded={open}
       >
-        <span className="absolute -inset-3 rounded-full bg-cyan-300/10 blur-2xl" />
-        <span className="absolute inset-0 rounded-full bg-gradient-to-br from-white/18 via-white/[0.06] to-cyan-400/10" />
-        <span className="absolute inset-[5px] rounded-full border border-white/12 bg-[#07131a]/65" />
+        <span className="absolute -inset-4 rounded-full bg-lime-300/20 blur-2xl" />
+        <span className="absolute -inset-2 rounded-full bg-sky-400/10 blur-xl" />
 
-        <span className="relative flex h-[46px] w-[46px] items-center justify-center rounded-full bg-gradient-to-br from-cyan-200 via-emerald-300 to-sky-400 text-[#041018]">
+        <span className="absolute inset-0 rounded-full bg-gradient-to-br from-lime-200/35 via-lime-400/15 to-sky-400/20" />
+        <span className="absolute inset-[5px] rounded-full border border-lime-100/20 bg-[#071008]/80" />
+
+        <span className="relative flex h-[46px] w-[46px] items-center justify-center rounded-full bg-gradient-to-br from-lime-200 via-lime-400 to-sky-300 text-[#071008] shadow-[0_0_28px_rgba(163,230,53,0.38)]">
           <Plus
-            className={`h-5 w-5 stroke-[2.4] transition duration-300 ${
+            className={`h-5 w-5 stroke-[2.6] transition duration-300 ${
               open ? "rotate-45" : "rotate-0"
             }`}
           />
-          <Sparkles className="absolute -right-1 -top-1 h-3.5 w-3.5 text-white" />
+          <Sparkles className="absolute -right-1 -top-1 h-3.5 w-3.5 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
         </span>
       </button>
     </div>
