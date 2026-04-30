@@ -6,6 +6,9 @@ import SavingsGoalCard from "../financial-cards/SavingsCard";
 import InvestmentFundCard from "../financial-cards/InvestmentCard";
 import DebtObligationCard from "../financial-cards/ObligationDebtCard";
 
+const SLIDE_WIDTH_RATIO = 0.9;
+const SLIDE_GAP = 12;
+
 export default function DashboardFinancialCarousel({
   budgetData,
   emergencyFundData,
@@ -24,13 +27,20 @@ export default function DashboardFinancialCarousel({
     { label: "Debt / Obligation", content: <DebtObligationCard data={debtData} /> },
   ];
 
+  const getSlideStep = () => {
+    const el = carouselRef.current;
+    if (!el) return 1;
+    return el.offsetWidth * SLIDE_WIDTH_RATIO + SLIDE_GAP;
+  };
+
   const scrollToSlide = (index) => {
     const el = carouselRef.current;
     if (!el) return;
 
-    setActiveSlide(index);
+    const nextIndex = Math.min(Math.max(index, 0), items.length - 1);
+    setActiveSlide(nextIndex);
     el.scrollTo({
-      left: index * el.offsetWidth,
+      left: nextIndex * getSlideStep(),
       behavior: "smooth",
     });
   };
@@ -39,7 +49,7 @@ export default function DashboardFinancialCarousel({
     const el = carouselRef.current;
     if (!el) return;
 
-    const index = Math.round(el.scrollLeft / el.offsetWidth);
+    const index = Math.round(el.scrollLeft / getSlideStep());
     setActiveSlide(Math.min(Math.max(index, 0), items.length - 1));
   };
 
@@ -51,13 +61,13 @@ export default function DashboardFinancialCarousel({
         ref={carouselRef}
         onScroll={handleScroll}
         aria-label="Financial dashboard cards"
-        className="relative -mx-1 flex gap-3 overflow-x-auto scroll-smooth snap-x snap-mandatory px-1 pb-1 scrollbar-none"
+        className="relative -mx-4 flex gap-3 overflow-x-auto scroll-smooth snap-x snap-mandatory px-4 pb-1 scrollbar-none"
       >
         {items.map((item, index) => (
           <div
             key={item.label}
             aria-label={item.label}
-            className={`min-w-full flex-shrink-0 snap-center transition duration-300 ${
+            className={`w-[90%] min-w-[90%] flex-shrink-0 snap-center transition duration-300 ${
               activeSlide === index ? "scale-100 opacity-100" : "scale-[0.985] opacity-75"
             }`}
           >
