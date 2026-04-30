@@ -11,3 +11,11 @@ body,
 button {
   font-family: inherit;
 }
+
+.clara-no-scrollbar {
+  scrollbar-width: none;
+}
+
+.clara-no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
