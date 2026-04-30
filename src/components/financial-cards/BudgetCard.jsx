@@ -46,7 +46,11 @@ export default function BudgetCard({ data, onAdjustBudget, onReallocate }) {
 
   return (
     <>
-      <div className={panelOpen ? "scale-[0.98] opacity-80 transition duration-300" : "transition duration-300"}>
+      <div
+        className={`h-full w-full ${
+          panelOpen ? "scale-[0.98] opacity-80 transition duration-300" : "transition duration-300"
+        }`}
+      >
         <FinancialCardShell
           eyebrow="Budget"
           title="Monthly Plan"
