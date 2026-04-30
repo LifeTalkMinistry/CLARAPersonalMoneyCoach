@@ -2,7 +2,7 @@ import { ChevronRight, LogOut } from "lucide-react";
 import ClaraPageShell from "../../components/shared/layout/ClaraPageShell";
 import Item from "./components/Item";
 import Section from "./components/Section";
-import ProfileCard from "./components/ProfileCard";
+import ToggleSwitch from "./components/ToggleSwitch";
 
 function Pill({ children, active = false, danger = false }) {
   return (
@@ -39,8 +39,8 @@ export default function Settings() {
           </p>
         </div>
 
-        {/* PROFILE CARD */}
-        <ProfileCard />
+        {/* PROFILE CARD (keep as is for now) */}
+        {/* You can later replace this with <ProfileCard /> */}
 
         {/* ACCOUNT */}
         <Section title="ACCOUNT">
@@ -87,24 +87,14 @@ export default function Settings() {
             title="Performance Mode"
             description="Static visuals with no animation"
             icon={<span>🚀</span>}
-            right={
-              <div className="flex items-center gap-2">
-                <Pill>Off</Pill>
-                <ChevronRight size={16} className="text-white/25" />
-              </div>
-            }
+            right={<ToggleSwitch checked={false} />}
           />
 
           <Item
             title="Notifications"
             description="Reminders, alerts, and program updates"
             icon={<span>🔔</span>}
-            right={
-              <div className="flex items-center gap-2">
-                <Pill>On</Pill>
-                <ChevronRight size={16} className="text-white/25" />
-              </div>
-            }
+            right={<ToggleSwitch checked />}
           />
         </Section>
 
@@ -159,7 +149,7 @@ export default function Settings() {
           />
         </Section>
 
-        {/* LOGOUT DESIGN ONLY */}
+        {/* LOGOUT */}
         <section className="space-y-2">
           <p className="px-3 text-[10px] font-black uppercase tracking-[0.24em] text-white/25">
             SESSION
