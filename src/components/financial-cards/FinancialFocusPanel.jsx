@@ -16,20 +16,26 @@ export default function FinancialFocusPanel({
   details = [],
   footer,
 }) {
-  if (!open) return null;
-
   const safeProgress = Math.min(Math.max(Number(progress) || 0, 0), 100);
 
   const panel = (
-    <div className="fixed inset-0 z-[9999] flex items-end justify-center px-3 pb-3 pt-10 sm:items-center sm:p-5">
+    <div
+      className={`fixed inset-0 z-[9999] flex items-end justify-center px-3 pb-3 pt-10 sm:items-center sm:p-5 transition-opacity duration-300 ${
+        open ? "opacity-100" : "opacity-0 pointer-events-none"
+      }`}
+    >
       <button
         type="button"
         aria-label={`Close ${title} panel`}
         onClick={onClose}
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm animate-[fadeIn_220ms_ease-out]"
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity duration-300"
       />
 
-      <div className="relative flex h-[86vh] w-full max-w-md flex-col overflow-hidden rounded-[30px] border border-white/10 bg-[#08111c]/95 shadow-[0_24px_90px_rgba(0,0,0,0.75)] backdrop-blur-2xl animate-[panelRise_320ms_cubic-bezier(0.2,0.9,0.2,1)]">
+      <div
+        className={`relative flex h-[86vh] w-full max-w-md flex-col overflow-hidden rounded-[30px] border border-white/10 bg-[#08111c]/95 shadow-[0_24px_90px_rgba(0,0,0,0.75)] backdrop-blur-2xl transform transition-transform duration-300 ${
+          open ? "translate-y-0 scale-100" : "translate-y-10 scale-95"
+        }`}
+      >
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_10%,rgba(45,212,191,0.18),transparent_34%),radial-gradient(circle_at_85%_18%,rgba(59,130,246,0.16),transparent_32%),radial-gradient(circle_at_80%_90%,rgba(244,63,94,0.14),transparent_35%)]" />
 
         <div className="relative border-b border-white/10 px-5 pb-4 pt-3">
@@ -130,24 +136,6 @@ export default function FinancialFocusPanel({
           )}
         </div>
       </div>
-
-      <style>{`
-        @keyframes fadeIn {
-          from { opacity: 0; }
-          to { opacity: 1; }
-        }
-
-        @keyframes panelRise {
-          from {
-            opacity: 0;
-            transform: translateY(28px) scale(0.96);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0) scale(1);
-          }
-        }
-      `}</style>
     </div>
   );
 
