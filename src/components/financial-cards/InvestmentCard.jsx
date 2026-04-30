@@ -39,11 +39,10 @@ export default function InvestmentCard({
   return (
     <>
       <div
-        className={`relative flex h-full min-h-[236px] flex-col overflow-hidden rounded-[26px] border border-white/10 bg-white/[0.04] p-4 shadow-[0_0_30px_rgba(0,0,0,0.3)] backdrop-blur-xl transition duration-300 ${
+        className={`relative flex h-full w-full min-h-[236px] flex-col overflow-hidden rounded-[26px] border border-white/10 bg-white/[0.04] p-4 shadow-[0_0_30px_rgba(0,0,0,0.3)] backdrop-blur-xl transition duration-300 ${
           panelOpen ? "scale-[0.98] opacity-80" : "scale-100 opacity-100"
         }`}
       >
-        {/* OVERVIEW */}
         <div className="mb-3 flex items-start justify-between">
           <div>
             <p className="text-xs text-white/50">Investments</p>
