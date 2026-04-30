@@ -15,7 +15,7 @@ export default function FinancialCardShell({
   const safeProgress = Math.min(Math.max(Number(progress) || 0, 0), 100);
 
   return (
-    <article className="group relative flex h-full min-h-[236px] flex-col overflow-hidden rounded-[26px] border border-white/[0.12] bg-[#0b1118]/82 p-4 text-white shadow-[0_22px_55px_rgba(0,0,0,0.34)] backdrop-blur-2xl transition duration-300 active:scale-[0.992]">
+    <article className="group relative flex h-full min-h-[236px] w-full flex-col overflow-hidden rounded-[26px] border border-white/[0.12] bg-[#0b1118]/82 p-4 text-white shadow-[0_22px_55px_rgba(0,0,0,0.34)] backdrop-blur-2xl transition duration-300 active:scale-[0.992]">
       <div className="pointer-events-none absolute inset-0 rounded-[26px] bg-[linear-gradient(145deg,rgba(255,255,255,0.12),rgba(255,255,255,0.035)_38%,rgba(255,255,255,0.02))]" />
       <div className={`pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-gradient-to-br ${accentClassName} blur-2xl transition duration-500 group-active:scale-105`} />
       <div className="pointer-events-none absolute -bottom-24 left-8 h-40 w-40 rounded-full bg-white/[0.035] blur-3xl" />
