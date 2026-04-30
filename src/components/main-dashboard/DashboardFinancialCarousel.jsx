@@ -17,7 +17,9 @@ export default function DashboardFinancialCarousel({
   debtData,
 }) {
   const carouselRef = useRef(null);
+  const frameRef = useRef(null);
   const [activeSlide, setActiveSlide] = useState(0);
+  const [scrollProgress, setScrollProgress] = useState(0);
 
   const items = [
     { label: "Budget", content: <BudgetCard data={budgetData} /> },
@@ -39,6 +41,7 @@ export default function DashboardFinancialCarousel({
 
     const nextIndex = Math.min(Math.max(index, 0), items.length - 1);
     setActiveSlide(nextIndex);
+    setScrollProgress(nextIndex);
     el.scrollTo({
       left: nextIndex * getSlideStep(),
       behavior: "smooth",
@@ -49,8 +52,20 @@ export default function DashboardFinancialCarousel({
     const el = carouselRef.current;
     if (!el) return;
 
-    const index = Math.round(el.scrollLeft / getSlideStep());
-    setActiveSlide(Math.min(Math.max(index, 0), items.length - 1));
+    if (frameRef.current) {
+      window.cancelAnimationFrame(frameRef.current);
+    }
+
+    frameRef.current = window.requestAnimationFrame(() => {
+      const step = getSlideStep();
+      const progress = step ? el.scrollLeft / step : 0;
+      const index = Math.round(progress);
+      const boundedIndex = Math.min(Math.max(index, 0), items.length - 1);
+      const boundedProgress = Math.min(Math.max(progress, 0), items.length - 1);
+
+      setScrollProgress(boundedProgress);
+      setActiveSlide(boundedIndex);
+    });
   };
 
   return (
@@ -69,25 +84,28 @@ export default function DashboardFinancialCarousel({
         className="relative -mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth px-4 pb-2 pt-1 scrollbar-none"
       >
         {items.map((item, index) => {
-          const distance = Math.abs(activeSlide - index);
+          const distance = index - scrollProgress;
+          const absDistance = Math.min(Math.abs(distance), 2);
           const isActive = activeSlide === index;
-          const translateY = isActive ? "translate-y-0" : "translate-y-2";
-          const rotate =
-            index < activeSlide
-              ? "-rotate-[0.8deg]"
-              : index > activeSlide
-                ? "rotate-[0.8deg]"
-                : "rotate-0";
-          const depth = distance > 1 ? "scale-[0.94] opacity-55" : "scale-[0.972] opacity-72";
+          const scale = 1 - absDistance * 0.035;
+          const opacity = Math.max(1 - absDistance * 0.22, 0.55);
+          const translateY = absDistance * 10;
+          const rotate = Math.max(Math.min(distance * 1.1, 1.35), -1.35);
+          const translateX = distance * -4;
 
           return (
             <div
               key={item.label}
               aria-label={item.label}
-              className={`w-[90%] min-w-[90%] flex-shrink-0 snap-center transition-all duration-300 ease-out will-change-transform ${
+              style={{
+                opacity,
+                transform: `translate3d(${translateX}px, ${translateY}px, 0) scale(${scale}) rotate(${rotate}deg)`,
+                zIndex: isActive ? 10 : Math.max(1, 8 - Math.round(absDistance * 3)),
+              }}
+              className={`w-[90%] min-w-[90%] flex-shrink-0 snap-center transition-[opacity,transform,filter] duration-200 ease-out will-change-transform ${
                 isActive
-                  ? "translate-y-0 scale-100 rotate-0 opacity-100 drop-shadow-[0_18px_34px_rgba(0,0,0,0.30)]"
-                  : `${translateY} ${rotate} ${depth}`
+                  ? "drop-shadow-[0_20px_38px_rgba(0,0,0,0.34)]"
+                  : "drop-shadow-[0_10px_22px_rgba(0,0,0,0.18)]"
               }`}
             >
               <div className="transition-transform duration-300 ease-out active:scale-[0.985]">
