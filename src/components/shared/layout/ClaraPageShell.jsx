@@ -1,6 +1,10 @@
 import TopNavigationBar from "../navigation/TopNavigationBar";
 
-export default function ClaraPageShell({ children, floatingAction = null, compactHeader = false }) {
+export default function ClaraPageShell({
+  children,
+  floatingAction = null,
+  compactHeader = true,
+}) {
   return (
     <main
       className="min-h-screen text-white flex justify-center"
