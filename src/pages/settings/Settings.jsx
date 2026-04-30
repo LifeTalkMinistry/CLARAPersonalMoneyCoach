@@ -3,6 +3,7 @@ import ClaraPageShell from "../../components/shared/layout/ClaraPageShell";
 import Item from "./components/Item";
 import Section from "./components/Section";
 import ToggleSwitch from "./components/ToggleSwitch";
+import ProfileCard from "./components/ProfileCard";
 
 function Pill({ children, active = false, danger = false }) {
   return (
@@ -24,7 +25,6 @@ export default function Settings() {
   return (
     <ClaraPageShell>
       <div className="space-y-5 pb-6">
-        {/* HEADER */}
         <div className="px-1 pt-1">
           <p className="text-[11px] font-black uppercase tracking-[0.26em] text-emerald-300/45">
             CLARA
@@ -39,10 +39,8 @@ export default function Settings() {
           </p>
         </div>
 
-        {/* PROFILE CARD (keep as is for now) */}
-        {/* You can later replace this with <ProfileCard /> */}
+        <ProfileCard />
 
-        {/* ACCOUNT */}
         <Section title="ACCOUNT">
           <Item
             title="Profile information"
@@ -69,7 +67,6 @@ export default function Settings() {
           />
         </Section>
 
-        {/* PREFERENCES */}
         <Section title="PREFERENCES">
           <Item
             title="Theme & appearance"
@@ -87,18 +84,17 @@ export default function Settings() {
             title="Performance Mode"
             description="Static visuals with no animation"
             icon={<span>🚀</span>}
-            right={<ToggleSwitch checked={false} />}
+            right={<ToggleSwitch defaultChecked={false} />}
           />
 
           <Item
             title="Notifications"
             description="Reminders, alerts, and program updates"
             icon={<span>🔔</span>}
-            right={<ToggleSwitch checked />}
+            right={<ToggleSwitch defaultChecked />}
           />
         </Section>
 
-        {/* PROGRAM */}
         <Section title="PROGRAM">
           <Item
             title="Plan & billing"
@@ -149,7 +145,6 @@ export default function Settings() {
           />
         </Section>
 
-        {/* LOGOUT */}
         <section className="space-y-2">
           <p className="px-3 text-[10px] font-black uppercase tracking-[0.24em] text-white/25">
             SESSION
