@@ -39,11 +39,10 @@ export default function ObligationDebtCard({
   return (
     <>
       <div
-        className={`relative overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] p-5 shadow-[0_0_30px_rgba(0,0,0,0.3)] backdrop-blur-xl transition duration-300 ${
+        className={`relative flex h-full w-full min-h-[236px] flex-col overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] p-5 shadow-[0_0_30px_rgba(0,0,0,0.3)] backdrop-blur-xl transition duration-300 ${
           panelOpen ? "scale-[0.98] opacity-80" : "scale-100 opacity-100"
         }`}
       >
-        {/* OVERVIEW */}
         <div className="mb-3 flex items-start justify-between">
           <div>
             <p className="text-xs text-white/50">Obligations</p>
@@ -74,7 +73,7 @@ export default function ObligationDebtCard({
 
         <p className="mt-3 text-xs text-white/60">{insight}</p>
 
-        <div className="mt-4">
+        <div className="mt-auto pt-4">
           <button
             type="button"
             onClick={() => setPanelOpen(true)}
