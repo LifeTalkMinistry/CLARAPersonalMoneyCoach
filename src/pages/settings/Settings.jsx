@@ -15,6 +15,8 @@ export default function Settings() {
 
   const [profileOpen, setProfileOpen] = useState(false);
 
+  const profileName = avatar?.name || "CLARA User";
+
   const handleOpenTheme = () => navigate("/settings/theme");
   const handleOpenProfile = () => setProfileOpen(true);
   const handleCloseProfile = () => setProfileOpen(false);
@@ -34,16 +36,20 @@ export default function Settings() {
 
   return (
     <ClaraPageShell>
-      <div className="space-y-5 pb-6">
-        <header className="px-1 pt-1">
-          <h1 className="text-[30px] font-black tracking-[-0.04em] text-white">Settings</h1>
-          <p className="mt-1 text-sm text-white/45">Manage your account and preferences.</p>
+      <div className="space-y-6 pb-6">
+        <header className="px-1 pt-3">
+          <h1 className="text-[30px] font-black tracking-[-0.04em] text-white">
+            Settings
+          </h1>
+          <p className="mt-1 text-sm leading-6 text-white/45">
+            Manage your account and preferences.
+          </p>
         </header>
 
         <Section title="ACCOUNT">
           <Item
             title="Profile information"
-            description={avatar?.name ? `${avatar.name} · Name, email, account identity` : "Name, email, account identity"}
+            description="Name, email, account identity"
             icon={<Avatar size={40} />}
             onClick={handleOpenProfile}
             right={<ChevronRight size={16} className="text-white/25" />}
@@ -68,13 +74,15 @@ export default function Settings() {
         </Section>
 
         <section className="space-y-2">
-          <p className="px-3 text-[10px] font-black uppercase tracking-[0.24em] text-white/25">SESSION</p>
+          <p className="px-3 text-[10px] font-black uppercase tracking-[0.24em] text-white/25">
+            SESSION
+          </p>
 
           <div className="rounded-[28px] border border-red-400/15 bg-red-500/[0.055]">
             <button
               type="button"
               onClick={handleLogout}
-              className="flex w-full items-center gap-3 px-4 py-3.5"
+              className="flex w-full items-center gap-3 px-4 py-3.5 transition duration-200 active:scale-[0.99]"
             >
               <LogOut size={17} className="text-red-300" />
               <span className="text-red-300">Log out</span>
@@ -86,9 +94,9 @@ export default function Settings() {
       <ProfileModal
         open={profileOpen}
         onClose={handleCloseProfile}
-        name={avatar.name}
+        name={profileName}
         setName={handleSetName}
-        avatarPreview={avatar.image}
+        avatarPreview={avatar?.image}
         onRemoveAvatar={handleRemoveAvatar}
       />
     </ClaraPageShell>
