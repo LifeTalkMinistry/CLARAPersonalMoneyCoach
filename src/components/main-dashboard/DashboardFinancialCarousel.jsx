@@ -56,19 +56,23 @@ export default function DashboardFinancialCarousel({
   return (
     <div className="relative mt-2">
       <div className="pointer-events-none absolute -inset-x-2 -top-4 h-24 rounded-full bg-emerald-400/[0.06] blur-3xl" />
+      <div className="pointer-events-none absolute -left-4 top-2 z-20 h-[calc(100%-28px)] w-8 bg-gradient-to-r from-[#070b10] via-[#070b10]/80 to-transparent" />
+      <div className="pointer-events-none absolute -right-4 top-2 z-20 h-[calc(100%-28px)] w-8 bg-gradient-to-l from-[#070b10] via-[#070b10]/80 to-transparent" />
 
       <section
         ref={carouselRef}
         onScroll={handleScroll}
         aria-label="Financial dashboard cards"
-        className="relative -mx-4 flex gap-3 overflow-x-auto scroll-smooth snap-x snap-mandatory px-4 pb-1 scrollbar-none"
+        className="relative -mx-4 flex gap-3 overflow-x-auto scroll-smooth snap-x snap-mandatory px-4 pb-2 pt-1 scrollbar-none"
       >
         {items.map((item, index) => (
           <div
             key={item.label}
             aria-label={item.label}
-            className={`w-[90%] min-w-[90%] flex-shrink-0 snap-center transition duration-300 ${
-              activeSlide === index ? "scale-100 opacity-100" : "scale-[0.985] opacity-75"
+            className={`w-[90%] min-w-[90%] flex-shrink-0 snap-center transition-all duration-300 ease-out will-change-transform ${
+              activeSlide === index
+                ? "scale-100 opacity-100 drop-shadow-[0_18px_34px_rgba(0,0,0,0.30)]"
+                : "scale-[0.975] opacity-70"
             }`}
           >
             {item.content}
@@ -76,7 +80,7 @@ export default function DashboardFinancialCarousel({
         ))}
       </section>
 
-      <div className="mt-3 flex items-center justify-center gap-2">
+      <div className="mt-2 flex items-center justify-center gap-2">
         {items.map((item, index) => {
           const isActive = activeSlide === index;
 
