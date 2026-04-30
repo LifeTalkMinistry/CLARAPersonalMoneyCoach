@@ -25,49 +25,88 @@ function openProfileDb() {
   });
 }
 
-export async function getStoredProfileName() {
+/* =========================
+   GET PROFILE (FULL OBJECT)
+========================= */
+async function getProfile() {
   const db = await openProfileDb();
 
   return new Promise((resolve, reject) => {
-    const transaction = db.transaction(STORE_NAME, "readonly");
-    const store = transaction.objectStore(STORE_NAME);
-    const request = store.get(PROFILE_KEY);
+    const tx = db.transaction(STORE_NAME, "readonly");
+    const store = tx.objectStore(STORE_NAME);
+    const req = store.get(PROFILE_KEY);
 
-    request.onsuccess = () => {
-      resolve(request.result?.name || "");
+    req.onsuccess = () => {
+      resolve(req.result || {});
     };
 
-    request.onerror = () => reject(request.error);
+    req.onerror = () => reject(req.error);
 
-    transaction.oncomplete = () => db.close();
-    transaction.onerror = () => {
+    tx.oncomplete = () => db.close();
+    tx.onerror = () => {
       db.close();
-      reject(transaction.error);
+      reject(tx.error);
     };
   });
 }
 
-export async function saveStoredProfileName(name) {
+/* =========================
+   SAVE PROFILE (MERGE SAFE)
+========================= */
+async function saveProfile(partialData) {
   const db = await openProfileDb();
 
   return new Promise((resolve, reject) => {
-    const transaction = db.transaction(STORE_NAME, "readwrite");
-    const store = transaction.objectStore(STORE_NAME);
+    const tx = db.transaction(STORE_NAME, "readwrite");
+    const store = tx.objectStore(STORE_NAME);
 
-    store.put({
-      id: PROFILE_KEY,
-      name,
-      updatedAt: new Date().toISOString(),
-    });
+    const getReq = store.get(PROFILE_KEY);
 
-    transaction.oncomplete = () => {
+    getReq.onsuccess = () => {
+      const existing = getReq.result || {};
+
+      store.put({
+        id: PROFILE_KEY,
+        ...existing,
+        ...partialData,
+        updatedAt: new Date().toISOString(),
+      });
+    };
+
+    getReq.onerror = () => reject(getReq.error);
+
+    tx.oncomplete = () => {
       db.close();
       resolve(true);
     };
 
-    transaction.onerror = () => {
+    tx.onerror = () => {
       db.close();
-      reject(transaction.error);
+      reject(tx.error);
     };
   });
+}
+
+/* =========================
+   NAME
+========================= */
+export async function getStoredProfileName() {
+  const profile = await getProfile();
+  return profile.name || "";
+}
+
+export async function saveStoredProfileName(name) {
+  return saveProfile({ name });
+}
+
+/* =========================
+   AVATAR
+========================= */
+export async function getStoredProfileAvatar() {
+  const profile = await getProfile();
+  return profile.avatar || null;
+}
+
+export async function saveStoredProfileAvatar(avatar) {
+  return saveProfile({ avatar });
 }
