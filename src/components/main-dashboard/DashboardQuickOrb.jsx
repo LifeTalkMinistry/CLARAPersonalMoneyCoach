@@ -1,5 +1,5 @@
 import { Bot, Plus, Sparkles, TrendingUp, WalletCards, Target, ShieldCheck } from "lucide-react";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 const commandItems = [
   {
@@ -32,6 +32,7 @@ const commandItems = [
 const ORB_SIZE = 60;
 const EDGE_PADDING = 18;
 const BOTTOM_SAFE = 18;
+const ORB_POSITION_KEY = "clara_dashboard_orb_position";
 
 export default function DashboardQuickOrb({
   onTap,
@@ -57,6 +58,14 @@ export default function DashboardQuickOrb({
     y: clamp(y, EDGE_PADDING, window.innerHeight - ORB_SIZE - BOTTOM_SAFE),
   });
 
+  const savePosition = (nextPosition) => {
+    try {
+      window.localStorage.setItem(ORB_POSITION_KEY, JSON.stringify(nextPosition));
+    } catch {
+      // UI memory only. Ignore storage errors safely.
+    }
+  };
+
   const snapToNearestEdge = (pos) => {
     const centerX = pos.x + ORB_SIZE / 2;
     const snappedX =
@@ -66,6 +75,39 @@ export default function DashboardQuickOrb({
 
     return getSafePosition(snappedX, pos.y);
   };
+
+  useEffect(() => {
+    try {
+      const savedPosition = window.localStorage.getItem(ORB_POSITION_KEY);
+      if (!savedPosition) return;
+
+      const parsed = JSON.parse(savedPosition);
+      if (
+        typeof parsed?.x !== "number" ||
+        typeof parsed?.y !== "number"
+      ) {
+        return;
+      }
+
+      setPosition(getSafePosition(parsed.x, parsed.y));
+    } catch {
+      // Keep default position when saved UI memory is unavailable.
+    }
+  }, []);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setPosition((current) => {
+        if (!current) return current;
+        const safePosition = getSafePosition(current.x, current.y);
+        savePosition(safePosition);
+        return safePosition;
+      });
+    };
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
 
   const handlePointerDown = (event) => {
     didLongPress.current = false;
@@ -113,7 +155,9 @@ export default function DashboardQuickOrb({
     onLongPressEnd?.();
 
     if (dragging.current && position) {
-      setPosition(snapToNearestEdge(position));
+      const snappedPosition = snapToNearestEdge(position);
+      setPosition(snappedPosition);
+      savePosition(snappedPosition);
     }
 
     window.setTimeout(() => {
