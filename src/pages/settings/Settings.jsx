@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
 import { ChevronRight, LogOut } from "lucide-react";
 import ClaraPageShell from "../../components/shared/layout/ClaraPageShell";
-import { supabase } from "../../lib/supabaseClient";
+import { supabase } from "../../../lib/supabaseClient"; // ✅ FIXED PATH
 import Item from "./components/Item";
 import Section from "./components/Section";
 
