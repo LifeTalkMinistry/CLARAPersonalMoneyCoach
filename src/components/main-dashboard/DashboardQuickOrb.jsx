@@ -37,6 +37,7 @@ export default function DashboardQuickOrb({
   const longPressTimer = useRef(null);
   const didLongPress = useRef(false);
   const dragging = useRef(false);
+  const lastDockedPosition = useRef(null);
 
   const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
@@ -44,6 +45,12 @@ export default function DashboardQuickOrb({
     x: clamp(x, EDGE_PADDING, window.innerWidth - ORB_SIZE - EDGE_PADDING),
     y: clamp(y, TOP_SAFE, window.innerHeight - ORB_SIZE - BOTTOM_SAFE),
   });
+
+  const getCenterPosition = () =>
+    getSafePosition(
+      window.innerWidth / 2 - ORB_SIZE / 2,
+      window.innerHeight / 2 + 130
+    );
 
   const snapToNearestEdge = (pos) => {
     const shouldDockLeft = pos.x + ORB_SIZE / 2 < window.innerWidth / 2;
@@ -57,15 +64,35 @@ export default function DashboardQuickOrb({
   };
 
   useEffect(() => {
-    setPosition(
-      getSafePosition(
-        window.innerWidth - ORB_SIZE - EDGE_PADDING,
-        window.innerHeight - ORB_SIZE - 110
-      )
+    const start = getSafePosition(
+      window.innerWidth - ORB_SIZE - EDGE_PADDING,
+      window.innerHeight - ORB_SIZE - 110
     );
+
+    setPosition(start);
+    lastDockedPosition.current = start;
   }, []);
 
-  const closeMenu = () => setOpen(false);
+  const closeMenu = () => {
+    setOpen(false);
+
+    if (lastDockedPosition.current) {
+      setPosition(lastDockedPosition.current);
+      setDockSide(
+        lastDockedPosition.current.x < window.innerWidth / 2 ? "left" : "right"
+      );
+    }
+  };
+
+  const openMenuCentered = () => {
+    if (position) {
+      lastDockedPosition.current = snapToNearestEdge(position);
+    }
+
+    setPosition(getCenterPosition());
+    setDockSide("center");
+    setOpen(true);
+  };
 
   const handlePointerDown = (event) => {
     didLongPress.current = false;
@@ -87,7 +114,7 @@ export default function DashboardQuickOrb({
     longPressTimer.current = window.setTimeout(() => {
       if (dragging.current) return;
       didLongPress.current = true;
-      setOpen(true);
+      openMenuCentered();
     }, 420);
   };
 
@@ -100,7 +127,7 @@ export default function DashboardQuickOrb({
     if (movedX > 7 || movedY > 7) {
       dragging.current = true;
       setIsDragging(true);
-      closeMenu();
+      setOpen(false);
 
       if (longPressTimer.current) {
         window.clearTimeout(longPressTimer.current);
@@ -130,6 +157,7 @@ export default function DashboardQuickOrb({
       const snappedPosition = snapToNearestEdge(dragData.current.lastPosition);
       setPosition(snappedPosition);
       setDockSide(snappedPosition.x < window.innerWidth / 2 ? "left" : "right");
+      lastDockedPosition.current = snappedPosition;
     }
 
     setTimeout(() => {
@@ -141,7 +169,13 @@ export default function DashboardQuickOrb({
 
   const handleOrbClick = () => {
     if (didLongPress.current || dragging.current || isDragging) return;
-    setOpen((current) => !current);
+
+    if (open) {
+      closeMenu();
+      return;
+    }
+
+    openMenuCentered();
     onTap?.();
   };
 
@@ -154,7 +188,9 @@ export default function DashboardQuickOrb({
   };
 
   const menuAlignment =
-    dockSide === "left"
+    dockSide === "center"
+      ? "left-1/2 -translate-x-1/2 origin-bottom"
+      : dockSide === "left"
       ? "left-0 origin-bottom-left"
       : "right-0 origin-bottom-right";
 
@@ -172,12 +208,12 @@ export default function DashboardQuickOrb({
           type="button"
           aria-label="Close CLARA command menu"
           onClick={closeMenu}
-          className="fixed inset-0 -z-10 bg-black/25 backdrop-blur-[1px]"
+          className="fixed inset-0 -z-10 bg-black/35 backdrop-blur-[2px]"
         />
       )}
 
       <div
-        className={`absolute bottom-[76px] ${menuAlignment} w-[320px] max-w-[calc(100vw-32px)] overflow-hidden rounded-[30px] border border-lime-300/20 bg-[#071008]/90 p-3 text-white shadow-[0_24px_90px_rgba(132,204,22,0.18)] backdrop-blur-2xl transition-all duration-300 ease-out ${
+        className={`absolute bottom-[76px] ${menuAlignment} w-[320px] max-w-[calc(100vw-32px)] overflow-hidden rounded-[30px] border border-lime-300/20 bg-[#071008]/92 p-3 text-white shadow-[0_24px_90px_rgba(132,204,22,0.20)] backdrop-blur-2xl transition-all duration-300 ease-out ${
           open
             ? "translate-y-0 scale-100 opacity-100"
             : "pointer-events-none translate-y-5 scale-95 opacity-0"
@@ -190,6 +226,9 @@ export default function DashboardQuickOrb({
           <h3 className="mt-1 text-lg font-black tracking-[-0.03em] text-white">
             Ask before you act
           </h3>
+          <p className="mt-1 text-xs text-white/42">
+            Choose your next smart money move.
+          </p>
         </div>
 
         <div className="space-y-1.5">
