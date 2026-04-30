@@ -65,7 +65,7 @@ export default function Dashboard() {
 
   return (
     <ClaraPageShell compactHeader floatingAction={<DashboardQuickOrb />}>
-      <div className="space-y-5 pt-1">
+      <div className="space-y-3 pt-0 pb-1 overflow-hidden">
 
         <section className="transition duration-300 active:scale-[0.99]">
           <DashboardBillboard />
