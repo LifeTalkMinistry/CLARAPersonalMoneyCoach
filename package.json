@@ -7,15 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "deploy": "npm run build && gh-pages -d dist",
-<<<<<<< HEAD
-    "lint": "eslint .",
-    "preview": "vite preview"
-  }
-=======
     "preview": "vite preview",
     "lint": "eslint ."
   },
->>>>>>> abbf60b (Update app)
   "dependencies": {
     "@tailwindcss/vite": "^4.2.4",
     "lucide-react": "^1.14.0",
