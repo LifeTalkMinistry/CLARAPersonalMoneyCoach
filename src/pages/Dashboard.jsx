@@ -62,34 +62,34 @@ export default function Dashboard() {
   }
 
   return (
-    <ClaraPageShell floatingAction={<DashboardQuickOrb />}>
-      
-      {/* 🔥 DASHBOARD LAYOUT SYSTEM */}
-      <div className="space-y-4">
+    <ClaraPageShell compactHeader floatingAction={<DashboardQuickOrb />}>
+      <div className="space-y-6">
 
-        {/* BILLBOARD (communication layer) */}
-        <DashboardBillboard />
+        <div className="transition duration-200 active:scale-[0.99]">
+          <DashboardBillboard />
+        </div>
 
-        {/* FINANCIAL CORE (system layer) */}
-        <DashboardFinancialCarousel
-          budgetData={budget}
-          emergencyFundData={{
-            saved: emergencyGoal?.saved_amount || 0,
-            target: emergencyGoal?.target_amount || 0,
-          }}
-          savingsData={savings}
-          investmentData={investments}
-          debtData={debts}
-        />
+        <div className="transition duration-200 active:scale-[0.99]">
+          <DashboardFinancialCarousel
+            budgetData={budget}
+            emergencyFundData={{
+              saved: emergencyGoal?.saved_amount || 0,
+              target: emergencyGoal?.target_amount || 0,
+            }}
+            savingsData={savings}
+            investmentData={investments}
+            debtData={debts}
+          />
+        </div>
 
-        {/* SUMMARY (insight layer) */}
-        <DashboardMoneySummary
-          moneyLeft={totalMoney - totalExpenses}
-          totalExpenses={totalExpenses}
-        />
+        <div className="transition duration-200 active:scale-[0.99]">
+          <DashboardMoneySummary
+            moneyLeft={totalMoney - totalExpenses}
+            totalExpenses={totalExpenses}
+          />
+        </div>
 
       </div>
-
     </ClaraPageShell>
   );
 }
