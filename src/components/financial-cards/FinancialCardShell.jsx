@@ -15,17 +15,17 @@ export default function FinancialCardShell({
   const safeProgress = Math.min(Math.max(Number(progress) || 0, 0), 100);
 
   return (
-    <article className="group relative flex h-full max-h-full min-h-0 w-full flex-col overflow-hidden rounded-[26px] border border-white/[0.12] bg-[#0b1118]/82 px-4 pb-4 pt-4 text-white shadow-[0_22px_55px_rgba(0,0,0,0.34)] backdrop-blur-2xl transition duration-300 active:scale-[0.992]">
+    <article className="group relative flex h-full max-h-full min-h-0 w-full flex-col overflow-hidden rounded-[26px] border border-white/[0.12] bg-[#0b1118]/82 px-4 pb-4 pt-4 text-white shadow-[0_22px_55px_rgba(0,0,0,0.34)] backdrop-blur-2xl transition-all duration-300 hover:scale-[1.01] hover:shadow-[0_28px_65px_rgba(0,0,0,0.45)] active:scale-[0.985]">
       <div className="pointer-events-none absolute inset-0 rounded-[26px] bg-[linear-gradient(145deg,rgba(255,255,255,0.12),rgba(255,255,255,0.035)_38%,rgba(255,255,255,0.02))]" />
-      <div className={`pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-gradient-to-br ${accentClassName} blur-2xl transition duration-500 group-active:scale-105`} />
+      <div className={`pointer-events-none absolute -right-16 -top-16 h-44 w-44 rounded-full bg-gradient-to-br ${accentClassName} blur-2xl transition duration-500 group-hover:scale-110`} />
       <div className="pointer-events-none absolute -bottom-24 left-8 h-40 w-40 rounded-full bg-white/[0.035] blur-3xl" />
-      <div className="pointer-events-none absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-white/35 to-transparent" />
+      <div className="pointer-events-none absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-white/35 to-transparent opacity-70 group-hover:opacity-100" />
       <div className="pointer-events-none absolute inset-x-6 bottom-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
       <div className="relative z-10 flex h-full min-h-0 flex-1 flex-col">
         <header className="flex h-[48px] shrink-0 items-start justify-between gap-3">
           <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.075] text-sm font-bold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.12)]">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.075] text-sm font-bold text-white shadow-[inset_0_1px_0_rgba(255,255,255,0.12)] transition-all duration-300 group-hover:bg-white/[0.12] group-active:scale-95">
               {icon}
             </div>
 
@@ -40,7 +40,7 @@ export default function FinancialCardShell({
           </div>
 
           {badge && (
-            <span className={`mt-0.5 shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase leading-none tracking-[0.12em] ${badgeClassName}`}>
+            <span className={`mt-0.5 shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase leading-none tracking-[0.12em] transition-all duration-300 group-hover:scale-105 ${badgeClassName}`}>
               {badge}
             </span>
           )}
@@ -67,13 +67,17 @@ export default function FinancialCardShell({
           </div>
 
           {insight && (
-            <p className="mt-3 line-clamp-2 min-h-[38px] text-[12px] leading-[1.55] text-white/58">
+            <p className="mt-3 line-clamp-2 min-h-[38px] text-[12px] leading-[1.55] text-white/58 transition-all duration-300 group-hover:text-white/70">
               {insight}
             </p>
           )}
         </section>
 
-        {children && <div className="relative z-10 mt-auto shrink-0 pt-3">{children}</div>}
+        {children && (
+          <div className="relative z-10 mt-auto shrink-0 pt-3 transition-transform duration-300 group-active:scale-[0.98]">
+            {children}
+          </div>
+        )}
       </div>
     </article>
   );
