@@ -1,83 +1,25 @@
 import { useEffect, useState } from "react";
-import { supabase } from "../../../lib/supabaseClient";
 
 export default function ProfileModal({ open, onClose }) {
-  const [userId, setUserId] = useState("");
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [loadingUser, setLoadingUser] = useState(false);
-  const [profileMessage, setProfileMessage] = useState("");
+  const [savedName, setSavedName] = useState("CLARA User");
+  const [name, setName] = useState(savedName);
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     if (!open) return;
-
-    let mounted = true;
-
-    async function loadProfile() {
-      setLoadingUser(true);
-      setProfileMessage("");
-
-      const { data: userData, error: userError } = await supabase.auth.getUser();
-      const user = userData?.user;
-
-      if (!mounted) return;
-
-      if (userError || !user) {
-        setUserId("");
-        setName("");
-        setEmail("");
-        setProfileMessage("Unable to load profile right now.");
-        setLoadingUser(false);
-        return;
-      }
-
-      setUserId(user.id);
-      setEmail(user.email || "");
-
-      const { data: profile, error: profileError } = await supabase
-        .from("profiles")
-        .select("full_name")
-        .eq("id", user.id)
-        .maybeSingle();
-
-      if (!mounted) return;
-
-      if (profileError) {
-        setName("");
-        setProfileMessage("Profile details are not available yet.");
-        setLoadingUser(false);
-        return;
-      }
-
-      if (profile) {
-        setName(profile.full_name || "");
-        setLoadingUser(false);
-        return;
-      }
-
-      const { error: insertError } = await supabase.from("profiles").insert({
-        id: user.id,
-        full_name: "",
-      });
-
-      if (!mounted) return;
-
-      if (insertError) {
-        setProfileMessage("Profile was not created yet.");
-      }
-
-      setName("");
-      setLoadingUser(false);
-    }
-
-    loadProfile();
-
-    return () => {
-      mounted = false;
-    };
-  }, [open]);
+    setName(savedName);
+    setMessage("");
+  }, [open, savedName]);
 
   if (!open) return null;
+
+  const handleSaveName = () => {
+    if (!name.trim()) return;
+
+    setSavedName(name.trim());
+    setName(name.trim());
+    setMessage("Name saved for this preview.");
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 backdrop-blur-sm">
@@ -94,9 +36,9 @@ export default function ProfileModal({ open, onClose }) {
           Update your basic details
         </p>
 
-        {profileMessage && (
-          <div className="mt-4 rounded-2xl border border-amber-300/15 bg-amber-400/10 px-3 py-2 text-xs text-amber-100/80">
-            {profileMessage}
+        {message && (
+          <div className="mt-4 rounded-2xl border border-emerald-300/15 bg-emerald-400/10 px-3 py-2 text-xs text-emerald-100/80">
+            {message}
           </div>
         )}
 
@@ -106,8 +48,11 @@ export default function ProfileModal({ open, onClose }) {
             <input
               type="text"
               value={name}
-              onChange={(event) => setName(event.target.value)}
-              placeholder={loadingUser ? "Loading name..." : "Your name"}
+              onChange={(event) => {
+                setName(event.target.value);
+                setMessage("");
+              }}
+              placeholder="Your name"
               className="mt-1 w-full bg-transparent text-sm text-white outline-none placeholder:text-white/25"
             />
           </div>
@@ -116,9 +61,8 @@ export default function ProfileModal({ open, onClose }) {
             <p className="text-[10px] uppercase text-white/40">Email</p>
             <input
               type="email"
-              value={email}
               readOnly
-              placeholder={loadingUser ? "Loading email..." : "you@email.com"}
+              placeholder="you@email.com"
               className="mt-1 w-full bg-transparent text-sm text-white/75 outline-none placeholder:text-white/25"
             />
           </div>
@@ -128,7 +72,7 @@ export default function ProfileModal({ open, onClose }) {
             <input
               type="password"
               readOnly
-              placeholder="Managed securely by Supabase Auth"
+              placeholder="Managed securely later"
               className="mt-1 w-full bg-transparent text-sm text-white/55 outline-none placeholder:text-white/25"
             />
           </div>
@@ -136,6 +80,7 @@ export default function ProfileModal({ open, onClose }) {
 
         <div className="mt-6 flex gap-3">
           <button
+            type="button"
             onClick={onClose}
             className="flex-1 rounded-xl border border-white/10 py-3 text-sm text-white/60"
           >
@@ -143,10 +88,12 @@ export default function ProfileModal({ open, onClose }) {
           </button>
 
           <button
-            disabled={!userId || loadingUser}
+            type="button"
+            onClick={handleSaveName}
+            disabled={!name.trim()}
             className="flex-1 rounded-xl bg-white py-3 text-sm font-medium text-black disabled:cursor-not-allowed disabled:bg-white/30 disabled:text-white/40"
           >
-            Save
+            Save Name
           </button>
         </div>
       </div>
