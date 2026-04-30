@@ -1,22 +1,21 @@
+import ClaraPageShell from "../../components/shared/layout/ClaraPageShell";
+
 export default function Settings() {
   return (
-    <main className="min-h-screen bg-[#070b10] text-white flex justify-center">
-      
-      {/* PHONE CONTAINER (same as Dashboard) */}
-      <div className="w-full max-w-[420px] px-4 pt-6 pb-10">
+    <ClaraPageShell>
+      <div className="space-y-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">
+            Settings
+          </h1>
 
-        <h1 className="text-2xl font-semibold tracking-tight">
-          Settings
-        </h1>
+          <p className="mt-1 text-sm text-white/50">
+            Manage your account and preferences
+          </p>
+        </div>
 
-        <p className="mt-1 text-sm text-white/50">
-          Manage your account and preferences
-        </p>
-
-        {/* PROFILE CARD */}
-        <section className="mt-6 rounded-[24px] border border-white/10 bg-white/[0.045] p-4">
+        <section className="rounded-[24px] border border-white/10 bg-white/[0.045] p-4">
           <div className="flex items-center gap-3">
-            
             <div className="flex h-14 w-14 items-center justify-center rounded-2xl border border-white/15 bg-white/10 text-lg font-bold">
               JM
             </div>
@@ -33,11 +32,9 @@ export default function Settings() {
             <span className="rounded-full border border-emerald-400/25 bg-emerald-400/10 px-3 py-1 text-[11px] font-bold text-emerald-300">
               Pro 99
             </span>
-
           </div>
         </section>
-
       </div>
-    </main>
+    </ClaraPageShell>
   );
 }
