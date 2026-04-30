@@ -56,20 +56,22 @@ export default function Dashboard() {
   if (loading) {
     return (
       <main className="min-h-screen bg-[#070b10] text-white flex items-center justify-center">
-        Loading...
+        <div className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white/55 backdrop-blur-xl">
+          Loading CLARA
+        </div>
       </main>
     );
   }
 
   return (
     <ClaraPageShell compactHeader floatingAction={<DashboardQuickOrb />}>
-      <div className="space-y-6">
+      <div className="space-y-5 pt-1">
 
-        <div className="transition duration-200 active:scale-[0.99]">
+        <section className="transition duration-300 active:scale-[0.99]">
           <DashboardBillboard />
-        </div>
+        </section>
 
-        <div className="transition duration-200 active:scale-[0.99]">
+        <section className="-mx-4 transition duration-300 active:scale-[0.99]">
           <DashboardFinancialCarousel
             budgetData={budget}
             emergencyFundData={{
@@ -80,14 +82,14 @@ export default function Dashboard() {
             investmentData={investments}
             debtData={debts}
           />
-        </div>
+        </section>
 
-        <div className="transition duration-200 active:scale-[0.99]">
+        <section className="transition duration-300 active:scale-[0.99]">
           <DashboardMoneySummary
             moneyLeft={totalMoney - totalExpenses}
             totalExpenses={totalExpenses}
           />
-        </div>
+        </section>
 
       </div>
     </ClaraPageShell>
