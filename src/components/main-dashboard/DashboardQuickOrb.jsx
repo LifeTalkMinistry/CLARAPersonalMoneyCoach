@@ -29,6 +29,10 @@ const commandItems = [
   },
 ];
 
+const ORB_SIZE = 60;
+const EDGE_PADDING = 18;
+const BOTTOM_SAFE = 18;
+
 export default function DashboardQuickOrb({
   onTap,
   onDoubleTap,
@@ -47,6 +51,21 @@ export default function DashboardQuickOrb({
   const toggleMenu = () => setOpen((current) => !current);
 
   const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+
+  const getSafePosition = (x, y) => ({
+    x: clamp(x, EDGE_PADDING, window.innerWidth - ORB_SIZE - EDGE_PADDING),
+    y: clamp(y, EDGE_PADDING, window.innerHeight - ORB_SIZE - BOTTOM_SAFE),
+  });
+
+  const snapToNearestEdge = (pos) => {
+    const centerX = pos.x + ORB_SIZE / 2;
+    const snappedX =
+      centerX < window.innerWidth / 2
+        ? EDGE_PADDING
+        : window.innerWidth - ORB_SIZE - EDGE_PADDING;
+
+    return getSafePosition(snappedX, pos.y);
+  };
 
   const handlePointerDown = (event) => {
     didLongPress.current = false;
@@ -81,15 +100,21 @@ export default function DashboardQuickOrb({
 
     if (!dragging.current) return;
 
-    setPosition({
-      x: clamp(event.clientX - dragData.current.offsetX, 18, window.innerWidth - 78),
-      y: clamp(event.clientY - dragData.current.offsetY, 18, window.innerHeight - 78),
-    });
+    setPosition(
+      getSafePosition(
+        event.clientX - dragData.current.offsetX,
+        event.clientY - dragData.current.offsetY
+      )
+    );
   };
 
   const handlePointerEnd = () => {
     if (longPressTimer.current) window.clearTimeout(longPressTimer.current);
     onLongPressEnd?.();
+
+    if (dragging.current && position) {
+      setPosition(snapToNearestEdge(position));
+    }
 
     window.setTimeout(() => {
       dragging.current = false;
@@ -112,7 +137,7 @@ export default function DashboardQuickOrb({
   };
 
   const wrapperClass = position
-    ? "fixed z-50"
+    ? "fixed z-50 transition-[left,top] duration-300 ease-out"
     : "fixed left-1/2 z-50 -translate-x-1/2 bottom-[calc(16px+env(safe-area-inset-bottom))] sm:bottom-[calc(18px+env(safe-area-inset-bottom))]";
 
   const wrapperStyle = position
