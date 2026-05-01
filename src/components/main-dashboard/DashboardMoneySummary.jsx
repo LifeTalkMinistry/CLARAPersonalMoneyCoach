@@ -5,6 +5,7 @@ import { formatMoney } from "../../lib/dashboard/financeUtils";
 
 export default function DashboardMoneySummary({
   moneyLeft = 0,
+  totalExpenses = 0,
   moneyVisible = true,
   onToggleMoneyVisible,
 }) {
@@ -28,8 +29,7 @@ export default function DashboardMoneySummary({
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(255,255,255,0.05),transparent_40%)]" />
 
-      <div className="relative px-4 pb-4 pt-3">
-        {/* Header */}
+      <div className="relative px-4 py-3">
         <div className="flex items-center justify-between">
           <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/45">
             Money Left
@@ -47,10 +47,11 @@ export default function DashboardMoneySummary({
           </button>
         </div>
 
-        {/* Amount */}
-        <p className="mt-3 text-[clamp(1.3rem,6vw,1.8rem)] font-extrabold leading-none tracking-tight text-white">
+        <p className="mt-2 text-[clamp(1.4rem,6.5vw,1.9rem)] font-extrabold leading-none tracking-tight text-white">
           {moneyVisible ? formatMoney(moneyLeft) : "••••"}
         </p>
+
+        <div className="mt-2 h-[2px] w-10 rounded-full bg-white/10" />
       </div>
     </section>
   );
