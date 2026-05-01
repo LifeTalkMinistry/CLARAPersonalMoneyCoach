@@ -33,7 +33,7 @@ export default function DashboardMoneySummary({
         <div className="min-h-[90px] px-4 pb-3 pt-3">
           <div className="flex items-center justify-between">
             <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/45">
-              Total Money
+              Money Left
             </p>
 
             <button
@@ -52,7 +52,7 @@ export default function DashboardMoneySummary({
             {moneyVisible ? formatMoney(moneyLeft) : "••••"}
           </p>
 
-          <p className="mt-2 text-[11px] text-white/45">Available</p>
+          <p className="mt-2 text-[11px] text-white/45">After expenses</p>
         </div>
 
         <div className="min-h-[90px] px-4 pb-3 pt-3">
