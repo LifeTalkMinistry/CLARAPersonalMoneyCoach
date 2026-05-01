@@ -70,20 +70,27 @@ export default function DashboardFinancialCarousel({
   return (
     <div className="relative flex h-[clamp(292px,40svh,322px)] shrink-0 flex-col overflow-hidden rounded-[30px] px-1 py-1">
       <div
-        className="pointer-events-none absolute inset-x-0 top-4 h-32 rounded-full bg-emerald-400/[0.045] blur-3xl transition-transform duration-500 ease-out"
+        className="pointer-events-none absolute inset-x-0 top-4 h-32 rounded-full blur-3xl transition-transform duration-500 ease-out"
         style={{
+          background: "var(--clara-surface-glow)",
           transform: `translate3d(${(scrollProgress - activeSlide) * 12}px, 0, 0)`,
         }}
       />
 
       <div
-        className="pointer-events-none absolute left-0 top-12 h-28 w-28 rounded-full bg-sky-400/[0.04] blur-3xl transition-transform duration-500 ease-out"
-        style={{ transform: `translate3d(${scrollProgress * 6}px, 0, 0)` }}
+        className="pointer-events-none absolute left-0 top-12 h-28 w-28 rounded-full blur-3xl transition-transform duration-500 ease-out"
+        style={{
+          background: "var(--clara-glow-soft)",
+          transform: `translate3d(${scrollProgress * 6}px, 0, 0)`,
+        }}
       />
 
       <div
-        className="pointer-events-none absolute right-0 bottom-8 h-28 w-28 rounded-full bg-fuchsia-400/[0.04] blur-3xl transition-transform duration-500 ease-out"
-        style={{ transform: `translate3d(${-scrollProgress * 6}px, 0, 0)` }}
+        className="pointer-events-none absolute right-0 bottom-8 h-28 w-28 rounded-full blur-3xl transition-transform duration-500 ease-out"
+        style={{
+          background: "var(--clara-glow-premium)",
+          transform: `translate3d(${-scrollProgress * 6}px, 0, 0)`,
+        }}
       />
 
       <section
@@ -112,6 +119,7 @@ export default function DashboardFinancialCarousel({
                 filter: `blur(${blur}px)`,
                 transform: `translate3d(${translateX}px, ${translateY}px, 0) scale(${scale}) rotate(${rotate}deg)`,
                 zIndex: isActive ? 10 : Math.max(1, 8 - Math.round(absDistance * 3)),
+                transition: "var(--clara-theme-transition)",
               }}
               className={`flex h-full w-full min-w-full flex-shrink-0 snap-center transition-[opacity,transform,filter] duration-300 ease-out will-change-transform ${
                 isActive
@@ -137,11 +145,13 @@ export default function DashboardFinancialCarousel({
               type="button"
               onClick={() => scrollToSlide(index)}
               aria-label={`Go to ${item.label}`}
-              className={`h-2 rounded-full transition-all duration-300 active:scale-90 ${
-                isActive
-                  ? "w-7 bg-emerald-400 shadow-[0_0_14px_rgba(52,211,153,0.65)]"
-                  : "w-2 bg-white/24 hover:bg-white/40"
-              }`}
+              className="h-2 rounded-full transition-all duration-300 active:scale-90"
+              style={{
+                width: isActive ? "1.75rem" : "0.5rem",
+                background: isActive ? "var(--clara-accent)" : "var(--clara-border-strong)",
+                boxShadow: isActive ? "var(--clara-glow-soft)" : "none",
+                opacity: isActive ? 1 : 0.62,
+              }}
             />
           );
         })}
