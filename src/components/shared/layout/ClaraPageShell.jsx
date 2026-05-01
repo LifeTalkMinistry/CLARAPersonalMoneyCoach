@@ -10,7 +10,7 @@ export default function ClaraPageShell({
       className="min-h-screen text-white flex justify-center"
       style={{ background: "var(--clara-bg)" }}
     >
-      <div className="w-full max-w-sm px-4 pt-2 pb-6 space-y-4">
+      <div className="flex w-full max-w-sm flex-col gap-4 px-4 pt-2 pb-6">
         <TopNavigationBar compact={compactHeader} />
         {children}
       </div>
