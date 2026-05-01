@@ -1,18 +1,83 @@
 @import "tailwindcss";
 
+:root {
+  color-scheme: dark;
+  --clara-bg: #070b10;
+  --clara-panel: rgba(255, 255, 255, 0.055);
+  --clara-panel-strong: rgba(255, 255, 255, 0.095);
+  --clara-card: rgba(255, 255, 255, 0.055);
+  --clara-card-strong: rgba(255, 255, 255, 0.095);
+  --clara-glass: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.095),
+    rgba(255, 255, 255, 0.055)
+  );
+  --clara-border: rgba(255, 255, 255, 0.105);
+  --clara-border-strong: rgba(52, 211, 153, 0.32);
+  --clara-text: rgba(255, 255, 255, 0.94);
+  --clara-text-soft: rgba(255, 255, 255, 0.72);
+  --clara-text-muted: rgba(255, 255, 255, 0.48);
+  --clara-text-faint: rgba(255, 255, 255, 0.30);
+  --clara-accent: #34d399;
+  --clara-accent-soft: rgba(52, 211, 153, 0.14);
+  --clara-accent-border: rgba(52, 211, 153, 0.32);
+  --clara-accent-text: #86efac;
+  --clara-glow: rgba(16, 185, 129, 0.22);
+  --clara-glow-soft: rgba(16, 185, 129, 0.22);
+  --clara-glow-premium: 0 0 28px rgba(16, 185, 129, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.10);
+  --clara-surface-glow: radial-gradient(
+    circle at 50% 0%,
+    rgba(16, 185, 129, 0.22),
+    transparent 42%
+  );
+  --clara-gradient: linear-gradient(
+    135deg,
+    rgba(52, 211, 153, 0.14),
+    rgba(15, 23, 42, 0.90),
+    rgba(6, 78, 59, 0.22)
+  );
+}
+
 html,
 body,
 #root {
   margin: 0;
   min-height: 100%;
-  background: #070b10;
+  background: var(--clara-bg);
+  color: var(--clara-text);
+}
+
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 50% -10%, var(--clara-glow), transparent 34%),
+    var(--clara-bg);
+  color: var(--clara-text);
+}
+
+button,
+input,
+textarea,
+select {
+  font-family: inherit;
 }
 
 button {
-  font-family: inherit;
+  color: inherit;
+}
+
+::selection {
+  background: var(--clara-accent-soft);
+  color: var(--clara-text);
 }
 
 .clara-no-scrollbar,
 .scrollbar-none {
   scrollbar-width: none;
+}
+
+.clara-no-scrollbar::-webkit-scrollbar,
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
 }
