@@ -3,7 +3,7 @@ import { supabase } from "../lib/supabaseClient";
 
 const AuthContext = createContext(null);
 
-const AUTH_INIT_TIMEOUT_MS = 7000;
+const AUTH_INIT_TIMEOUT_MS = 1500;
 
 const supabaseMissingError = {
   message:
@@ -84,7 +84,10 @@ export function AuthProvider({ children }) {
   const ensureProfile = async (authUser) => {
     if (!supabase || !authUser) return null;
 
-    const fallbackProfile = createFallbackProfile(authUser, "profile_unavailable");
+    const fallbackProfile = createFallbackProfile(
+      authUser,
+      "profile_unavailable"
+    );
 
     try {
       const existing = await fetchProfile(authUser.id);
@@ -133,6 +136,17 @@ export function AuthProvider({ children }) {
     }
   };
 
+  const startProfileLoad = (authUser, reason = "profile_loading") => {
+    if (!authUser) return;
+
+    setProfile(createFallbackProfile(authUser, reason));
+
+    ensureProfile(authUser).catch((err) => {
+      console.warn("Background profile setup failed", err);
+      setProfile(createFallbackProfile(authUser, "profile_failed"));
+    });
+  };
+
   const refreshProfile = async () => {
     if (!user?.id) return null;
 
@@ -144,13 +158,19 @@ export function AuthProvider({ children }) {
         return freshProfile;
       }
 
-      const fallbackProfile = createFallbackProfile(user, "refresh_profile_failed");
+      const fallbackProfile = createFallbackProfile(
+        user,
+        "refresh_profile_failed"
+      );
       setProfile((current) => current || fallbackProfile);
       return fallbackProfile;
     } catch (err) {
       console.warn("Unable to refresh profile", err);
 
-      const fallbackProfile = createFallbackProfile(user, "refresh_profile_crashed");
+      const fallbackProfile = createFallbackProfile(
+        user,
+        "refresh_profile_crashed"
+      );
       setProfile((current) => current || fallbackProfile);
       return fallbackProfile;
     }
@@ -171,7 +191,7 @@ export function AuthProvider({ children }) {
     });
 
     if (!error && data?.user) {
-      await ensureProfile(data.user);
+      startProfileLoad(data.user, "signup_profile_loading");
     }
 
     return { data, error };
@@ -183,7 +203,7 @@ export function AuthProvider({ children }) {
     const result = await supabase.auth.signInWithPassword({ email, password });
 
     if (!result.error && result.data?.user) {
-      await ensureProfile(result.data.user);
+      startProfileLoad(result.data.user, "signin_profile_loading");
     }
 
     return result;
@@ -245,17 +265,7 @@ export function AuthProvider({ children }) {
         setUser(currentUser);
 
         if (currentUser) {
-          const profileResult = await withTimeout(
-            ensureProfile(currentUser),
-            AUTH_INIT_TIMEOUT_MS,
-            "Profile initialization"
-          );
-
-          if (!alive) return;
-
-          if (profileResult?.timedOut) {
-            setProfile(createFallbackProfile(currentUser, "profile_timeout"));
-          }
+          startProfileLoad(currentUser, "profile_loading");
         } else {
           setProfile(null);
         }
@@ -272,7 +282,7 @@ export function AuthProvider({ children }) {
     initAuth();
 
     const { data: listener } = supabase.auth.onAuthStateChange(
-      async (_event, nextSession) => {
+      (_event, nextSession) => {
         const nextUser = nextSession?.user ?? null;
 
         setSession(nextSession);
@@ -284,22 +294,8 @@ export function AuthProvider({ children }) {
           return;
         }
 
-        try {
-          const profileResult = await withTimeout(
-            ensureProfile(nextUser),
-            AUTH_INIT_TIMEOUT_MS,
-            "Auth state profile sync"
-          );
-
-          if (profileResult?.timedOut) {
-            setProfile(createFallbackProfile(nextUser, "auth_state_profile_timeout"));
-          }
-        } catch (err) {
-          console.warn("Auth profile sync failed", err);
-          setProfile(createFallbackProfile(nextUser, "auth_state_profile_failed"));
-        } finally {
-          setLoading(false);
-        }
+        startProfileLoad(nextUser, "auth_state_loading");
+        setLoading(false);
       }
     );
 
