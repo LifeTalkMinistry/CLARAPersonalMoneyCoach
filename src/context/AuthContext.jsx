@@ -36,21 +36,16 @@ export function AuthProvider({ children }) {
   const upsertProfile = async (authUser) => {
     if (!supabase || !authUser) return null;
 
+    const baseProfile = {
+      id: authUser.id,
+      email: authUser.email,
+      role: "user",
+      is_admin: false,
+    };
+
     const { data, error } = await supabase
       .from("profiles")
-      .upsert(
-        {
-          id: authUser.id,
-          email: authUser.email,
-          display_name:
-            authUser.user_metadata?.display_name ||
-            authUser.user_metadata?.full_name ||
-            null,
-          role: "user",
-          is_admin: false,
-        },
-        { onConflict: "id" }
-      )
+      .upsert(baseProfile, { onConflict: "id" })
       .select()
       .maybeSingle();
 
@@ -59,8 +54,8 @@ export function AuthProvider({ children }) {
       return null;
     }
 
-    setProfile(data);
-    return data;
+    setProfile(data || baseProfile);
+    return data || baseProfile;
   };
 
   const signUp = async (email, password, displayName = "") => {
