@@ -1,17 +1,9 @@
 import { useEffect, useRef, useState } from "react";
 import { X } from "lucide-react";
 
-const categories = [
-  "Insight",
-  "Success",
-  "Testimony",
-  "Q&A",
-  "Budget Win",
-  "Spending Reflection",
-];
-
 export default function PostComposerModal({
   open,
+  originRect,
   selectedCategory = "Insight",
   content = "",
   onClose,
@@ -19,223 +11,151 @@ export default function PostComposerModal({
   onContentChange,
   onSubmit,
 }) {
+  const modalRef = useRef(null);
+
   const [mounted, setMounted] = useState(false);
   const [visible, setVisible] = useState(false);
-  const [dragY, setDragY] = useState(0);
-  const [isDragging, setIsDragging] = useState(false);
-  const [isTextFocused, setIsTextFocused] = useState(false);
+  const [contentVisible, setContentVisible] = useState(false);
+  const [transformStyle, setTransformStyle] = useState({});
 
-  const startYRef = useRef(0);
-  const frameRef = useRef(null);
-  const closeTimerRef = useRef(null);
-
-  const canPost = content.trim().length > 0;
-
+  // -------------------------
+  // OPEN / CLOSE ANIMATION
+  // -------------------------
   useEffect(() => {
     if (open) {
-      if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
-      if (frameRef.current) cancelAnimationFrame(frameRef.current);
-
       setMounted(true);
       setVisible(false);
-      setDragY(0);
+      setContentVisible(false);
 
-      frameRef.current = requestAnimationFrame(() => {
-        frameRef.current = requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const modalRect = modalRef.current?.getBoundingClientRect();
+
+        if (originRect && modalRect) {
+          const dx = originRect.left - modalRect.left;
+          const dy = originRect.top - modalRect.top;
+
+          const scaleX = originRect.width / modalRect.width;
+          const scaleY = originRect.height / modalRect.height;
+
+          setTransformStyle({
+            transform: `translate(${dx}px, ${dy}px) scale(${scaleX}, ${scaleY}) rotate(-1deg)`,
+            opacity: 0.9,
+            filter: "blur(0.4px)",
+          });
+        }
+
+        requestAnimationFrame(() => {
           setVisible(true);
+
+          setTransformStyle({
+            transform: "translate(0px, 0px) scale(1,1) rotate(0deg)",
+            opacity: 1,
+            filter: "blur(0px)",
+          });
+
+          setTimeout(() => {
+            setContentVisible(true);
+          }, 90);
         });
       });
+    } else {
+      setContentVisible(false);
+      setVisible(false);
 
-      return;
+      setTimeout(() => {
+        setMounted(false);
+      }, 240);
     }
-
-    setVisible(false);
-    setDragY(0);
-
-    closeTimerRef.current = setTimeout(() => {
-      setMounted(false);
-    }, 260);
-
-    return () => {
-      if (frameRef.current) cancelAnimationFrame(frameRef.current);
-      if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
-    };
-  }, [open]);
+  }, [open, originRect]);
 
   if (!mounted) return null;
 
+  // -------------------------
+  // CLOSE HANDLER
+  // -------------------------
   const handleClose = () => {
+    setContentVisible(false);
     setVisible(false);
-    setDragY(0);
 
     setTimeout(() => {
       onClose?.();
-    }, 180);
+    }, 240);
   };
 
-  const handleTouchStart = (event) => {
-    startYRef.current = event.touches[0].clientY;
-    setIsDragging(true);
-  };
-
-  const handleTouchMove = (event) => {
-    const currentY = event.touches[0].clientY;
-    const nextDragY = Math.max(0, currentY - startYRef.current);
-    setDragY(nextDragY);
-  };
-
-  const handleTouchEnd = () => {
-    setIsDragging(false);
-
-    if (dragY > 120) {
-      handleClose();
-      return;
-    }
-
-    setDragY(0);
-  };
-
-  const backdropOpacity = visible ? Math.max(0.3, 1 - dragY / 390) : 0;
-  const dragScale = Math.max(0.965, 1 - dragY / 2600);
-  const dragRotate = Math.min(dragY / 90, 1.15);
-
+  // -------------------------
+  // UI
+  // -------------------------
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center px-3 pb-3 sm:items-center sm:pb-0"
+      className="fixed inset-0 z-50 flex items-end justify-center px-3 pb-3 sm:items-center"
+      onClick={handleClose}
       style={{
-        opacity: backdropOpacity,
-        pointerEvents: visible ? "auto" : "none",
+        opacity: visible ? 1 : 0,
         backdropFilter: visible ? "blur(6px)" : "blur(0px)",
         background:
-          "radial-gradient(circle at 50% 86%, rgba(255,255,255,0.045), transparent 32%), linear-gradient(to bottom, rgba(15,23,42,0.18), rgba(2,6,23,0.84))",
-        transition: isDragging
-          ? "none"
-          : "opacity 260ms ease, backdrop-filter 260ms ease",
+          "linear-gradient(to bottom, rgba(15,23,42,0.18), rgba(2,6,23,0.85))",
+        transition: "all 300ms ease",
       }}
-      onClick={handleClose}
     >
       <div
-        role="dialog"
-        aria-modal="true"
-        onClick={(event) => event.stopPropagation()}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
-        className="w-full max-w-md overflow-hidden rounded-[26px] border border-white/10 bg-slate-950/95 shadow-[0_32px_110px_rgba(0,0,0,0.68)] backdrop-blur-2xl will-change-transform"
+        ref={modalRef}
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-md overflow-hidden rounded-[26px] border border-white/10 bg-slate-950/95 shadow-[0_32px_110px_rgba(0,0,0,0.7)] backdrop-blur-2xl"
         style={{
-          filter: visible ? "blur(0px)" : "blur(0.35px)",
-          opacity: visible ? 1 : 0,
-          transform: visible
-            ? `translate3d(0, ${dragY}px, 0) scale(${dragScale}) rotate(${dragRotate}deg)`
-            : "translate3d(0, 72px, 0) scale(0.88) rotate(-1.1deg)",
-          transition: isDragging
-            ? "none"
-            : visible
-              ? "opacity 220ms ease-out, filter 320ms ease-out, transform 420ms cubic-bezier(0.16,1,0.3,1)"
-              : "opacity 170ms ease-in, filter 180ms ease-in, transform 220ms cubic-bezier(0.32,0,0.67,0)",
-          transformOrigin: "bottom center",
-          boxShadow:
-            "inset 0 1px 0 rgba(255,255,255,0.09), 0 34px 96px rgba(0,0,0,0.72)",
+          ...transformStyle,
+          transition: visible
+            ? "transform 420ms cubic-bezier(0.16,1,0.3,1), opacity 300ms ease, filter 300ms ease"
+            : "transform 240ms cubic-bezier(0.32,0,0.67,0), opacity 200ms ease",
         }}
       >
-        <div className="mx-auto mt-3 h-1 w-10 rounded-full bg-white/20 shadow-[0_0_12px_rgba(255,255,255,0.08)]" />
+        {/* CONTENT */}
+        <div
+          style={{
+            opacity: contentVisible ? 1 : 0,
+            transform: contentVisible
+              ? "translateY(0px)"
+              : "translateY(8px)",
+            transition: "all 180ms ease",
+          }}
+        >
+          {/* HEADER */}
+          <div className="flex items-center justify-between px-4 pt-4 pb-2">
+            <h2 className="text-base font-semibold text-white/90">
+              Create post
+            </h2>
 
-        <div className="flex items-center justify-between px-4 pb-2.5 pt-3.5">
-          <h2 className="text-base font-semibold text-white/90">
-            Create post
-          </h2>
-
-          <button
-            type="button"
-            onClick={handleClose}
-            className="flex h-9 w-9 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.045] text-white/55 transition duration-200 hover:rotate-6 hover:bg-white/[0.075] hover:text-white/80 active:scale-95 active:rotate-12"
-            aria-label="Close post composer"
-          >
-            <X size={17} />
-          </button>
-        </div>
-
-        <div className="space-y-2.5 px-4 pb-3.5">
-          <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/[0.025] p-2.5">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.07] text-xs font-semibold text-white/75">
-              JM
-            </div>
-
-            <div className="min-w-0 flex-1">
-              <p className="text-sm font-semibold text-white/85">You</p>
-              <p className="text-[11px] text-white/35">
-                Share a money lesson
-              </p>
-            </div>
-          </div>
-
-          <textarea
-            value={content}
-            onChange={(event) => onContentChange(event.target.value)}
-            onFocus={() => setIsTextFocused(true)}
-            onBlur={() => setIsTextFocused(false)}
-            rows={4}
-            placeholder="What financial lesson do you want to share?"
-            className="w-full resize-none rounded-[22px] border px-4 py-3 text-sm leading-6 text-white outline-none placeholder:text-white/30 transition duration-200 will-change-transform"
-            style={{
-              borderColor: isTextFocused
-                ? "rgba(255,255,255,0.2)"
-                : "rgba(255,255,255,0.1)",
-              background: isTextFocused
-                ? "rgba(255,255,255,0.065)"
-                : "rgba(255,255,255,0.04)",
-              boxShadow: isTextFocused
-                ? "0 0 0 1px rgba(255,255,255,0.08)"
-                : "none",
-              transform:
-                content.length > 0 && isTextFocused
-                  ? "scale(1.01)"
-                  : "scale(1)",
-            }}
-          />
-
-          <div className="flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            {categories.map((category) => {
-              const active = selectedCategory === category;
-
-              return (
-                <button
-                  key={category}
-                  type="button"
-                  onClick={() => onCategoryChange(category)}
-                  className={[
-                    "shrink-0 rounded-full border px-3 py-1.5 text-[11px] font-semibold transition duration-150 active:scale-95",
-                    active
-                      ? "scale-[1.04] border-white/25 bg-white/[0.14] text-white/90 shadow-[0_0_18px_rgba(255,255,255,0.045)]"
-                      : "border-white/10 bg-white/[0.035] text-white/45 hover:bg-white/[0.06] hover:text-white/70",
-                  ].join(" ")}
-                >
-                  {category}
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-        <div className="flex items-center justify-between border-t border-white/10 px-4 py-3">
-          <p className="text-[11px] text-white/32">
-            Keep it honest and helpful.
-          </p>
-
-          <div className="flex items-center gap-2">
             <button
-              type="button"
               onClick={handleClose}
-              className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-xs font-semibold text-white/55 transition duration-150 hover:bg-white/[0.07] hover:text-white/75 active:scale-[0.97]"
+              className="flex h-9 w-9 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05]"
+            >
+              <X size={16} />
+            </button>
+          </div>
+
+          {/* TEXTAREA */}
+          <div className="px-4 pb-3">
+            <textarea
+              value={content}
+              onChange={(e) => onContentChange(e.target.value)}
+              placeholder="What financial lesson do you want to share?"
+              className="w-full resize-none rounded-[22px] border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white outline-none"
+              rows={4}
+            />
+          </div>
+
+          {/* ACTIONS */}
+          <div className="flex items-center justify-end gap-2 border-t border-white/10 px-4 py-3">
+            <button
+              onClick={handleClose}
+              className="rounded-full border border-white/10 px-4 py-2 text-xs text-white/60"
             >
               Cancel
             </button>
 
             <button
-              type="button"
               onClick={onSubmit}
-              disabled={!canPost}
-              className="rounded-full border border-white/10 bg-white/[0.12] px-5 py-2 text-xs font-semibold text-white/85 transition duration-150 hover:bg-white/[0.16] active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-35"
+              disabled={!content.trim()}
+              className="rounded-full border border-white/10 bg-white/[0.12] px-5 py-2 text-xs text-white"
             >
               Post
             </button>
