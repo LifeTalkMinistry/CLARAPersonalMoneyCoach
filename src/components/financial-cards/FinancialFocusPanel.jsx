@@ -15,6 +15,7 @@ export default function FinancialFocusPanel({
   actions = [],
   details = [],
   footer,
+  footerAction,
 }) {
   const safeProgress = Math.min(Math.max(Number(progress) || 0, 0), 100);
 
@@ -127,6 +128,23 @@ export default function FinancialFocusPanel({
                 </div>
               ))}
             </div>
+          )}
+
+          {footerAction && (
+            <button
+              type="button"
+              onClick={footerAction.onClick}
+              className="mt-4 w-full rounded-[22px] border border-emerald-300/20 bg-emerald-400/10 px-4 py-4 text-left transition hover:bg-emerald-400/15"
+            >
+              <p className="text-sm font-semibold text-emerald-50">
+                {footerAction.label}
+              </p>
+              {footerAction.description && (
+                <p className="mt-1 text-xs leading-relaxed text-emerald-50/55">
+                  {footerAction.description}
+                </p>
+              )}
+            </button>
           )}
 
           {footer && (
