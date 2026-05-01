@@ -19,21 +19,33 @@ export default function PostComposerModal({
   onContentChange,
   onSubmit,
 }) {
-  const [mounted, setMounted] = useState(open);
+  const [mounted, setMounted] = useState(false);
   const [visible, setVisible] = useState(false);
   const [dragY, setDragY] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const [isTextFocused, setIsTextFocused] = useState(false);
 
   const startYRef = useRef(0);
+  const frameRef = useRef(null);
   const closeTimerRef = useRef(null);
 
   const canPost = content.trim().length > 0;
 
   useEffect(() => {
     if (open) {
+      if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
+      if (frameRef.current) cancelAnimationFrame(frameRef.current);
+
       setMounted(true);
-      requestAnimationFrame(() => setVisible(true));
+      setVisible(false);
+      setDragY(0);
+
+      frameRef.current = requestAnimationFrame(() => {
+        frameRef.current = requestAnimationFrame(() => {
+          setVisible(true);
+        });
+      });
+
       return;
     }
 
@@ -42,9 +54,10 @@ export default function PostComposerModal({
 
     closeTimerRef.current = setTimeout(() => {
       setMounted(false);
-    }, 220);
+    }, 240);
 
     return () => {
+      if (frameRef.current) cancelAnimationFrame(frameRef.current);
       if (closeTimerRef.current) clearTimeout(closeTimerRef.current);
     };
   }, [open]);
@@ -54,9 +67,10 @@ export default function PostComposerModal({
   const handleClose = () => {
     setVisible(false);
     setDragY(0);
+
     setTimeout(() => {
       onClose?.();
-    }, 180);
+    }, 170);
   };
 
   const handleTouchStart = (event) => {
@@ -81,19 +95,20 @@ export default function PostComposerModal({
     setDragY(0);
   };
 
-  const backdropOpacity = visible ? Math.max(0.32, 1 - dragY / 420) : 0;
+  const backdropOpacity = visible ? Math.max(0.28, 1 - dragY / 380) : 0;
 
   return (
     <div
       className="fixed inset-0 z-50 flex items-end justify-center px-3 pb-3 sm:items-center sm:pb-0"
       style={{
         opacity: backdropOpacity,
-        backdropFilter: visible ? "blur(5px)" : "blur(0px)",
+        pointerEvents: visible ? "auto" : "none",
+        backdropFilter: visible ? "blur(6px)" : "blur(0px)",
         background:
-          "linear-gradient(to bottom, rgba(15,23,42,0.34), rgba(2,6,23,0.76))",
+          "linear-gradient(to bottom, rgba(15,23,42,0.22), rgba(2,6,23,0.82))",
         transition: isDragging
           ? "none"
-          : "opacity 220ms ease, backdrop-filter 260ms ease",
+          : "opacity 260ms ease, backdrop-filter 260ms ease",
       }}
       onClick={handleClose}
     >
@@ -104,19 +119,20 @@ export default function PostComposerModal({
         onTouchStart={handleTouchStart}
         onTouchMove={handleTouchMove}
         onTouchEnd={handleTouchEnd}
-        className="w-full max-w-md overflow-hidden rounded-[26px] border border-white/10 bg-slate-950/95 shadow-[0_28px_90px_rgba(0,0,0,0.58)] backdrop-blur-2xl will-change-transform"
+        className="w-full max-w-md overflow-hidden rounded-[26px] border border-white/10 bg-slate-950/95 shadow-[0_32px_110px_rgba(0,0,0,0.68)] backdrop-blur-2xl will-change-transform"
         style={{
-          transform: `translateY(${visible ? dragY : 40}px) scale(${
-            visible ? 1 : 0.96
-          })`,
+          transform: visible
+            ? `translate3d(0, ${dragY}px, 0) scale(1)`
+            : "translate3d(0, calc(100% + 28px), 0) scale(0.94)",
           opacity: visible ? 1 : 0,
           transition: isDragging
             ? "none"
             : visible
-              ? "transform 260ms cubic-bezier(0.22,1,0.36,1), opacity 260ms cubic-bezier(0.22,1,0.36,1)"
-              : "transform 180ms ease, opacity 180ms ease",
+              ? "transform 360ms cubic-bezier(0.22,1,0.36,1), opacity 240ms ease-out"
+              : "transform 210ms cubic-bezier(0.32,0,0.67,0), opacity 170ms ease-in",
+          transformOrigin: "bottom center",
           boxShadow:
-            "inset 0 1px 0 rgba(255,255,255,0.08), 0 28px 90px rgba(0,0,0,0.58)",
+            "inset 0 1px 0 rgba(255,255,255,0.09), 0 32px 110px rgba(0,0,0,0.68)",
         }}
       >
         <div className="mx-auto mt-3 h-1 w-10 rounded-full bg-white/20 shadow-[0_0_12px_rgba(255,255,255,0.08)]" />
