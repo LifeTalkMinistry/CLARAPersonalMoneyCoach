@@ -10,9 +10,9 @@ export default function ClaraPageShell({
     <main
       className="min-h-screen flex justify-center"
       style={{
-        background:
-          "radial-gradient(circle at 50% -10%, var(--clara-glow), transparent 34%), var(--clara-bg)",
+        background: "var(--clara-surface-glow), var(--clara-bg)",
         color: "var(--clara-text)",
+        transition: "background var(--clara-theme-transition)",
       }}
     >
       <div className="flex w-full max-w-sm flex-col gap-4 px-4 pt-2 pb-6">
