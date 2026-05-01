@@ -1,11 +1,15 @@
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 
 function normalizeAuthError(message = "") {
   const lowerMessage = message.toLowerCase();
 
-  if (lowerMessage.includes("rate limit") || lowerMessage.includes("too many")) {
-    return "Too many attempts. Please wait before trying again.";
+  if (
+    lowerMessage.includes("email rate limit") ||
+    lowerMessage.includes("rate limit") ||
+    lowerMessage.includes("too many")
+  ) {
+    return "Supabase is still blocking signup emails. Please disable email confirmation for testing or wait for the project email limit to reset.";
   }
 
   if (lowerMessage.includes("invalid login")) {
@@ -36,12 +40,17 @@ export default function AuthPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [cooldownUntil, setCooldownUntil] = useState(0);
+  const [cooldownSeconds, setCooldownSeconds] = useState(0);
 
-  const cooldownSeconds = useMemo(() => {
-    if (!cooldownUntil) return 0;
-    return Math.max(0, Math.ceil((cooldownUntil - Date.now()) / 1000));
-  }, [cooldownUntil, loading, error]);
+  useEffect(() => {
+    if (cooldownSeconds <= 0) return undefined;
+
+    const timer = window.setInterval(() => {
+      setCooldownSeconds((current) => Math.max(0, current - 1));
+    }, 1000);
+
+    return () => window.clearInterval(timer);
+  }, [cooldownSeconds]);
 
   const blocked = loading || cooldownSeconds > 0;
 
@@ -96,14 +105,17 @@ export default function AuthPage() {
 
         if (
           authError.status === 429 ||
+          nextMessage.toLowerCase().includes("rate") ||
           nextMessage.toLowerCase().includes("too many") ||
-          nextMessage.toLowerCase().includes("rate")
+          nextMessage.toLowerCase().includes("blocking")
         ) {
-          setCooldownUntil(Date.now() + 60 * 1000);
+          setCooldownSeconds(60);
         }
 
         return;
       }
+
+      setCooldownSeconds(0);
 
       if (!isLogin) {
         setSuccess(
@@ -122,6 +134,7 @@ export default function AuthPage() {
   const handleModeToggle = () => {
     if (loading) return;
     resetMessages();
+    setCooldownSeconds(0);
     setIsLogin((current) => !current);
   };
 
@@ -181,7 +194,7 @@ export default function AuthPage() {
 
         {cooldownSeconds > 0 && (
           <p className="mt-3 text-xs leading-5 text-white/40">
-            Signup protection is cooling down. Try again in about {cooldownSeconds} seconds.
+            Frontend cooldown: try again in {cooldownSeconds} seconds. If Supabase still blocks it after this, turn off email confirmation while testing.
           </p>
         )}
 
