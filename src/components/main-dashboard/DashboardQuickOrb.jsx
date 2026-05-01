@@ -1,5 +1,5 @@
-import { Check, Plus, X } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { Check, ChevronDown, Plus, X } from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 const ORB_SIZE = 60;
 const EDGE_PADDING = 18;
@@ -9,17 +9,91 @@ const BOTTOM_SAFE = 24;
 export default function DashboardQuickOrb({
   onLongPressStart,
   onLongPressEnd,
+  onQuickExpense,
+  budgetCategories = [],
   state = "idle",
 }) {
   const [position, setPosition] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isPressing, setIsPressing] = useState(false);
   const [showExpense, setShowExpense] = useState(false);
+  const [amount, setAmount] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [categoryOpen, setCategoryOpen] = useState(false);
 
   const dragData = useRef(null);
   const longPressTimer = useRef(null);
   const didLongPress = useRef(false);
   const dragging = useRef(false);
+
+  const safeBudgetCategories = useMemo(() => {
+    if (!Array.isArray(budgetCategories)) return [];
+
+    return budgetCategories
+      .filter((item) => item?.category)
+      .map((item) => ({
+        ...item,
+        type: "budget",
+        label: item.category,
+        value: item.category,
+        budgetStatus: "planned",
+      }));
+  }, [budgetCategories]);
+
+  const categoryOptions = useMemo(
+    () => [
+      {
+        type: "unplanned",
+        label: "Unplanned Expense",
+        value: "Unplanned",
+        budgetStatus: "unplanned",
+      },
+      {
+        type: "undocumented",
+        label: "Undocumented Expense",
+        value: "",
+        budgetStatus: "undocumented",
+      },
+      ...safeBudgetCategories,
+    ],
+    [safeBudgetCategories]
+  );
+
+  const resetExpenseForm = () => {
+    setAmount("");
+    setSelectedCategory(null);
+    setCategoryOpen(false);
+  };
+
+  const closeExpenseModal = () => {
+    setShowExpense(false);
+    resetExpenseForm();
+  };
+
+  const handleSaveExpense = () => {
+    const cleanAmount = Number(amount);
+
+    if (!Number.isFinite(cleanAmount) || cleanAmount <= 0) return;
+
+    const fallbackCategory = {
+      type: "undocumented",
+      label: "Undocumented Expense",
+      value: "",
+      budgetStatus: "undocumented",
+    };
+
+    const finalCategory = selectedCategory || fallbackCategory;
+
+    const quickExpense = {
+      amount: cleanAmount,
+      category: finalCategory.value,
+      budgetStatus: finalCategory.budgetStatus,
+      created_at: new Date().toISOString(),
+    };
+
+    onQuickExpense?.(quickExpense);
+    closeExpenseModal();
+  };
 
   const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
@@ -132,12 +206,13 @@ export default function DashboardQuickOrb({
     setShowExpense(true);
   };
 
-  const stateClass = {
-    idle: "",
-    thinking: "animate-pulse",
-    attention: "ring-1 ring-amber-300/25",
-    response: "animate-[pulse_1.2s_ease-out]",
-  }[state] || "";
+  const stateClass =
+    {
+      idle: "",
+      thinking: "animate-pulse",
+      attention: "ring-1 ring-amber-300/25",
+      response: "animate-[pulse_1.2s_ease-out]",
+    }[state] || "";
 
   return (
     <>
@@ -146,7 +221,7 @@ export default function DashboardQuickOrb({
           <button
             type="button"
             aria-label="Close quick expense"
-            onClick={() => setShowExpense(false)}
+            onClick={closeExpenseModal}
             className="absolute inset-0"
           />
 
@@ -167,7 +242,7 @@ export default function DashboardQuickOrb({
 
               <button
                 type="button"
-                onClick={() => setShowExpense(false)}
+                onClick={closeExpenseModal}
                 className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/[0.10] bg-white/[0.055] text-white/65 transition active:scale-95"
                 aria-label="Close quick expense"
               >
@@ -186,6 +261,8 @@ export default function DashboardQuickOrb({
                 </span>
                 <input
                   autoFocus
+                  value={amount}
+                  onChange={(event) => setAmount(event.target.value)}
                   inputMode="decimal"
                   placeholder="0.00"
                   className="min-w-0 flex-1 bg-transparent text-4xl font-black tracking-[-0.05em] text-white outline-none placeholder:text-white/18"
@@ -193,21 +270,92 @@ export default function DashboardQuickOrb({
               </div>
             </div>
 
-            <div className="relative mt-3 grid grid-cols-3 gap-2">
-              {['Food', 'Fare', 'Bills'].map((item) => (
-                <button
-                  key={item}
-                  type="button"
-                  className="rounded-2xl border border-white/[0.08] bg-white/[0.045] py-2.5 text-xs font-semibold text-white/58 transition active:scale-95"
-                >
-                  {item}
-                </button>
-              ))}
+            <div className="relative mt-3">
+              <button
+                type="button"
+                onClick={() => setCategoryOpen((current) => !current)}
+                className={`flex w-full items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-left text-xs font-semibold transition active:scale-[0.99] ${
+                  selectedCategory
+                    ? "border-lime-200/[0.20] bg-lime-300/[0.10] text-lime-50"
+                    : "border-white/[0.08] bg-white/[0.045] text-white/58"
+                }`}
+              >
+                <span>
+                  {selectedCategory?.label || "Select category"}
+                </span>
+                <ChevronDown
+                  size={16}
+                  strokeWidth={2.2}
+                  className={`shrink-0 transition ${
+                    categoryOpen ? "rotate-180 text-white/80" : "text-white/45"
+                  }`}
+                />
+              </button>
+
+              {categoryOpen && (
+                <div className="mt-2 overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0b1117]/95 shadow-[0_18px_40px_rgba(0,0,0,0.34)]">
+                  {categoryOptions.slice(0, 2).map((item) => {
+                    const active =
+                      selectedCategory?.type === item.type &&
+                      selectedCategory?.value === item.value;
+
+                    return (
+                      <button
+                        key={item.type}
+                        type="button"
+                        onClick={() => {
+                          setSelectedCategory(item);
+                          setCategoryOpen(false);
+                        }}
+                        className={`flex w-full items-center justify-between px-4 py-3 text-left text-xs font-semibold transition ${
+                          active
+                            ? "bg-lime-300/[0.12] text-lime-50"
+                            : "text-white/62 hover:bg-white/[0.055]"
+                        }`}
+                      >
+                        {item.label}
+                        {active && <Check size={15} strokeWidth={2.2} />}
+                      </button>
+                    );
+                  })}
+
+                  {safeBudgetCategories.length > 0 && (
+                    <>
+                      <div className="mx-4 h-px bg-white/[0.08]" />
+
+                      {safeBudgetCategories.map((item) => {
+                        const active =
+                          selectedCategory?.type === "budget" &&
+                          selectedCategory?.value === item.value;
+
+                        return (
+                          <button
+                            key={item.value}
+                            type="button"
+                            onClick={() => {
+                              setSelectedCategory(item);
+                              setCategoryOpen(false);
+                            }}
+                            className={`flex w-full items-center justify-between gap-3 px-4 py-3 text-left text-xs font-semibold transition ${
+                              active
+                                ? "bg-lime-300/[0.12] text-lime-50"
+                                : "text-white/62 hover:bg-white/[0.055]"
+                            }`}
+                          >
+                            <span className="min-w-0 truncate">{item.label}</span>
+                            {active && <Check size={15} strokeWidth={2.2} />}
+                          </button>
+                        );
+                      })}
+                    </>
+                  )}
+                </div>
+              )}
             </div>
 
             <button
               type="button"
-              onClick={() => setShowExpense(false)}
+              onClick={handleSaveExpense}
               className="relative mt-4 flex w-full items-center justify-center gap-2 rounded-[22px] border border-lime-200/[0.14] bg-lime-300/[0.12] py-3.5 text-sm font-bold text-lime-50 shadow-[0_14px_34px_rgba(132,204,22,0.10)] transition active:scale-[0.98]"
             >
               <Check size={17} strokeWidth={2.2} />
@@ -219,7 +367,9 @@ export default function DashboardQuickOrb({
 
       <div
         className={`fixed z-50 ${
-          isDragging ? "transition-none" : "transition-[left,top] duration-300 ease-out"
+          isDragging
+            ? "transition-none"
+            : "transition-[left,top] duration-300 ease-out"
         }`}
         style={position ? { left: position.x, top: position.y } : undefined}
       >
@@ -231,7 +381,11 @@ export default function DashboardQuickOrb({
           onPointerUp={handleEnd}
           onPointerCancel={handleEnd}
           className={`touch-none select-none group relative flex h-[60px] w-[60px] items-center justify-center rounded-full border border-white/[0.13] bg-[#080d12]/82 text-white shadow-[0_14px_34px_rgba(0,0,0,0.48),inset_0_1px_0_rgba(255,255,255,0.13),inset_0_-18px_32px_rgba(0,0,0,0.22)] backdrop-blur-2xl transition-all duration-300 ease-out ${stateClass} ${
-            isDragging ? "scale-95 cursor-grabbing" : isPressing ? "scale-[0.97] cursor-grab" : "cursor-grab active:scale-95"
+            isDragging
+              ? "scale-95 cursor-grabbing"
+              : isPressing
+              ? "scale-[0.97] cursor-grab"
+              : "cursor-grab active:scale-95"
           }`}
           aria-label="CLARA quick expense"
         >
@@ -242,7 +396,9 @@ export default function DashboardQuickOrb({
           <span className="pointer-events-none absolute inset-[13px] rounded-full bg-[radial-gradient(circle_at_35%_28%,rgba(255,255,255,0.18),rgba(163,230,53,0.12)_42%,rgba(4,9,8,0.88)_100%)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.14),inset_0_-10px_18px_rgba(0,0,0,0.34)]" />
           <span
             className={`pointer-events-none absolute -inset-[5px] rounded-full border transition-all duration-300 ${
-              isPressing ? "scale-110 border-lime-100/18 opacity-100" : "scale-100 border-white/[0.045] opacity-65"
+              isPressing
+                ? "scale-110 border-lime-100/18 opacity-100"
+                : "scale-100 border-white/[0.045] opacity-65"
             }`}
           />
 
