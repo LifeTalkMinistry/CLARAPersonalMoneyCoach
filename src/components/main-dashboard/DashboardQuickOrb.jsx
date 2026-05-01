@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react";
+import { Check, Plus, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 
 const ORB_SIZE = 60;
@@ -21,7 +21,7 @@ export default function DashboardQuickOrb({
   const didLongPress = useRef(false);
   const dragging = useRef(false);
 
-  const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
+  const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
 
   const getSafePosition = (x, y) => ({
     x: clamp(x, EDGE_PADDING, window.innerWidth - ORB_SIZE - EDGE_PADDING),
@@ -29,11 +29,10 @@ export default function DashboardQuickOrb({
   });
 
   const snapToEdge = (pos) => {
-    const left = pos.x + ORB_SIZE / 2 < window.innerWidth / 2;
+    const shouldDockLeft = pos.x + ORB_SIZE / 2 < window.innerWidth / 2;
+
     return getSafePosition(
-      left
-        ? EDGE_PADDING
-        : window.innerWidth - ORB_SIZE - EDGE_PADDING,
+      shouldDockLeft ? EDGE_PADDING : window.innerWidth - ORB_SIZE - EDGE_PADDING,
       pos.y
     );
   };
@@ -54,22 +53,21 @@ export default function DashboardQuickOrb({
     }
   };
 
-  const handleDown = (e) => {
-    e.currentTarget.setPointerCapture?.(e.pointerId);
+  const handleDown = (event) => {
+    event.currentTarget.setPointerCapture?.(event.pointerId);
 
     didLongPress.current = false;
     dragging.current = false;
-
     setIsDragging(false);
     setIsPressing(true);
 
-    const rect = e.currentTarget.getBoundingClientRect();
+    const rect = event.currentTarget.getBoundingClientRect();
 
     dragData.current = {
-      startX: e.clientX,
-      startY: e.clientY,
-      offsetX: e.clientX - rect.left,
-      offsetY: e.clientY - rect.top,
+      startX: event.clientX,
+      startY: event.clientY,
+      offsetX: event.clientX - rect.left,
+      offsetY: event.clientY - rect.top,
       last: position,
     };
 
@@ -84,12 +82,12 @@ export default function DashboardQuickOrb({
     }, 420);
   };
 
-  const handleMove = (e) => {
+  const handleMove = (event) => {
     if (!dragData.current) return;
 
     const moved =
-      Math.abs(e.clientX - dragData.current.startX) > 7 ||
-      Math.abs(e.clientY - dragData.current.startY) > 7;
+      Math.abs(event.clientX - dragData.current.startX) > 7 ||
+      Math.abs(event.clientY - dragData.current.startY) > 7;
 
     if (moved) {
       dragging.current = true;
@@ -101,16 +99,16 @@ export default function DashboardQuickOrb({
     if (!dragging.current) return;
 
     const next = getSafePosition(
-      e.clientX - dragData.current.offsetX,
-      e.clientY - dragData.current.offsetY
+      event.clientX - dragData.current.offsetX,
+      event.clientY - dragData.current.offsetY
     );
 
     dragData.current.last = next;
     setPosition(next);
   };
 
-  const handleEnd = (e) => {
-    e.currentTarget.releasePointerCapture?.(e.pointerId);
+  const handleEnd = (event) => {
+    event.currentTarget.releasePointerCapture?.(event.pointerId);
     clearTimer();
     setIsPressing(false);
 
@@ -131,59 +129,126 @@ export default function DashboardQuickOrb({
 
   const handleTap = () => {
     if (didLongPress.current || dragging.current || isDragging) return;
-
     setShowExpense(true);
   };
 
+  const stateClass = {
+    idle: "",
+    thinking: "animate-pulse",
+    attention: "ring-1 ring-amber-300/25",
+    response: "animate-[pulse_1.2s_ease-out]",
+  }[state] || "";
+
   return (
     <>
-      {/* EXPENSE SHEET */}
       {showExpense && (
-        <div className="fixed inset-0 z-40 flex items-end bg-black/40 backdrop-blur-sm">
-          <div className="w-full rounded-t-[28px] border border-white/10 bg-[#0b1117] p-5 shadow-[0_-30px_80px_rgba(0,0,0,0.7)]">
-            
-            <p className="text-[10px] uppercase tracking-[0.25em] text-white/40">
-              Quick Expense
-            </p>
+        <div className="fixed inset-0 z-40 flex items-end justify-center bg-black/55 backdrop-blur-md">
+          <button
+            type="button"
+            aria-label="Close quick expense"
+            onClick={() => setShowExpense(false)}
+            className="absolute inset-0"
+          />
 
-            <input
-              autoFocus
-              placeholder="₱0.00"
-              className="mt-3 w-full bg-transparent text-4xl font-semibold text-white outline-none placeholder:text-white/20"
-            />
+          <section className="relative w-full max-w-sm overflow-hidden rounded-t-[32px] border border-white/[0.10] bg-[#080d12]/95 px-5 pb-5 pt-4 text-white shadow-[0_-30px_90px_rgba(0,0,0,0.72)] backdrop-blur-2xl">
+            <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-white/28 to-transparent" />
+            <div className="pointer-events-none absolute -right-20 -top-20 h-44 w-44 rounded-full bg-lime-300/[0.07] blur-3xl" />
+            <div className="pointer-events-none absolute -left-20 bottom-0 h-44 w-44 rounded-full bg-sky-300/[0.055] blur-3xl" />
+
+            <div className="relative flex items-center justify-between gap-3">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.26em] text-white/38">
+                  Quick Expense
+                </p>
+                <h3 className="mt-1 text-lg font-black tracking-[-0.03em] text-white">
+                  Log spending
+                </h3>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setShowExpense(false)}
+                className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/[0.10] bg-white/[0.055] text-white/65 transition active:scale-95"
+                aria-label="Close quick expense"
+              >
+                <X size={17} strokeWidth={2} />
+              </button>
+            </div>
+
+            <div className="relative mt-5 rounded-[26px] border border-white/[0.09] bg-white/[0.045] px-4 py-4 shadow-inner shadow-white/[0.015]">
+              <p className="text-[10px] font-bold uppercase tracking-[0.20em] text-white/35">
+                Amount
+              </p>
+
+              <div className="mt-2 flex items-center gap-2">
+                <span className="text-3xl font-black tracking-[-0.04em] text-white/45">
+                  ₱
+                </span>
+                <input
+                  autoFocus
+                  inputMode="decimal"
+                  placeholder="0.00"
+                  className="min-w-0 flex-1 bg-transparent text-4xl font-black tracking-[-0.05em] text-white outline-none placeholder:text-white/18"
+                />
+              </div>
+            </div>
+
+            <div className="relative mt-3 grid grid-cols-3 gap-2">
+              {['Food', 'Fare', 'Bills'].map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  className="rounded-2xl border border-white/[0.08] bg-white/[0.045] py-2.5 text-xs font-semibold text-white/58 transition active:scale-95"
+                >
+                  {item}
+                </button>
+              ))}
+            </div>
 
             <button
+              type="button"
               onClick={() => setShowExpense(false)}
-              className="mt-5 w-full rounded-xl bg-white/10 py-3 text-sm text-white/80 active:scale-95"
+              className="relative mt-4 flex w-full items-center justify-center gap-2 rounded-[22px] border border-lime-200/[0.14] bg-lime-300/[0.12] py-3.5 text-sm font-bold text-lime-50 shadow-[0_14px_34px_rgba(132,204,22,0.10)] transition active:scale-[0.98]"
             >
-              Save
+              <Check size={17} strokeWidth={2.2} />
+              Save expense
             </button>
-          </div>
+          </section>
         </div>
       )}
 
-      {/* ORB */}
       <div
         className={`fixed z-50 ${
-          isDragging ? "" : "transition-all duration-300"
+          isDragging ? "transition-none" : "transition-[left,top] duration-300 ease-out"
         }`}
         style={position ? { left: position.x, top: position.y } : undefined}
       >
         <button
+          type="button"
           onClick={handleTap}
           onPointerDown={handleDown}
           onPointerMove={handleMove}
           onPointerUp={handleEnd}
           onPointerCancel={handleEnd}
-          className={`relative flex h-[60px] w-[60px] items-center justify-center rounded-full border border-white/15 bg-[#080d12]/80 backdrop-blur-xl ${
-            isDragging
-              ? "scale-95"
-              : isPressing
-              ? "scale-[0.96]"
-              : "active:scale-95"
+          className={`touch-none select-none group relative flex h-[60px] w-[60px] items-center justify-center rounded-full border border-white/[0.13] bg-[#080d12]/82 text-white shadow-[0_14px_34px_rgba(0,0,0,0.48),inset_0_1px_0_rgba(255,255,255,0.13),inset_0_-18px_32px_rgba(0,0,0,0.22)] backdrop-blur-2xl transition-all duration-300 ease-out ${stateClass} ${
+            isDragging ? "scale-95 cursor-grabbing" : isPressing ? "scale-[0.97] cursor-grab" : "cursor-grab active:scale-95"
           }`}
+          aria-label="CLARA quick expense"
         >
-          <Plus className="h-5 w-5 text-white/80" />
+          <span className="pointer-events-none absolute -inset-[10px] rounded-full bg-lime-200/[0.055] blur-2xl transition duration-500 group-hover:bg-lime-200/[0.075]" />
+          <span className="pointer-events-none absolute -inset-[3px] rounded-full border border-white/[0.055]" />
+          <span className="pointer-events-none absolute inset-0 rounded-full bg-[radial-gradient(circle_at_32%_24%,rgba(255,255,255,0.22),rgba(255,255,255,0.055)_34%,rgba(132,204,22,0.055)_58%,rgba(0,0,0,0.16)_100%)]" />
+          <span className="pointer-events-none absolute inset-[5px] rounded-full border border-white/[0.085] bg-[#071008]/72 shadow-inner shadow-black/40" />
+          <span className="pointer-events-none absolute inset-[13px] rounded-full bg-[radial-gradient(circle_at_35%_28%,rgba(255,255,255,0.18),rgba(163,230,53,0.12)_42%,rgba(4,9,8,0.88)_100%)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.14),inset_0_-10px_18px_rgba(0,0,0,0.34)]" />
+          <span
+            className={`pointer-events-none absolute -inset-[5px] rounded-full border transition-all duration-300 ${
+              isPressing ? "scale-110 border-lime-100/18 opacity-100" : "scale-100 border-white/[0.045] opacity-65"
+            }`}
+          />
+
+          <span className="relative flex h-[42px] w-[42px] items-center justify-center rounded-full text-white/82 transition duration-300 group-hover:text-white">
+            <Plus className="h-5 w-5 stroke-[2.3] drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)]" />
+          </span>
         </button>
       </div>
     </>
