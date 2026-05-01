@@ -315,26 +315,16 @@ export default function BudgetCard({
           progressClassName={progressClassName}
           insight={insight}
         >
-          <div className="space-y-2">
-            <button
-              type="button"
-              onClick={() => setPanelOpen(true)}
-              className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-left text-sm text-white/70 transition duration-300 hover:bg-white/[0.06] hover:text-white"
-            >
-              <span className="font-medium">Show details</span>
-              <span className="text-lg leading-none text-white/60" aria-hidden>
-                ⌄
-              </span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => openBudgetBuilder(total ? "manage" : "create")}
-              className="w-full rounded-2xl border border-emerald-300/20 bg-emerald-400/10 px-4 py-3 text-sm font-semibold text-emerald-100 transition duration-300 hover:bg-emerald-400/15"
-            >
-              {total ? "Manage Budget" : "+ Start Budgeting"}
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => setPanelOpen(true)}
+            className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-left text-sm text-white/70 transition duration-300 hover:bg-white/[0.06] hover:text-white"
+          >
+            <span className="font-medium">Show details</span>
+            <span className="text-lg leading-none text-white/60" aria-hidden>
+              ⌄
+            </span>
+          </button>
         </FinancialCardShell>
       </div>
 
