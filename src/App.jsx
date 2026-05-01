@@ -10,23 +10,39 @@ import AuthPage from "./pages/auth/AuthPage";
 
 import { useAuth } from "./context/AuthContext";
 
+function AppLoadingScreen() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-[#070b10] px-6 text-white">
+      <div className="rounded-[28px] border border-white/10 bg-white/[0.045] px-6 py-5 text-center shadow-[0_18px_60px_rgba(0,0,0,0.35)] backdrop-blur-2xl">
+        <p className="text-[11px] font-black uppercase tracking-[0.24em] text-white/35">
+          CLARA
+        </p>
+        <h1 className="mt-2 text-lg font-black tracking-[-0.03em] text-white">
+          Loading your space
+        </h1>
+        <p className="mt-1 text-sm text-white/45">
+          Preparing your secure session...
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export default function App() {
-  const { user, loading } = useAuth();
+  const { user, loading, authReady } = useAuth();
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center text-white">
-        Loading...
-      </div>
-    );
+    return <AppLoadingScreen />;
   }
 
-  // 🔒 NOT LOGGED IN → SHOW AUTH
+  if (!authReady) {
+    return <AuthPage />;
+  }
+
   if (!user) {
     return <AuthPage />;
   }
 
-  // ✅ LOGGED IN → SHOW APP
   return (
     <Routes>
       <Route path="/" element={<Dashboard />} />
