@@ -3,31 +3,58 @@ export default function PostCard({ post }) {
   const category = post?.category || "Insight";
 
   return (
-    <article className="rounded-[24px] border border-white/10 bg-white/[0.04] p-4 backdrop-blur-xl">
+    <article
+      className="rounded-[24px] p-4 backdrop-blur-xl"
+      style={{
+        background: "var(--clara-card)",
+        border: "1px solid var(--clara-border)",
+        boxShadow: "var(--clara-glow-premium)",
+      }}
+    >
       <div className="flex items-start gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.065] text-xs font-semibold text-white">
+        <div
+          className="flex h-10 w-10 items-center justify-center rounded-2xl text-xs font-semibold"
+          style={{
+            border: "1px solid var(--clara-border)",
+            background: "var(--clara-panel)",
+            color: "var(--clara-text)",
+          }}
+        >
           {initials}
         </div>
 
         <div className="flex-1">
           <div className="flex items-center gap-2">
-            <h3 className="text-sm font-semibold text-white/90">
+            <h3 className="text-sm font-semibold" style={{ color: "var(--clara-text)" }}>
               {post.name}
             </h3>
 
-            <span className="rounded-full border border-white/10 bg-white/[0.045] px-2 py-0.5 text-[10px] uppercase text-white/40">
+            <span
+              className="rounded-full px-2 py-0.5 text-[10px] uppercase"
+              style={{
+                border: "1px solid var(--clara-border)",
+                background: "var(--clara-accent-soft)",
+                color: "var(--clara-accent-text)",
+              }}
+            >
               {category}
             </span>
           </div>
 
-          <p className="mt-3 text-sm text-white/70">
+          <p className="mt-3 text-sm" style={{ color: "var(--clara-text-soft)" }}>
             {post.content}
           </p>
 
-          <div className="mt-4 flex gap-2 border-t border-white/10 pt-3 text-xs text-white/45">
-            <button className="hover:text-white/70">Reflect</button>
-            <button className="hover:text-white/70">Comment</button>
-            <button className="hover:text-white/70">Share</button>
+          <div
+            className="mt-4 flex gap-2 border-t pt-3 text-xs"
+            style={{
+              borderColor: "var(--clara-border)",
+              color: "var(--clara-text-muted)",
+            }}
+          >
+            <button>Reflect</button>
+            <button>Comment</button>
+            <button>Share</button>
           </div>
         </div>
       </div>
