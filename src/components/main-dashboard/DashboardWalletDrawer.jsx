@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Plus, Wallet } from "lucide-react";
+import { ChevronRight, Plus, Wallet } from "lucide-react";
 
 function formatPeso(value = 0) {
   const amount = Number(value) || 0;
@@ -34,20 +34,22 @@ export default function DashboardWalletDrawer({ wallets = [], onAddWallet }) {
       <button
         type="button"
         onClick={() => setWalletModalOpen(true)}
-        className="group relative w-full overflow-hidden rounded-[24px] border border-white/10 bg-white/[0.035] px-4 py-4 text-left shadow-[0_18px_55px_rgba(0,0,0,0.42)] backdrop-blur-2xl transition duration-300 active:scale-[0.99]"
+        className="group relative w-full overflow-hidden rounded-[24px] border border-white/10 bg-white/[0.035] px-4 py-3 text-left shadow-[0_14px_46px_rgba(0,0,0,0.38),inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-2xl transition duration-300 hover:bg-white/[0.045] hover:shadow-[0_18px_58px_rgba(0,0,0,0.46),inset_0_1px_0_rgba(255,255,255,0.08)] active:scale-[0.98] active:bg-black/10"
       >
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_18%_0%,rgba(56,189,248,0.12),transparent_34%),radial-gradient(circle_at_88%_10%,rgba(168,85,247,0.10),transparent_32%)] opacity-70" />
+        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.065),rgba(255,255,255,0.018)_42%,rgba(0,0,0,0.10)),radial-gradient(circle_at_18%_0%,rgba(255,255,255,0.08),transparent_32%),radial-gradient(circle_at_88%_12%,rgba(255,255,255,0.055),transparent_34%)] opacity-70 transition duration-300 group-active:opacity-50" />
 
-        <div className="relative mx-auto mb-3 h-[3px] w-11 rounded-full bg-white/20 shadow-[0_0_12px_rgba(255,255,255,0.16)]" />
+        <div className="pointer-events-none absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-60" />
+
+        <div className="relative mx-auto mb-2.5 h-[2px] w-10 rounded-full bg-white/20 shadow-[0_0_10px_rgba(255,255,255,0.12)]" />
 
         <div className="relative flex items-center justify-between gap-4">
           <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.06] text-white/65">
-              <Wallet size={16} strokeWidth={1.8} />
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.055] text-white/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
+              <Wallet size={15} strokeWidth={1.8} />
             </div>
 
             <div className="min-w-0">
-              <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-white/60">
+              <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-white/55">
                 Wallets
               </p>
               <p className="mt-0.5 text-[11px] font-medium text-white/35">
@@ -56,13 +58,21 @@ export default function DashboardWalletDrawer({ wallets = [], onAddWallet }) {
             </div>
           </div>
 
-          <div className="shrink-0 text-right">
-            <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-white/35">
-              Total Balance
-            </p>
-            <p className="mt-0.5 text-lg font-extrabold tracking-tight text-white">
-              {formatPeso(totalBalance)}
-            </p>
+          <div className="flex shrink-0 items-center gap-2.5 text-right">
+            <div>
+              <p className="text-[9px] font-bold uppercase tracking-[0.22em] text-white/30">
+                Total
+              </p>
+              <p className="mt-0.5 text-[17px] font-extrabold tracking-tight text-white">
+                {formatPeso(totalBalance)}
+              </p>
+            </div>
+
+            <ChevronRight
+              size={16}
+              strokeWidth={1.8}
+              className="text-white/20 transition duration-300 group-hover:translate-x-0.5 group-hover:text-white/30"
+            />
           </div>
         </div>
       </button>
