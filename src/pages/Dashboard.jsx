@@ -8,7 +8,7 @@ import DashboardQuickOrb from "../components/main-dashboard/DashboardQuickOrb";
 import useFinancialData from "../hooks/useFinancialData";
 
 export default function Dashboard() {
-  const { wallets, expenses, budgets, savingsGoals, loading, saveBudget } = useFinancialData();
+  const { wallets, expenses, budgets, savingsGoals, loading, saveBudget, addExpense } = useFinancialData();
 
   const now = new Date();
   const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
@@ -48,7 +48,12 @@ export default function Dashboard() {
   return (
     <ClaraPageShell
       compactHeader
-      floatingAction={<DashboardQuickOrb budgetCategories={budget?.categories || []} />}
+      floatingAction={
+        <DashboardQuickOrb
+          budgetCategories={budget?.categories || []}
+          onQuickExpense={addExpense}
+        />
+      }
     >
       <div className="space-y-[10px] sm:space-y-3 overflow-hidden pb-[calc(88px+env(safe-area-inset-bottom))]">
 
