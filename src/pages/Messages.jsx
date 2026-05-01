@@ -62,9 +62,9 @@ function getInitials(value = "") {
 
 function StateCard({ title, description }) {
   return (
-    <div className="mx-4 my-4 rounded-[26px] border border-white/10 bg-white/[0.045] px-4 py-5 text-center shadow-[0_18px_50px_rgba(0,0,0,0.22)]">
-      <p className="text-sm font-semibold text-white/90">{title}</p>
-      <p className="mx-auto mt-1 max-w-[260px] text-xs leading-relaxed text-white/45">
+    <div className="mx-4 my-4 rounded-[26px] border border-[color:var(--clara-border)] bg-[var(--clara-card)] px-4 py-5 text-center shadow-[var(--clara-glow-soft)]">
+      <p className="text-sm font-semibold text-[color:var(--clara-text)]">{title}</p>
+      <p className="mx-auto mt-1 max-w-[260px] text-xs leading-relaxed text-[color:var(--clara-text-faint)]">
         {description}
       </p>
     </div>
@@ -367,23 +367,23 @@ export default function Messages() {
 
   return (
     <ClaraPageShell>
-      <section className="flex h-[calc(100vh-8.5rem)] min-h-[560px] flex-col overflow-hidden rounded-[30px] border border-white/10 bg-slate-950/80 shadow-[0_24px_80px_rgba(0,0,0,0.45)] backdrop-blur-2xl">
-        <header className="shrink-0 border-b border-white/10 bg-white/[0.045] px-4 pb-3 pt-4">
+      <section className="flex h-[calc(100vh-8.5rem)] min-h-[560px] flex-col overflow-hidden rounded-[30px] border border-[color:var(--clara-border)] bg-[var(--clara-panel)] shadow-[var(--clara-surface-glow)] backdrop-blur-2xl">
+        <header className="shrink-0 border-b border-[color:var(--clara-border)] bg-[var(--clara-glass)] px-4 pb-3 pt-4">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <button
                 type="button"
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.05] text-white/70 transition active:scale-95"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-[color:var(--clara-border)] bg-[var(--clara-card)] text-[color:var(--clara-text-soft)] transition active:scale-95"
                 aria-label="Back"
               >
                 <ArrowLeft size={17} />
               </button>
 
               <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-white/35">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[color:var(--clara-text-faint)]">
                   CLARA Messages
                 </p>
-                <h1 className="text-base font-semibold tracking-tight text-white">
+                <h1 className="text-base font-semibold tracking-tight text-[color:var(--clara-text)]">
                   Conversations
                 </h1>
               </div>
@@ -391,33 +391,33 @@ export default function Messages() {
 
             <button
               type="button"
-              className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.05] text-white/70 transition active:scale-95"
+              className="flex h-9 w-9 items-center justify-center rounded-full border border-[color:var(--clara-border)] bg-[var(--clara-card)] text-[color:var(--clara-text-soft)] transition active:scale-95"
               aria-label="Message options"
             >
               <MoreHorizontal size={18} />
             </button>
           </div>
 
-          <div className="mt-4 flex items-center gap-2 rounded-2xl border border-white/10 bg-black/20 px-3 py-2 text-white/40">
+          <div className="mt-4 flex items-center gap-2 rounded-2xl border border-[color:var(--clara-border)] bg-[var(--clara-card)] px-3 py-2 text-[color:var(--clara-text-muted)]">
             <Search size={15} />
             <input
               type="text"
               value={searchTerm}
               onChange={(event) => setSearchTerm(event.target.value)}
               placeholder="Search messages"
-              className="w-full bg-transparent text-xs text-white outline-none placeholder:text-white/35"
+              className="w-full bg-transparent text-xs text-[color:var(--clara-text)] outline-none placeholder:text-[color:var(--clara-text-faint)]"
             />
           </div>
         </header>
 
         <div className="grid min-h-0 flex-1 grid-rows-[auto_1fr_auto] overflow-hidden">
-          <div className="flex shrink-0 gap-2 overflow-x-auto border-b border-white/10 px-4 py-3">
+          <div className="flex shrink-0 gap-2 overflow-x-auto border-b border-[color:var(--clara-border)] px-4 py-3">
             {authLoading || loadingConversations ? (
-              <div className="flex min-w-[210px] items-center gap-3 rounded-3xl border border-white/10 bg-white/[0.035] p-3 text-left">
-                <div className="h-11 w-11 shrink-0 animate-pulse rounded-2xl bg-white/10" />
+              <div className="flex min-w-[210px] items-center gap-3 rounded-3xl border border-[color:var(--clara-border)] bg-[var(--clara-card)] p-3 text-left">
+                <div className="h-11 w-11 shrink-0 animate-pulse rounded-2xl bg-[var(--clara-glass)]" />
                 <div className="min-w-0 flex-1 space-y-2">
-                  <div className="h-3 w-28 animate-pulse rounded-full bg-white/10" />
-                  <div className="h-2 w-36 animate-pulse rounded-full bg-white/5" />
+                  <div className="h-3 w-28 animate-pulse rounded-full bg-[var(--clara-glass)]" />
+                  <div className="h-2 w-36 animate-pulse rounded-full bg-[var(--clara-card)]" />
                 </div>
               </div>
             ) : null}
@@ -434,25 +434,25 @@ export default function Messages() {
                     onClick={() => setActiveConversationId(conversation.id)}
                     className={`flex min-w-[210px] items-center gap-3 rounded-3xl border p-3 text-left transition active:scale-[0.99] ${
                       isActive
-                        ? "border-white/15 bg-white/[0.09] shadow-[0_0_30px_rgba(255,255,255,0.06)]"
-                        : "border-white/10 bg-white/[0.035]"
+                        ? "border-[color:var(--clara-accent-border)] bg-[var(--clara-accent-soft)] shadow-[var(--clara-glow-soft)]"
+                        : "border-[color:var(--clara-border)] bg-[var(--clara-card)]"
                     }`}
                   >
-                    <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/10 text-xs font-bold text-white/85">
+                    <div className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-[color:var(--clara-border)] bg-[var(--clara-glass)] text-xs font-bold text-[color:var(--clara-text)]">
                       {conversation.initials}
                       {isActive && (
-                        <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-slate-950 bg-emerald-400" />
+                        <span className="absolute -bottom-0.5 -right-0.5 h-3 w-3 rounded-full border-2 border-[color:var(--clara-panel)] bg-[var(--clara-accent)]" />
                       )}
                     </div>
 
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center justify-between gap-2">
-                        <p className="truncate text-sm font-semibold text-white/90">
+                        <p className="truncate text-sm font-semibold text-[color:var(--clara-text)]">
                           {conversation.name}
                         </p>
-                        <span className="text-[10px] text-white/35">{conversation.time}</span>
+                        <span className="text-[10px] text-[color:var(--clara-text-faint)]">{conversation.time}</span>
                       </div>
-                      <p className="mt-0.5 truncate text-[11px] text-white/45">
+                      <p className="mt-0.5 truncate text-[11px] text-[color:var(--clara-text-muted)]">
                         {conversation.preview}
                       </p>
                     </div>
@@ -462,16 +462,16 @@ export default function Messages() {
           </div>
 
           <div className="flex min-h-0 flex-col">
-            <div className="flex shrink-0 items-center justify-between border-b border-white/10 px-4 py-3">
+            <div className="flex shrink-0 items-center justify-between border-b border-[color:var(--clara-border)] px-4 py-3">
               <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/10 text-xs font-bold text-white/85">
+                <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-[color:var(--clara-border)] bg-[var(--clara-glass)] text-xs font-bold text-[color:var(--clara-text)]">
                   {activeConversation?.initials || "CP"}
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-white/90">
+                  <p className="text-sm font-semibold text-[color:var(--clara-text)]">
                     {activeConversation?.name || "CLARA Partner"}
                   </p>
-                  <p className="text-[11px] text-emerald-300/75">
+                  <p className="text-[11px] text-[color:var(--clara-accent)]">
                     {activeConversation ? "Active for money check-ins" : "Messages ready"}
                   </p>
                 </div>
@@ -479,7 +479,7 @@ export default function Messages() {
 
               <button
                 type="button"
-                className="flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/[0.05] text-white/70 transition active:scale-95"
+                className="flex h-9 w-9 items-center justify-center rounded-full border border-[color:var(--clara-border)] bg-[var(--clara-card)] text-[color:var(--clara-text-soft)] transition active:scale-95"
                 aria-label="Call partner"
               >
                 <Phone size={16} />
@@ -538,16 +538,16 @@ export default function Messages() {
                     >
                       <div className={`max-w-[78%] ${isMe ? "items-end" : "items-start"}`}>
                         <div
-                          className={`rounded-[22px] px-4 py-3 text-sm leading-relaxed shadow-[0_14px_36px_rgba(0,0,0,0.22)] ${
+                          className={`rounded-[22px] px-4 py-3 text-sm leading-relaxed ${
                             isMe
-                              ? "rounded-br-md bg-white text-slate-950"
-                              : "rounded-bl-md border border-white/10 bg-white/[0.07] text-white/82"
+                              ? "rounded-br-md bg-[var(--clara-accent)] text-[color:var(--clara-accent-text)] shadow-[var(--clara-glow-premium)]"
+                              : "rounded-bl-md border border-[color:var(--clara-border)] bg-[var(--clara-card)] text-[color:var(--clara-text-soft)] shadow-[var(--clara-glow-soft)]"
                           }`}
                         >
                           {message.body}
                         </div>
                         <p
-                          className={`mt-1 px-1 text-[10px] text-white/35 ${
+                          className={`mt-1 px-1 text-[10px] text-[color:var(--clara-text-faint)] ${
                             isMe ? "text-right" : "text-left"
                           }`}
                         >
@@ -562,8 +562,8 @@ export default function Messages() {
             </div>
           </div>
 
-          <div className="shrink-0 border-t border-white/10 bg-slate-950/90 px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-3">
-            <div className="flex items-end gap-2 rounded-[26px] border border-white/10 bg-white/[0.055] p-2 shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
+          <div className="shrink-0 border-t border-[color:var(--clara-border)] bg-[var(--clara-panel)] px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-3">
+            <div className="flex items-end gap-2 rounded-[26px] border border-[color:var(--clara-border)] bg-[var(--clara-card)] p-2 shadow-[var(--clara-glow-soft)]">
               <textarea
                 rows={1}
                 value={draftMessage}
@@ -576,7 +576,7 @@ export default function Messages() {
                 }}
                 disabled={!user?.id || !activeConversationId || chatError || sendingMessage}
                 placeholder={user?.id ? "Message your partner..." : "Sign in to send messages"}
-                className="max-h-28 min-h-10 flex-1 resize-none bg-transparent px-3 py-2 text-sm text-white outline-none placeholder:text-white/30 disabled:cursor-not-allowed disabled:opacity-50"
+                className="max-h-28 min-h-10 flex-1 resize-none bg-transparent px-3 py-2 text-sm text-[color:var(--clara-text)] outline-none placeholder:text-[color:var(--clara-text-faint)] disabled:cursor-not-allowed disabled:opacity-50"
               />
 
               <button
@@ -589,7 +589,7 @@ export default function Messages() {
                   chatError ||
                   sendingMessage
                 }
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white text-slate-950 shadow-[0_0_28px_rgba(255,255,255,0.12)] transition active:scale-95 disabled:cursor-not-allowed disabled:opacity-45"
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[color:var(--clara-accent-border)] bg-[var(--clara-accent)] text-[color:var(--clara-accent-text)] shadow-[var(--clara-glow-premium)] transition active:scale-95 disabled:cursor-not-allowed disabled:opacity-45"
                 aria-label="Send message"
               >
                 <Send size={16} />
