@@ -21,36 +21,49 @@ export default function FinancialCardShell({
         border: "1px solid var(--clara-border)",
         background: "var(--clara-card)",
         color: "var(--clara-text)",
-        boxShadow: "0 18px 45px rgba(0,0,0,0.32), var(--clara-surface-glow)",
+        boxShadow:
+          "0 18px 45px rgba(0,0,0,0.34), 0 0 38px var(--clara-glow-soft), inset 0 1px 0 rgba(255,255,255,0.08)",
       }}
     >
-      {/* Glass overlay */}
+      {/* Theme base glass */}
       <div
         className="pointer-events-none absolute inset-0 rounded-[26px]"
         style={{ background: "var(--clara-glass)" }}
       />
 
-      {/* Accent glow (theme controlled) */}
+      {/* Atmospheric card glow - the first-draft feeling */}
       <div
-        className={`pointer-events-none absolute -right-20 -top-20 h-48 w-48 rounded-full opacity-70 blur-3xl transition duration-500 group-hover:scale-110 group-hover:opacity-90 ${accentClassName}`}
-        style={{ background: "var(--clara-glow-premium)" }}
+        className="pointer-events-none absolute inset-0 rounded-[26px] opacity-95 transition duration-500 group-hover:opacity-100"
+        style={{ background: "var(--clara-surface-glow)" }}
       />
 
-      {/* Base ambient glow */}
+      {/* Main accent bloom */}
       <div
-        className="pointer-events-none absolute -bottom-24 left-10 h-44 w-44 rounded-full blur-3xl"
+        className={`pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full opacity-70 blur-3xl transition duration-500 group-hover:scale-110 group-hover:opacity-90 ${accentClassName}`}
+        style={{ background: "var(--clara-accent-soft)" }}
+      />
+
+      {/* Secondary background bloom */}
+      <div
+        className="pointer-events-none absolute -bottom-24 -left-14 h-56 w-56 rounded-full opacity-55 blur-3xl transition duration-500 group-hover:opacity-75"
         style={{ background: "var(--clara-glow-soft)" }}
       />
 
+      {/* Inner depth vignette */}
+      <div className="pointer-events-none absolute inset-0 rounded-[26px] bg-[radial-gradient(circle_at_50%_110%,rgba(0,0,0,0.30),transparent_46%)]" />
+
+      {/* Premium glass sheen */}
+      <div className="pointer-events-none absolute inset-0 rounded-[26px] bg-[linear-gradient(145deg,rgba(255,255,255,0.10),rgba(255,255,255,0.025)_38%,rgba(255,255,255,0.01)_68%,rgba(0,0,0,0.10))]" />
+
       {/* Top highlight line */}
       <div
-        className="pointer-events-none absolute inset-x-6 top-0 h-px opacity-60 group-hover:opacity-90"
+        className="pointer-events-none absolute inset-x-6 top-0 h-px opacity-75 group-hover:opacity-100"
         style={{ background: "linear-gradient(90deg, transparent, var(--clara-border-strong), transparent)" }}
       />
 
       {/* Bottom subtle separator */}
       <div
-        className="pointer-events-none absolute inset-x-6 bottom-0 h-px"
+        className="pointer-events-none absolute inset-x-6 bottom-0 h-px opacity-70"
         style={{ background: "linear-gradient(90deg, transparent, var(--clara-border), transparent)" }}
       />
 
@@ -59,11 +72,13 @@ export default function FinancialCardShell({
         <header className="flex h-[48px] shrink-0 items-start justify-between gap-3">
           <div className="flex min-w-0 items-center gap-3">
             <div
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-sm font-bold shadow-[inset_0_1px_0_rgba(255,255,255,0.10)] transition-all duration-300 group-active:scale-95"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl text-sm font-bold transition-all duration-300 group-active:scale-95"
               style={{
-                border: "1px solid var(--clara-border)",
-                background: "var(--clara-panel)",
-                color: "var(--clara-text)",
+                border: "1px solid var(--clara-accent-border)",
+                background: "var(--clara-accent-soft)",
+                color: "var(--clara-accent-text)",
+                boxShadow:
+                  "0 0 18px var(--clara-glow-soft), inset 0 1px 0 rgba(255,255,255,0.12)",
               }}
             >
               {icon}
@@ -92,6 +107,7 @@ export default function FinancialCardShell({
                 borderColor: "var(--clara-accent-border)",
                 background: "var(--clara-accent-soft)",
                 color: "var(--clara-accent-text)",
+                boxShadow: "0 0 16px var(--clara-glow-soft)",
               }}
             >
               {badge}
@@ -111,7 +127,7 @@ export default function FinancialCardShell({
           {heroSubtext && (
             <p
               className="truncate text-[12px] font-medium leading-none"
-              style={{ color: "var(--clara-text-muted)" }}
+              style={{ color: "var(--clara-accent-text)" }}
             >
               {heroSubtext}
             </p>
@@ -122,14 +138,14 @@ export default function FinancialCardShell({
         <section className="flex min-h-0 flex-1 flex-col gap-3">
           <div
             className="h-2 overflow-hidden rounded-full shadow-[inset_0_1px_2px_rgba(0,0,0,0.28)]"
-            style={{ border: "1px solid var(--clara-border)", background: "var(--clara-panel)" }}
+            style={{ border: "1px solid var(--clara-border)", background: "rgba(255,255,255,0.045)" }}
           >
             <div
               className={`h-full rounded-full transition-all duration-700 ease-out ${progressClassName}`}
               style={{
                 width: `${safeProgress}%`,
-                background: "var(--clara-gradient)",
-                boxShadow: "var(--clara-glow)",
+                background: "linear-gradient(90deg, var(--clara-accent-text), var(--clara-accent))",
+                boxShadow: "0 0 18px var(--clara-glow)",
               }}
             />
           </div>
