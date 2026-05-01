@@ -5,41 +5,6 @@ import { topNavItems } from "./navConfig";
 
 const PROFILE_PLAN = "Free";
 
-const pageToneMap = {
-  "/": {
-    shell:
-      "border-sky-300/22 bg-gradient-to-br from-sky-400/14 via-indigo-500/10 to-fuchsia-500/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_14px_42px_rgba(14,165,233,0.10)]",
-    active:
-      "bg-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.13),0_10px_22px_rgba(56,189,248,0.10)]",
-    sweep: "bg-gradient-to-r from-transparent via-sky-100/[0.13] to-transparent",
-    icon: "scale-[1.03] border-sky-100/45 bg-sky-200/[0.11] text-white shadow-[0_0_12px_rgba(125,211,252,0.14)]",
-  },
-  "/feed": {
-    shell:
-      "border-violet-300/20 bg-gradient-to-br from-violet-400/13 via-fuchsia-500/[0.09] to-sky-400/[0.07] shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_14px_42px_rgba(167,139,250,0.09)]",
-    active:
-      "bg-white/[0.075] shadow-[inset_0_1px_0_rgba(255,255,255,0.13),0_10px_22px_rgba(167,139,250,0.10)]",
-    sweep: "bg-gradient-to-r from-transparent via-violet-100/[0.13] to-transparent",
-    icon: "scale-[1.03] border-violet-100/42 bg-violet-200/[0.105] text-white shadow-[0_0_12px_rgba(196,181,253,0.13)]",
-  },
-  "/messages": {
-    shell:
-      "border-cyan-300/20 bg-gradient-to-br from-cyan-400/[0.12] via-sky-500/[0.08] to-indigo-500/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_14px_42px_rgba(34,211,238,0.085)]",
-    active:
-      "bg-white/[0.075] shadow-[inset_0_1px_0_rgba(255,255,255,0.13),0_10px_22px_rgba(34,211,238,0.10)]",
-    sweep: "bg-gradient-to-r from-transparent via-cyan-100/[0.13] to-transparent",
-    icon: "scale-[1.03] border-cyan-100/42 bg-cyan-200/[0.105] text-white shadow-[0_0_12px_rgba(103,232,249,0.13)]",
-  },
-  "/settings": {
-    shell:
-      "border-white/[0.14] bg-gradient-to-br from-white/[0.095] via-slate-500/[0.07] to-sky-500/[0.055] shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_14px_42px_rgba(148,163,184,0.08)]",
-    active:
-      "bg-white/[0.085] shadow-[inset_0_1px_0_rgba(255,255,255,0.13),0_10px_22px_rgba(148,163,184,0.095)]",
-    sweep: "bg-gradient-to-r from-transparent via-white/[0.13] to-transparent",
-    icon: "scale-[1.03] border-white/35 bg-white/[0.10] text-white shadow-[0_0_12px_rgba(255,255,255,0.10)]",
-  },
-};
-
 export default function TopNavigationBar({ compact = false }) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -47,7 +12,6 @@ export default function TopNavigationBar({ compact = false }) {
 
   const profileName = avatar?.name || "CLARA User";
   const firstName = profileName.split(" ").filter(Boolean)[0] || "CLARA";
-  const pageTone = pageToneMap[location.pathname] || pageToneMap["/"];
 
   const activeIndex = Math.max(
     0,
@@ -64,15 +28,29 @@ export default function TopNavigationBar({ compact = false }) {
             className="group flex min-w-0 items-center gap-3 text-left transition duration-200 active:scale-[0.98]"
             aria-label="Go to dashboard"
           >
-            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-amber-300/25 bg-gradient-to-br from-white/12 via-white/[0.06] to-amber-400/10 text-sm font-black tracking-tight text-amber-50 shadow-[0_0_22px_rgba(245,158,11,0.12)] transition group-hover:scale-105">
+            <div
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border text-sm font-black tracking-tight transition group-hover:scale-105"
+              style={{
+                borderColor: "var(--clara-accent-border)",
+                background: "var(--clara-accent-soft)",
+                color: "var(--clara-accent-text)",
+                boxShadow: "var(--clara-glow-premium)",
+              }}
+            >
               C
             </div>
 
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold leading-tight text-white">
+              <p
+                className="truncate text-sm font-semibold leading-tight"
+                style={{ color: "var(--clara-text)" }}
+              >
                 CLARA
               </p>
-              <p className="truncate text-[10px] font-medium uppercase tracking-[0.18em] text-white/40">
+              <p
+                className="truncate text-[10px] font-medium uppercase tracking-[0.18em]"
+                style={{ color: "var(--clara-text-muted)" }}
+              >
                 Personal Money Coach
               </p>
             </div>
@@ -81,24 +59,50 @@ export default function TopNavigationBar({ compact = false }) {
           <button
             type="button"
             onClick={() => navigate("/settings")}
-            className="group relative flex shrink-0 items-center gap-2 rounded-[22px] border border-white/10 bg-white/[0.055] px-2.5 py-2 text-left backdrop-blur-xl transition duration-200 hover:bg-white/[0.08] active:scale-95"
+            className="group relative flex shrink-0 items-center gap-2 rounded-[22px] border px-2.5 py-2 text-left backdrop-blur-xl transition duration-200 active:scale-95"
+            style={{
+              borderColor: "var(--clara-border)",
+              background: "var(--clara-glass)",
+            }}
             aria-label="Open profile settings"
           >
             <span className="relative block h-10 w-10">
               <Avatar
                 size={40}
-                className={`rounded-2xl border-amber-200/35 bg-gradient-to-br from-amber-200/25 via-white/10 to-slate-900/60 text-[13px] font-black shadow-[0_0_22px_rgba(245,158,11,0.16)] transition group-hover:scale-105 ${
+                className={`rounded-2xl text-[13px] font-black transition group-hover:scale-105 ${
                   hydrated ? "opacity-100" : "opacity-70"
                 }`}
+                style={{
+                  borderColor: "var(--clara-accent-border)",
+                  background: "var(--clara-accent-soft)",
+                  boxShadow: "var(--clara-glow-premium)",
+                }}
               />
-              <span className="absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full border-2 border-[#070b10] bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.9)]" />
+              <span
+                className="absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full border-2"
+                style={{
+                  borderColor: "var(--clara-bg)",
+                  background: "var(--clara-accent)",
+                  boxShadow: "0 0 10px var(--clara-glow)",
+                }}
+              />
             </span>
 
             <span className="hidden min-w-0 sm:block">
-              <span className="block max-w-[84px] truncate text-xs font-semibold text-white/85">
+              <span
+                className="block max-w-[84px] truncate text-xs font-semibold"
+                style={{ color: "var(--clara-text-soft)" }}
+              >
                 {firstName}
               </span>
-              <span className="mt-0.5 inline-flex rounded-full border border-amber-300/25 bg-amber-300/10 px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em] text-amber-100">
+              <span
+                className="mt-0.5 inline-flex rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em]"
+                style={{
+                  borderColor: "var(--clara-accent-border)",
+                  background: "var(--clara-accent-soft)",
+                  color: "var(--clara-accent-text)",
+                }}
+              >
                 {PROFILE_PLAN}
               </span>
             </span>
@@ -108,32 +112,42 @@ export default function TopNavigationBar({ compact = false }) {
 
       <div
         className={`relative overflow-hidden rounded-[28px] border backdrop-blur-2xl transition-all duration-300 ${
-          compact
-            ? `${pageTone.shell} p-1`
-            : "border-amber-400/24 bg-gradient-to-br from-white/8 via-slate-900/82 to-amber-950/24 p-1.5 shadow-[0_0_28px_rgba(245,158,11,0.10)]"
+          compact ? "p-1" : "p-1.5"
         }`}
+        style={{
+          borderColor: "var(--clara-border)",
+          background: "var(--clara-glass)",
+          boxShadow: "var(--clara-glow-premium)",
+        }}
       >
         <nav className="relative grid grid-cols-4 gap-1.5">
           <div
-            className={`absolute bottom-0 top-0 overflow-hidden rounded-[22px] transition-all duration-500 ease-out ${
-              compact
-                ? pageTone.active
-                : "bg-white/[0.10] shadow-[inset_0_0_18px_rgba(255,255,255,0.09),0_0_18px_rgba(251,191,36,0.10)]"
-            }`}
+            className="absolute bottom-0 top-0 overflow-hidden rounded-[22px] transition-all duration-500 ease-out"
             style={{
               width: "calc((100% - 1.125rem) / 4)",
               transform: `translateX(calc(${activeIndex} * (100% + 0.375rem)))`,
+              background: "var(--clara-accent-soft)",
+              boxShadow: "var(--clara-glow-premium)",
             }}
           >
             <span
-              className={`pointer-events-none absolute inset-y-0 -left-1/3 w-[135%] rounded-[22px] ${
-                compact
-                  ? pageTone.sweep
-                  : "bg-gradient-to-r from-transparent via-amber-100/[0.12] to-transparent"
-              }`}
+              className="pointer-events-none absolute inset-y-0 -left-1/3 w-[135%] rounded-[22px]"
+              style={{
+                background:
+                  "linear-gradient(90deg, transparent, var(--clara-accent-soft), transparent)",
+              }}
             />
-            <span className="pointer-events-none absolute inset-x-3 top-0 h-px bg-gradient-to-r from-transparent via-white/28 to-transparent" />
-            <span className="pointer-events-none absolute inset-0 rounded-[22px] bg-[radial-gradient(circle_at_30%_15%,rgba(255,255,255,0.13),transparent_58%)]" />
+            <span
+              className="pointer-events-none absolute inset-x-3 top-0 h-px"
+              style={{
+                background:
+                  "linear-gradient(90deg, transparent, var(--clara-accent-border), transparent)",
+              }}
+            />
+            <span
+              className="pointer-events-none absolute inset-0 rounded-[22px]"
+              style={{ background: "var(--clara-surface-glow)" }}
+            />
           </div>
 
           {topNavItems.map((item) => {
@@ -150,9 +164,22 @@ export default function TopNavigationBar({ compact = false }) {
                 {item.badge && (
                   <span className="absolute right-4 top-2">
                     {item.badge === "dot" ? (
-                      <span className="block h-2 w-2 rounded-full bg-sky-400 shadow-[0_0_10px_rgba(56,189,248,0.85)]" />
+                      <span
+                        className="block h-2 w-2 rounded-full"
+                        style={{
+                          background: "var(--clara-accent)",
+                          boxShadow: "0 0 10px var(--clara-glow)",
+                        }}
+                      />
                     ) : (
-                      <span className="flex h-4 min-w-4 items-center justify-center rounded-full bg-sky-400 px-1 text-[9px] font-bold text-slate-950 shadow-[0_0_10px_rgba(56,189,248,0.85)]">
+                      <span
+                        className="flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[9px] font-bold"
+                        style={{
+                          background: "var(--clara-accent)",
+                          color: "var(--clara-bg)",
+                          boxShadow: "0 0 10px var(--clara-glow)",
+                        }}
+                      >
                         {item.badge}
                       </span>
                     )}
@@ -160,23 +187,28 @@ export default function TopNavigationBar({ compact = false }) {
                 )}
 
                 <span
-                  className={`flex h-8 w-8 items-center justify-center rounded-full border transition-all duration-300 ${
-                    isActive
-                      ? compact
-                        ? pageTone.icon
-                        : "scale-[1.03] border-amber-200/55 bg-amber-300/12 text-amber-50 shadow-[0_0_10px_rgba(251,191,36,0.16)]"
-                      : "border-white/22 bg-white/[0.055] text-white/76 group-hover:bg-white/[0.09] group-hover:text-white"
-                  }`}
+                  className="flex h-8 w-8 items-center justify-center rounded-full border transition-all duration-300"
+                  style={{
+                    borderColor: isActive
+                      ? "var(--clara-accent-border)"
+                      : "var(--clara-border)",
+                    background: isActive
+                      ? "var(--clara-accent-soft)"
+                      : "var(--clara-panel)",
+                    color: isActive
+                      ? "var(--clara-accent-text)"
+                      : "var(--clara-text-soft)",
+                    boxShadow: isActive ? "0 0 12px var(--clara-glow)" : "none",
+                  }}
                 >
                   <Icon size={16} strokeWidth={1.8} />
                 </span>
 
                 <span
-                  className={`transition-all duration-300 ${
-                    isActive
-                      ? "text-white"
-                      : "text-white/58 group-hover:text-white/82"
-                  }`}
+                  className="transition-all duration-300"
+                  style={{
+                    color: isActive ? "var(--clara-text)" : "var(--clara-text-muted)",
+                  }}
                 >
                   {item.label}
                 </span>
