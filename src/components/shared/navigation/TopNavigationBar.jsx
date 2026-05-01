@@ -19,7 +19,7 @@ export default function TopNavigationBar({ compact = false }) {
   );
 
   return (
-    <header className={compact ? "px-0 pt-3" : "px-4 pt-4"}>
+    <header className={compact ? "px-0 pt-2" : "px-4 pt-4"}>
       {!compact && (
         <div className="mb-3 flex items-center justify-between gap-3">
           <button
@@ -33,7 +33,9 @@ export default function TopNavigationBar({ compact = false }) {
             </div>
 
             <div className="min-w-0">
-              <p className="truncate text-sm font-semibold leading-tight text-white">CLARA</p>
+              <p className="truncate text-sm font-semibold leading-tight text-white">
+                CLARA
+              </p>
               <p className="truncate text-[10px] font-medium uppercase tracking-[0.18em] text-white/40">
                 Personal Money Coach
               </p>
@@ -69,22 +71,22 @@ export default function TopNavigationBar({ compact = false }) {
       )}
 
       <div
-        className={`relative overflow-hidden rounded-[30px] border backdrop-blur-2xl transition-all duration-300 ${
+        className={`relative overflow-hidden rounded-[28px] border backdrop-blur-2xl transition-all duration-300 ${
           compact
-            ? "border-sky-300/25 bg-gradient-to-br from-sky-400/18 via-indigo-500/12 to-fuchsia-500/10 p-1.5 shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_18px_50px_rgba(14,165,233,0.12)]"
+            ? "border-sky-300/22 bg-gradient-to-br from-sky-400/14 via-indigo-500/10 to-fuchsia-500/[0.08] p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_14px_42px_rgba(14,165,233,0.10)]"
             : "border-amber-400/24 bg-gradient-to-br from-white/8 via-slate-900/82 to-amber-950/24 p-1.5 shadow-[0_0_28px_rgba(245,158,11,0.10)]"
         }`}
       >
-        <nav className="relative grid grid-cols-4 gap-2">
+        <nav className="relative grid grid-cols-4 gap-1.5">
           <div
-            className={`absolute bottom-0 top-0 rounded-[24px] transition-all duration-300 ease-out ${
+            className={`absolute bottom-0 top-0 rounded-[22px] transition-all duration-300 ease-out ${
               compact
-                ? "bg-white/[0.13] shadow-[inset_0_1px_0_rgba(255,255,255,0.16),0_12px_28px_rgba(56,189,248,0.15)]"
+                ? "bg-white/[0.095] shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_10px_22px_rgba(56,189,248,0.11)]"
                 : "bg-white/[0.12] shadow-[inset_0_0_18px_rgba(255,255,255,0.10),0_0_18px_rgba(251,191,36,0.12)]"
             }`}
             style={{
-              width: "calc((100% - 1.5rem) / 4)",
-              transform: `translateX(calc(${activeIndex} * (100% + 0.5rem)))`,
+              width: "calc((100% - 1.125rem) / 4)",
+              transform: `translateX(calc(${activeIndex} * (100% + 0.375rem)))`,
             }}
           />
 
@@ -97,7 +99,7 @@ export default function TopNavigationBar({ compact = false }) {
                 key={item.path}
                 type="button"
                 onClick={() => navigate(item.path)}
-                className="group relative z-10 flex flex-col items-center justify-center gap-1.5 py-3 text-[11px] font-semibold transition-all duration-200 active:scale-95"
+                className="group relative z-10 flex flex-col items-center justify-center gap-1 py-2.5 text-[10px] font-semibold transition-all duration-200 active:scale-95"
               >
                 {item.badge && (
                   <span className="absolute right-4 top-2">
@@ -112,20 +114,22 @@ export default function TopNavigationBar({ compact = false }) {
                 )}
 
                 <span
-                  className={`flex h-9 w-9 items-center justify-center rounded-full border transition-all duration-300 ${
+                  className={`flex h-8 w-8 items-center justify-center rounded-full border transition-all duration-300 ${
                     isActive
                       ? compact
-                        ? "scale-105 border-sky-100/55 bg-sky-200/16 text-white shadow-[0_0_16px_rgba(125,211,252,0.20)]"
-                        : "scale-105 border-amber-200/60 bg-amber-300/14 text-amber-50 shadow-[0_0_12px_rgba(251,191,36,0.18)]"
-                      : "border-white/25 bg-white/[0.07] text-white/80 group-hover:bg-white/[0.10] group-hover:text-white"
+                        ? "scale-[1.03] border-sky-100/45 bg-sky-200/[0.11] text-white shadow-[0_0_12px_rgba(125,211,252,0.14)]"
+                        : "scale-[1.03] border-amber-200/55 bg-amber-300/12 text-amber-50 shadow-[0_0_10px_rgba(251,191,36,0.16)]"
+                      : "border-white/22 bg-white/[0.055] text-white/76 group-hover:bg-white/[0.09] group-hover:text-white"
                   }`}
                 >
-                  <Icon size={18} strokeWidth={1.8} />
+                  <Icon size={16} strokeWidth={1.8} />
                 </span>
 
                 <span
                   className={`transition-all duration-300 ${
-                    isActive ? "text-white" : "text-white/60 group-hover:text-white/85"
+                    isActive
+                      ? "text-white"
+                      : "text-white/58 group-hover:text-white/82"
                   }`}
                 >
                   {item.label}
