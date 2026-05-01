@@ -1,5 +1,5 @@
 import { ChevronRight, LogOut } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ClaraPageShell from "../../components/shared/layout/ClaraPageShell";
 import Item from "./components/Item";
@@ -8,6 +8,7 @@ import Section from "./components/Section";
 import ToggleSwitch from "./components/ToggleSwitch";
 import Avatar from "../../components/shared/Avatar";
 import { useAvatar } from "../../context/AvatarContext";
+import { supabase } from "../../lib/supabaseClient";
 
 function Pill({ children, active = false, danger = false }) {
   return (
@@ -25,18 +26,58 @@ function Pill({ children, active = false, danger = false }) {
   );
 }
 
+function isApprovedAdmin(profile) {
+  return profile?.role === "admin" || profile?.is_admin === true;
+}
+
 export default function Settings() {
   const navigate = useNavigate();
   const { avatar, updateAvatar } = useAvatar();
 
   const [profileOpen, setProfileOpen] = useState(false);
+  const [adminAllowed, setAdminAllowed] = useState(false);
 
   const profileName = avatar?.name || "CLARA User";
 
   const handleOpenTheme = () => navigate("/settings/theme");
   const handleOpenProfile = () => setProfileOpen(true);
   const handleCloseProfile = () => setProfileOpen(false);
+  const handleOpenAdmin = () => navigate("/settings/admin");
   const handleLogout = () => (window.location.href = "/login");
+
+  useEffect(() => {
+    let alive = true;
+
+    async function checkAdminAccess() {
+      try {
+        const { data: authData } = await supabase.auth.getUser();
+        const userId = authData?.user?.id;
+
+        if (!userId) {
+          if (alive) setAdminAllowed(false);
+          return;
+        }
+
+        const { data, error } = await supabase
+          .from("profiles")
+          .select("id,email,role,is_admin,plan,subscription_status")
+          .eq("id", userId)
+          .maybeSingle();
+
+        if (error) throw error;
+        if (alive) setAdminAllowed(isApprovedAdmin(data));
+      } catch (err) {
+        console.warn("Unable to verify admin access", err);
+        if (alive) setAdminAllowed(false);
+      }
+    }
+
+    checkAdminAccess();
+
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   const handleRemoveAvatar = async () => {
     try {
@@ -185,19 +226,24 @@ export default function Settings() {
               </div>
             }
           />
-
-          <Item
-            title="Admin Panel"
-            description="Manage users, access, and CLARA system"
-            icon={<span>🛡️</span>}
-            right={
-              <div className="flex items-center gap-2">
-                <Pill>Admin</Pill>
-                <ChevronRight size={16} className="text-white/25" />
-              </div>
-            }
-          />
         </Section>
+
+        {adminAllowed && (
+          <Section title="ADMIN TOOLS">
+            <Item
+              title="Admin Panel"
+              description="Manage billboards, users, plans, and feature access"
+              icon={<span>🛡️</span>}
+              onClick={handleOpenAdmin}
+              right={
+                <div className="flex items-center gap-2">
+                  <Pill active>Admin</Pill>
+                  <ChevronRight size={16} className="text-white/25" />
+                </div>
+              }
+            />
+          </Section>
+        )}
 
         <section className="space-y-2">
           <p className="px-3 text-[10px] font-black uppercase tracking-[0.24em] text-white/25">
