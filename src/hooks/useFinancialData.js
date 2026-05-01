@@ -116,6 +116,22 @@ function isBudgetForCurrentMonth(budget, monthKey) {
   return !datedMonth || datedMonth === monthKey;
 }
 
+function attachBudgetSummary(categories, summary) {
+  const budgetArray = [...categories];
+
+  budgetArray.month = summary.month;
+  budgetArray.monthKey = summary.monthKey;
+  budgetArray.total = summary.total;
+  budgetArray.spent = summary.spent;
+  budgetArray.totalExpenses = summary.totalExpenses;
+  budgetArray.unplannedSpent = summary.unplannedSpent;
+  budgetArray.undocumentedSpent = summary.undocumentedSpent;
+  budgetArray.categories = budgetArray;
+  budgetArray.summary = summary;
+
+  return budgetArray;
+}
+
 function buildBudgetFromExpenses(rawBudgets = [], rawExpenses = []) {
   const monthKey = getCurrentMonthKey();
   const budgetRows = Array.isArray(rawBudgets) ? rawBudgets : [];
@@ -185,7 +201,7 @@ function buildBudgetFromExpenses(rawBudgets = [], rawExpenses = []) {
     0
   );
 
-  return {
+  const summary = {
     month: monthKey,
     monthKey,
     total,
@@ -195,6 +211,8 @@ function buildBudgetFromExpenses(rawBudgets = [], rawExpenses = []) {
     undocumentedSpent,
     categories,
   };
+
+  return attachBudgetSummary(categories, summary);
 }
 
 function readObjectStore(db, storeName) {
@@ -247,7 +265,9 @@ function openIndexedDb(dbName) {
 }
 
 function pickExistingStoreName(db, candidates) {
-  return candidates.find((storeName) => db?.objectStoreNames?.contains(storeName));
+  if (!db?.objectStoreNames) return undefined;
+
+  return candidates.find((storeName) => db.objectStoreNames.contains(storeName));
 }
 
 async function readFinanceDataFromIndexedDb() {
