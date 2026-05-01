@@ -54,7 +54,7 @@ export default function PostComposerModal({
 
     closeTimerRef.current = setTimeout(() => {
       setMounted(false);
-    }, 240);
+    }, 260);
 
     return () => {
       if (frameRef.current) cancelAnimationFrame(frameRef.current);
@@ -70,7 +70,7 @@ export default function PostComposerModal({
 
     setTimeout(() => {
       onClose?.();
-    }, 170);
+    }, 180);
   };
 
   const handleTouchStart = (event) => {
@@ -95,7 +95,9 @@ export default function PostComposerModal({
     setDragY(0);
   };
 
-  const backdropOpacity = visible ? Math.max(0.28, 1 - dragY / 380) : 0;
+  const backdropOpacity = visible ? Math.max(0.3, 1 - dragY / 390) : 0;
+  const dragScale = Math.max(0.965, 1 - dragY / 2600);
+  const dragRotate = Math.min(dragY / 90, 1.15);
 
   return (
     <div
@@ -105,7 +107,7 @@ export default function PostComposerModal({
         pointerEvents: visible ? "auto" : "none",
         backdropFilter: visible ? "blur(6px)" : "blur(0px)",
         background:
-          "linear-gradient(to bottom, rgba(15,23,42,0.22), rgba(2,6,23,0.82))",
+          "radial-gradient(circle at 50% 86%, rgba(255,255,255,0.045), transparent 32%), linear-gradient(to bottom, rgba(15,23,42,0.18), rgba(2,6,23,0.84))",
         transition: isDragging
           ? "none"
           : "opacity 260ms ease, backdrop-filter 260ms ease",
@@ -121,18 +123,19 @@ export default function PostComposerModal({
         onTouchEnd={handleTouchEnd}
         className="w-full max-w-md overflow-hidden rounded-[26px] border border-white/10 bg-slate-950/95 shadow-[0_32px_110px_rgba(0,0,0,0.68)] backdrop-blur-2xl will-change-transform"
         style={{
-          transform: visible
-            ? `translate3d(0, ${dragY}px, 0) scale(1)`
-            : "translate3d(0, calc(100% + 28px), 0) scale(0.94)",
+          filter: visible ? "blur(0px)" : "blur(0.35px)",
           opacity: visible ? 1 : 0,
+          transform: visible
+            ? `translate3d(0, ${dragY}px, 0) scale(${dragScale}) rotate(${dragRotate}deg)`
+            : "translate3d(0, 72px, 0) scale(0.88) rotate(-1.1deg)",
           transition: isDragging
             ? "none"
             : visible
-              ? "transform 360ms cubic-bezier(0.22,1,0.36,1), opacity 240ms ease-out"
-              : "transform 210ms cubic-bezier(0.32,0,0.67,0), opacity 170ms ease-in",
+              ? "opacity 220ms ease-out, filter 320ms ease-out, transform 420ms cubic-bezier(0.16,1,0.3,1)"
+              : "opacity 170ms ease-in, filter 180ms ease-in, transform 220ms cubic-bezier(0.32,0,0.67,0)",
           transformOrigin: "bottom center",
           boxShadow:
-            "inset 0 1px 0 rgba(255,255,255,0.09), 0 32px 110px rgba(0,0,0,0.68)",
+            "inset 0 1px 0 rgba(255,255,255,0.09), 0 34px 96px rgba(0,0,0,0.72)",
         }}
       >
         <div className="mx-auto mt-3 h-1 w-10 rounded-full bg-white/20 shadow-[0_0_12px_rgba(255,255,255,0.08)]" />
