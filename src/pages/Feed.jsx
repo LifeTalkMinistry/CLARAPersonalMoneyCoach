@@ -1,14 +1,55 @@
 import ClaraPageShell from "../components/shared/layout/ClaraPageShell";
+import CreatePost from "./feed/components/CreatePost";
+import FeedList from "./feed/components/FeedList";
+
+const featuredPost = {
+  id: "clara-featured",
+  name: "CLARA",
+  badge: "Founder",
+  content:
+    "Before you spend today, ask yourself: is this planned, needed, or emotional?",
+  tag: "#AskBeforeYouAct",
+  isFeatured: true,
+};
+
+const posts = [
+  {
+    id: "post-1",
+    name: "Mika",
+    badge: "Core",
+    content:
+      "I delayed buying something today and realized I only wanted it because I was stressed.",
+    tag: "#MoneyReflection",
+  },
+  {
+    id: "post-2",
+    name: "Jem",
+    badge: "Pro",
+    content:
+      "Small win: I checked my budget before ordering food. Still bought it, but at least it was planned.",
+    tag: "#BudgetWin",
+  },
+];
 
 export default function Feed() {
+  const feedPosts = [featuredPost, ...posts];
+
   return (
     <ClaraPageShell>
-      <section className="rounded-3xl border border-white/10 bg-white/[0.04] p-5">
-        <h1 className="text-lg font-semibold">Feed</h1>
-        <p className="mt-1 text-sm text-white/55">
-          Community updates will appear here.
-        </p>
-      </section>
+      <div className="space-y-4 pb-[calc(70px+env(safe-area-inset-bottom))] sm:pb-[calc(88px+env(safe-area-inset-bottom))]">
+        <header>
+          <h1 className="text-2xl font-semibold tracking-tight text-white">
+            Feed
+          </h1>
+          <p className="mt-1 text-sm text-white/50">
+            Learn, reflect, and grow your financial habits
+          </p>
+        </header>
+
+        <CreatePost />
+
+        <FeedList posts={feedPosts} />
+      </div>
     </ClaraPageShell>
   );
 }
