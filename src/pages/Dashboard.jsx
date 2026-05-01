@@ -6,7 +6,6 @@ import DashboardBillboard from "../components/main-dashboard/DashboardBillboard"
 import DashboardWalletDrawer from "../components/main-dashboard/DashboardWalletDrawer";
 import DashboardFinancialCarousel from "../components/main-dashboard/DashboardFinancialCarousel";
 import DashboardMoneySummary from "../components/main-dashboard/DashboardMoneySummary";
-import DashboardQuickOrb from "../components/main-dashboard/DashboardQuickOrb";
 
 import useFinancialData from "../hooks/useFinancialData";
 
@@ -22,7 +21,9 @@ function getAdaptiveDashboardScale() {
 }
 
 export default function Dashboard() {
-  const { wallets, expenses, budgets, savingsGoals, loading, saveBudget, addExpense } = useFinancialData();
+  const { wallets, expenses, budgets, savingsGoals, loading, saveBudget, addExpense } =
+    useFinancialData();
+
   const [dashboardScale, setDashboardScale] = useState(getAdaptiveDashboardScale);
 
   useEffect(() => {
@@ -45,17 +46,19 @@ export default function Dashboard() {
 
   const totalMoney = wallets?.reduce((sum, w) => sum + (w.balance || 0), 0) || 0;
 
-  const totalExpenses = expenses
-    ?.filter((e) => {
-      const d = new Date(e.created_at);
-      const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
-      return key === monthKey;
-    })
-    .reduce((sum, e) => sum + (e.amount || 0), 0) || 0;
+  const totalExpenses =
+    expenses
+      ?.filter((e) => {
+        const d = new Date(e.created_at);
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+        return key === monthKey;
+      })
+      .reduce((sum, e) => sum + (e.amount || 0), 0) || 0;
 
   const budget = budgets || {};
 
-  const emergencyGoal = savingsGoals?.find((g) => g.title?.toLowerCase().includes("emergency")) || null;
+  const emergencyGoal =
+    savingsGoals?.find((g) => g.title?.toLowerCase().includes("emergency")) || null;
 
   const savings = {
     saved: savingsGoals?.reduce((s, g) => s + (g.saved_amount || 0), 0) || 0,
@@ -64,6 +67,14 @@ export default function Dashboard() {
 
   const investments = { value: 0 };
   const debts = { total: 0 };
+
+  const startClaraAiLongPress = () => {
+    console.log("CLARA AI long press started");
+  };
+
+  const endClaraAiLongPress = () => {
+    console.log("CLARA AI long press ended");
+  };
 
   if (loading) {
     return (
@@ -76,15 +87,7 @@ export default function Dashboard() {
   }
 
   return (
-    <ClaraPageShell
-      compactHeader
-      floatingAction={
-        <DashboardQuickOrb
-          budgetCategories={budget?.categories || []}
-          onQuickExpense={addExpense}
-        />
-      }
-    >
+    <ClaraPageShell compactHeader>
       <div className="dashboard-home-stack flex h-[calc(100svh-74px)] flex-col gap-[6px] overflow-hidden pb-[calc(70px+env(safe-area-inset-bottom))] sm:h-auto sm:gap-3 sm:overflow-y-auto sm:pb-[calc(88px+env(safe-area-inset-bottom))]">
         <div
           className="flex min-h-0 origin-top flex-col gap-[6px] sm:gap-3"
@@ -120,6 +123,9 @@ export default function Dashboard() {
             <DashboardMoneySummary
               moneyLeft={totalMoney - totalExpenses}
               totalExpenses={totalExpenses}
+              handleQuickExpense={addExpense}
+              startClaraAiLongPress={startClaraAiLongPress}
+              endClaraAiLongPress={endClaraAiLongPress}
             />
           </section>
         </div>
