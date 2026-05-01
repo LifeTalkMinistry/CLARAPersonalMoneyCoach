@@ -30,6 +30,36 @@ export default function Dashboard() {
       })
       .reduce((sum, e) => sum + (e.amount || 0), 0) || 0;
 
+  const budgetCategories =
+    budgets
+      ?.filter((b) => b.month === monthKey)
+      ?.map((b) => {
+        const spent =
+          expenses
+            ?.filter((e) => e.category === b.category)
+            ?.reduce((sum, e) => sum + (e.amount || 0), 0) || 0;
+
+        const remaining = (b.allocated_amount || 0) - spent;
+
+        const usagePercentage =
+          b.allocated_amount > 0
+            ? (spent / b.allocated_amount) * 100
+            : 0;
+
+        let riskLevel = "safe";
+        if (usagePercentage >= 85) riskLevel = "danger";
+        else if (usagePercentage >= 60) riskLevel = "warning";
+
+        return {
+          category: b.category,
+          allocated: b.allocated_amount || 0,
+          spent,
+          remaining,
+          usagePercentage,
+          riskLevel,
+        };
+      }) || [];
+
   const budget = {
     total:
       budgets?.find((b) => b.month === monthKey)?.allocated_amount || 0,
@@ -64,7 +94,11 @@ export default function Dashboard() {
   return (
     <ClaraPageShell
       compactHeader
-      floatingAction={<DashboardQuickOrb />}
+      floatingAction={
+        <DashboardQuickOrb
+          budgetCategories={budgetCategories}
+        />
+      }
     >
       <div className="space-y-[10px] sm:space-y-3 overflow-hidden pb-[calc(88px+env(safe-area-inset-bottom))]">
 
