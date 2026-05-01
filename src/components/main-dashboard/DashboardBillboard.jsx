@@ -1,4 +1,4 @@
-import { Play, Sparkles } from "lucide-react";
+import { Play } from "lucide-react";
 
 export default function DashboardBillboard({ billboard, onClick }) {
   const videoUrl = billboard?.video_url || "";
@@ -6,6 +6,7 @@ export default function DashboardBillboard({ billboard, onClick }) {
   const title = billboard?.title || "TRY YOUR ADS";
   const subtitle = billboard?.subtitle || "Now!";
   const caption = billboard?.caption || billboard?.description || "Feature your message inside CLARA.";
+  const hasCta = Boolean(billboard?.cta_url);
 
   return (
     <section
@@ -37,22 +38,15 @@ export default function DashboardBillboard({ billboard, onClick }) {
           <div className="h-full w-full bg-[radial-gradient(circle_at_20%_20%,rgba(56,189,248,0.20),transparent_34%),radial-gradient(circle_at_84%_60%,rgba(168,85,247,0.15),transparent_34%),linear-gradient(135deg,rgba(255,255,255,0.07),rgba(15,23,42,0.80),rgba(0,0,0,0.92))]" />
         )}
 
-        <div className="absolute inset-0 bg-gradient-to-r from-black/85 via-black/56 to-black/18" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-transparent to-white/[0.035]" />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/46 to-black/12" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/62 via-transparent to-white/[0.025]" />
 
-        <div className="absolute left-4 top-3 max-w-[72%] sm:top-4">
-          <div className="inline-flex items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.08] px-2.5 py-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.10)] backdrop-blur-xl">
-            <Sparkles className="h-3 w-3 text-sky-300" />
-            <p className="text-[9px] font-black uppercase tracking-[0.24em] text-white/72">
-              Billboard
-            </p>
-          </div>
-
-          <p className="mt-2 text-[10px] font-black uppercase tracking-[0.32em] text-white/64 sm:mt-3">
+        <div className="absolute left-4 top-4 max-w-[74%]">
+          <p className="text-[10px] font-black uppercase tracking-[0.32em] text-white/58">
             {title}
           </p>
 
-          <h2 className="mt-0.5 truncate text-[clamp(1rem,3.2svh,1.25rem)] font-black leading-none tracking-tight text-white drop-shadow-[0_4px_18px_rgba(0,0,0,0.45)]">
+          <h2 className="mt-1 truncate text-[clamp(1rem,3.2svh,1.25rem)] font-black leading-none tracking-tight text-white drop-shadow-[0_4px_18px_rgba(0,0,0,0.45)]">
             {subtitle}
           </h2>
 
@@ -61,12 +55,14 @@ export default function DashboardBillboard({ billboard, onClick }) {
           </p>
         </div>
 
-        <div className="absolute right-4 top-1/2 -translate-y-1/2">
-          <div className="relative flex h-11 w-11 items-center justify-center rounded-full border border-white/14 bg-white/[0.09] shadow-[inset_0_1px_0_rgba(255,255,255,0.14),0_0_24px_rgba(255,255,255,0.08)] backdrop-blur-xl transition-all duration-300 group-hover:scale-105 group-hover:bg-white/[0.13] group-active:scale-95 sm:h-12 sm:w-12">
-            <div className="absolute inset-1 rounded-full border border-white/8" />
-            <Play className="ml-0.5 h-5 w-5 text-white" fill="currentColor" strokeWidth={1.8} />
+        {hasCta && (
+          <div className="absolute right-4 top-4">
+            <div className="relative flex h-8 w-8 items-center justify-center rounded-full border border-white/12 bg-black/25 shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_0_18px_rgba(255,255,255,0.06)] backdrop-blur-xl transition-all duration-300 group-hover:scale-105 group-hover:bg-white/[0.10] group-active:scale-95">
+              <div className="absolute inset-1 rounded-full border border-white/8" />
+              <Play className="ml-0.5 h-3.5 w-3.5 text-white/82" fill="currentColor" strokeWidth={1.8} />
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </section>
   );
