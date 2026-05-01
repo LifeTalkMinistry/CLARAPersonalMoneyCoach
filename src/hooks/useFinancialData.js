@@ -4,9 +4,10 @@ const FALLBACK_WALLETS = [];
 const FALLBACK_EXPENSES = [];
 const FALLBACK_BUDGETS = [];
 const FALLBACK_SAVINGS_GOALS = [];
+const PRIMARY_FINANCE_DB = "clara_finance_db";
 
 const FINANCE_DB_CANDIDATES = [
-  "clara_finance_db",
+  PRIMARY_FINANCE_DB,
   "CLARA_FINANCE_DB",
   "claraFinanceDB",
   "localFinanceDB",
@@ -130,18 +131,20 @@ function buildBudgetFromExpenses(rawBudgets = [], rawExpenses = []) {
 
   currentMonthExpenses.forEach((expense) => {
     const amount = getExpenseAmount(expense);
-    const expenseCategory = getExpenseCategory(expense);
-    const key = normalizeText(expenseCategory);
+    const key = normalizeText(getExpenseCategory(expense));
     spent += amount;
+
     if (!key) {
       undocumentedSpent += amount;
       return;
     }
+
     const matchedCategory = categoryMap.get(key);
     if (!matchedCategory) {
       unplannedSpent += amount;
       return;
     }
+
     matchedCategory.spent = safeNumber(matchedCategory.spent) + amount;
     matchedCategory.remaining = getBudgetAllocated(matchedCategory) - safeNumber(matchedCategory.spent);
   });
@@ -182,22 +185,63 @@ function buildBudgetFromExpenses(rawBudgets = [], rawExpenses = []) {
   return attachBudgetSummary(enrichedCategories, summary);
 }
 
-function openIndexedDb(dbName) {
+function openIndexedDb(dbName, version) {
   return new Promise((resolve) => {
     if (typeof window === "undefined" || !window.indexedDB) return resolve(null);
     try {
-      const request = window.indexedDB.open(dbName);
+      const request = version ? window.indexedDB.open(dbName, version) : window.indexedDB.open(dbName);
       request.onsuccess = () => resolve(request.result);
       request.onerror = () => resolve(null);
       request.onblocked = () => resolve(null);
       request.onupgradeneeded = () => {
-        request.transaction?.abort();
-        resolve(null);
+        const db = request.result;
+        if (!db.objectStoreNames.contains("budgets")) {
+          db.createObjectStore("budgets", { keyPath: "id" });
+        }
       };
     } catch (error) {
       console.warn(`CLARA IndexedDB open skipped for ${dbName}:`, error);
       resolve(null);
     }
+  });
+}
+
+function openDbWithBudgetStore(dbName) {
+  return new Promise((resolve, reject) => {
+    if (typeof window === "undefined" || !window.indexedDB) {
+      reject(new Error("IndexedDB is not available"));
+      return;
+    }
+
+    const firstOpen = window.indexedDB.open(dbName);
+
+    firstOpen.onerror = () => reject(firstOpen.error || new Error("Unable to open finance DB"));
+    firstOpen.onblocked = () => reject(new Error("Finance DB is blocked"));
+
+    firstOpen.onsuccess = () => {
+      const existingDb = firstOpen.result;
+
+      if (existingDb.objectStoreNames.contains("budgets")) {
+        resolve(existingDb);
+        return;
+      }
+
+      const nextVersion = existingDb.version + 1;
+      existingDb.close();
+
+      const upgradeOpen = window.indexedDB.open(dbName, nextVersion);
+
+      upgradeOpen.onupgradeneeded = () => {
+        const upgradedDb = upgradeOpen.result;
+        if (!upgradedDb.objectStoreNames.contains("budgets")) {
+          upgradedDb.createObjectStore("budgets", { keyPath: "id" });
+        }
+      };
+
+      upgradeOpen.onsuccess = () => resolve(upgradeOpen.result);
+      upgradeOpen.onerror = () => reject(upgradeOpen.error || new Error("Unable to create budget store"));
+      upgradeOpen.onblocked = () => reject(new Error("Budget store upgrade is blocked"));
+    };
   });
 }
 
@@ -309,28 +353,13 @@ function buildBudgetRows({ month, categories }) {
 }
 
 async function saveBudgetRowsToIndexedDb(monthKey, rows) {
-  if (typeof window === "undefined" || !window.indexedDB) throw new Error("IndexedDB is not available");
-
-  for (const dbName of FINANCE_DB_CANDIDATES) {
-    const db = await openIndexedDb(dbName);
-    if (!db) continue;
-
-    try {
-      const budgetStore = pickExistingStoreName(db, STORE_CANDIDATES.budgets);
-      if (!budgetStore) {
-        db.close?.();
-        continue;
-      }
-      await replaceMonthBudgets(db, budgetStore, monthKey, rows);
-      db.close?.();
-      return rows;
-    } catch (error) {
-      console.warn(`CLARA budget save skipped for ${dbName}:`, error);
-      db.close?.();
-    }
+  const db = await openDbWithBudgetStore(PRIMARY_FINANCE_DB);
+  try {
+    await replaceMonthBudgets(db, "budgets", monthKey, rows);
+    return rows;
+  } finally {
+    db.close?.();
   }
-
-  throw new Error("No CLARA budget store found");
 }
 
 export default function useFinancialData() {
@@ -360,12 +389,12 @@ export default function useFinancialData() {
     const monthKey = String(month || getCurrentMonthKey()).slice(0, 7);
     const rows = buildBudgetRows({ month: monthKey, total, categories });
 
-    await saveBudgetRowsToIndexedDb(monthKey, rows);
     setRawBudgets((currentRows) => {
       const existingRows = Array.isArray(currentRows) ? currentRows : [];
       return [...existingRows.filter((budget) => !isBudgetForMonth(budget, monthKey)), ...rows];
     });
-    await refreshFinanceData();
+
+    await saveBudgetRowsToIndexedDb(monthKey, rows);
     return rows;
   }
 
