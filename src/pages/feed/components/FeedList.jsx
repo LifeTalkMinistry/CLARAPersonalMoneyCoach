@@ -7,7 +7,7 @@ export default function FeedList({ posts = [] }) {
   }
 
   return (
-    <section className="space-y-3">
+    <section className="space-y-4">
       {posts.map((post) => (
         <PostCard key={post.id} post={post} />
       ))}
