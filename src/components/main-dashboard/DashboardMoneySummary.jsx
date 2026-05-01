@@ -20,6 +20,8 @@ export default function DashboardMoneySummary({
   const didSwipe = useRef(false);
 
   const [isPressing, setIsPressing] = useState(false);
+  const [isSliding, setIsSliding] = useState(false);
+  const [slideX, setSlideX] = useState(0);
   const [showExpense, setShowExpense] = useState(false);
   const [amount, setAmount] = useState("");
 
@@ -59,6 +61,8 @@ export default function DashboardMoneySummary({
     didLongPress.current = false;
     didSwipe.current = false;
     setIsPressing(true);
+    setIsSliding(false);
+    setSlideX(0);
 
     startPoint.current = {
       x: event.clientX,
@@ -80,7 +84,11 @@ export default function DashboardMoneySummary({
     const diffX = event.clientX - startPoint.current.x;
     const diffY = event.clientY - startPoint.current.y;
 
-    if (diffX < -35 && Math.abs(diffY) < 28) {
+    if (diffX < 0 && Math.abs(diffY) < 34) {
+      setSlideX(Math.max(diffX, -58));
+    }
+
+    if (diffX < -42 && Math.abs(diffY) < 30) {
       didSwipe.current = true;
       clearTimer();
       setIsPressing(false);
@@ -100,16 +108,29 @@ export default function DashboardMoneySummary({
 
     if (didLongPress.current) {
       endClaraAiLongPress?.();
+      setSlideX(0);
       startPoint.current = null;
       return;
     }
 
     if (didSwipe.current) {
-      navigate("/transactions");
+      setIsSliding(true);
+      setSlideX(-92);
+
+      window.setTimeout(() => {
+        navigate("/transactions");
+      }, 180);
+
+      window.setTimeout(() => {
+        setIsSliding(false);
+        setSlideX(0);
+      }, 260);
+
       startPoint.current = null;
       return;
     }
 
+    setSlideX(0);
     setShowExpense(true);
     startPoint.current = null;
   };
@@ -125,7 +146,7 @@ export default function DashboardMoneySummary({
             aria-label="Close quick expense"
           />
 
-          <section className="relative w-full max-w-sm rounded-t-[32px] border border-white/[0.10] bg-[#080d12]/95 px-5 pb-5 pt-4 text-white shadow-[0_-30px_90px_rgba(0,0,0,0.72)] backdrop-blur-2xl">
+          <section className="relative w-full max-w-sm animate-[slideUp_0.22s_ease-out] rounded-t-[32px] border border-white/[0.10] bg-[#080d12]/95 px-5 pb-5 pt-4 text-white shadow-[0_-30px_90px_rgba(0,0,0,0.72)] backdrop-blur-2xl">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.26em] text-white/38">
@@ -139,7 +160,8 @@ export default function DashboardMoneySummary({
               <button
                 type="button"
                 onClick={closeExpense}
-                className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/[0.10] bg-white/[0.055] text-white/65"
+                className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/[0.10] bg-white/[0.055] text-white/65 transition active:scale-95"
+                aria-label="Close quick expense"
               >
                 <X size={17} />
               </button>
@@ -166,7 +188,7 @@ export default function DashboardMoneySummary({
             <button
               type="button"
               onClick={handleSaveExpense}
-              className="mt-4 flex w-full items-center justify-center gap-2 rounded-[22px] border border-lime-200/[0.14] bg-lime-300/[0.12] py-3.5 text-sm font-bold text-lime-50"
+              className="mt-4 flex w-full items-center justify-center gap-2 rounded-[22px] border border-lime-200/[0.14] bg-lime-300/[0.12] py-3.5 text-sm font-bold text-lime-50 transition active:scale-[0.98]"
             >
               <Check size={17} />
               Save expense
@@ -191,7 +213,8 @@ export default function DashboardMoneySummary({
                   event.stopPropagation();
                   onToggleMoneyVisible?.();
                 }}
-                className="rounded-full border border-white/10 bg-white/[0.05] p-1.5 text-white/45"
+                className="rounded-full border border-white/10 bg-white/[0.05] p-1.5 text-white/45 transition active:scale-95"
+                aria-label={moneyVisible ? "Hide money" : "Show money"}
               >
                 {moneyVisible ? <Eye size={12} /> : <EyeOff size={12} />}
               </button>
@@ -202,25 +225,43 @@ export default function DashboardMoneySummary({
             </p>
           </div>
 
-          <button
-            type="button"
-            onPointerDown={handlePointerDown}
-            onPointerMove={handlePointerMove}
-            onPointerUp={handlePointerEnd}
-            onPointerCancel={handlePointerEnd}
-            className={`group relative flex h-[60px] w-[60px] shrink-0 touch-none select-none items-center justify-center rounded-full border border-white/[0.13] bg-[#080d12]/82 text-white shadow-[0_14px_34px_rgba(0,0,0,0.48),inset_0_1px_0_rgba(255,255,255,0.13),inset_0_-18px_32px_rgba(0,0,0,0.22)] backdrop-blur-2xl transition-all duration-300 ${
-              isPressing ? "scale-[0.97]" : "active:scale-95"
-            }`}
-          >
-            <span className="pointer-events-none absolute -inset-[10px] rounded-full bg-lime-200/[0.055] blur-2xl" />
-            <span className="pointer-events-none absolute inset-0 rounded-full bg-[radial-gradient(circle_at_32%_24%,rgba(255,255,255,0.22),rgba(255,255,255,0.055)_34%,rgba(132,204,22,0.055)_58%,rgba(0,0,0,0.16)_100%)]" />
-            <span className="pointer-events-none absolute inset-[5px] rounded-full border border-white/[0.085] bg-[#071008]/72 shadow-inner shadow-black/40" />
-            <span className="pointer-events-none absolute inset-[13px] rounded-full bg-[radial-gradient(circle_at_35%_28%,rgba(255,255,255,0.18),rgba(163,230,53,0.12)_42%,rgba(4,9,8,0.88)_100%)]" />
+          <div className="relative shrink-0">
+            <div className="pointer-events-none absolute inset-y-0 -left-14 flex items-center">
+              <div
+                className={`rounded-full border border-white/[0.08] bg-white/[0.04] px-2 py-1 text-[9px] font-bold uppercase tracking-[0.18em] text-white/35 transition ${
+                  slideX < -18 ? "opacity-100" : "opacity-0"
+                }`}
+              >
+                Transactions
+              </div>
+            </div>
 
-            <span className="relative flex h-[42px] w-[42px] items-center justify-center text-white/82">
-              <Plus className="h-5 w-5 stroke-[2.3]" />
-            </span>
-          </button>
+            <button
+              type="button"
+              onPointerDown={handlePointerDown}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerEnd}
+              onPointerCancel={handlePointerEnd}
+              className={`group relative flex h-[60px] w-[60px] touch-none select-none items-center justify-center rounded-full border border-white/[0.13] bg-[#080d12]/82 text-white shadow-[0_14px_34px_rgba(0,0,0,0.48),inset_0_1px_0_rgba(255,255,255,0.13),inset_0_-18px_32px_rgba(0,0,0,0.22)] backdrop-blur-2xl transition-all duration-200 ${
+                isPressing ? "scale-[0.97]" : "active:scale-95"
+              } ${isSliding ? "opacity-80" : ""}`}
+              style={{
+                transform: `translateX(${slideX}px) scale(${
+                  isPressing ? 0.97 : 1
+                })`,
+              }}
+              aria-label="CLARA quick action"
+            >
+              <span className="pointer-events-none absolute -inset-[10px] rounded-full bg-lime-200/[0.055] blur-2xl" />
+              <span className="pointer-events-none absolute inset-0 rounded-full bg-[radial-gradient(circle_at_32%_24%,rgba(255,255,255,0.22),rgba(255,255,255,0.055)_34%,rgba(132,204,22,0.055)_58%,rgba(0,0,0,0.16)_100%)]" />
+              <span className="pointer-events-none absolute inset-[5px] rounded-full border border-white/[0.085] bg-[#071008]/72 shadow-inner shadow-black/40" />
+              <span className="pointer-events-none absolute inset-[13px] rounded-full bg-[radial-gradient(circle_at_35%_28%,rgba(255,255,255,0.18),rgba(163,230,53,0.12)_42%,rgba(4,9,8,0.88)_100%)]" />
+
+              <span className="relative flex h-[42px] w-[42px] items-center justify-center text-white/82">
+                <Plus className="h-5 w-5 stroke-[2.3]" />
+              </span>
+            </button>
+          </div>
         </div>
       </section>
     </>
