@@ -1,5 +1,5 @@
 import { ChevronRight, LogOut } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import ClaraPageShell from "../../components/shared/layout/ClaraPageShell";
 import Item from "./components/Item";
@@ -8,7 +8,7 @@ import Section from "./components/Section";
 import ToggleSwitch from "./components/ToggleSwitch";
 import Avatar from "../../components/shared/Avatar";
 import { useAvatar } from "../../context/AvatarContext";
-import { supabase } from "../../lib/supabaseClient";
+import { useAuth } from "../../context/AuthContext";
 
 function Pill({ children, active = false, danger = false }) {
   return (
@@ -33,51 +33,38 @@ function isApprovedAdmin(profile) {
 export default function Settings() {
   const navigate = useNavigate();
   const { avatar, updateAvatar } = useAvatar();
+  const { user, profile, signOut } = useAuth();
 
   const [profileOpen, setProfileOpen] = useState(false);
-  const [adminAllowed, setAdminAllowed] = useState(false);
+  const [loggingOut, setLoggingOut] = useState(false);
 
-  const profileName = avatar?.name || "CLARA User";
+  const adminAllowed = isApprovedAdmin(profile);
+  const profileName =
+    profile?.display_name ||
+    avatar?.name ||
+    user?.email?.split("@")[0] ||
+    "CLARA User";
+
+  const profileEmail = user?.email || profile?.email || "Profile";
 
   const handleOpenTheme = () => navigate("/settings/theme");
   const handleOpenProfile = () => setProfileOpen(true);
   const handleCloseProfile = () => setProfileOpen(false);
   const handleOpenAdmin = () => navigate("/settings/admin");
-  const handleLogout = () => (window.location.href = "/login");
 
-  useEffect(() => {
-    let alive = true;
+  const handleLogout = async () => {
+    if (loggingOut) return;
 
-    async function checkAdminAccess() {
-      try {
-        const { data: authData } = await supabase.auth.getUser();
-        const userId = authData?.user?.id;
-
-        if (!userId) {
-          if (alive) setAdminAllowed(false);
-          return;
-        }
-
-        const { data, error } = await supabase
-          .from("profiles")
-          .select("id,email,role,is_admin,plan,subscription_status")
-          .eq("id", userId)
-          .maybeSingle();
-
-        if (error) throw error;
-        if (alive) setAdminAllowed(isApprovedAdmin(data));
-      } catch (err) {
-        console.warn("Unable to verify admin access", err);
-        if (alive) setAdminAllowed(false);
-      }
+    try {
+      setLoggingOut(true);
+      await signOut();
+      navigate("/", { replace: true });
+    } catch (err) {
+      console.warn("Logout failed", err);
+    } finally {
+      setLoggingOut(false);
     }
-
-    checkAdminAccess();
-
-    return () => {
-      alive = false;
-    };
-  }, []);
+  };
 
   const handleRemoveAvatar = async () => {
     try {
@@ -116,7 +103,7 @@ export default function Settings() {
                 {profileName}
               </h2>
               <p className="mt-0.5 truncate text-xs text-white/45">
-                Profile
+                {profileEmail}
               </p>
             </div>
 
@@ -144,7 +131,7 @@ export default function Settings() {
             icon={<span>🛡️</span>}
             right={
               <div className="flex items-center gap-2">
-                <Pill>Safe</Pill>
+                <Pill active>Signed in</Pill>
                 <ChevronRight size={16} className="text-white/25" />
               </div>
             }
@@ -254,7 +241,8 @@ export default function Settings() {
             <button
               type="button"
               onClick={handleLogout}
-              className="group flex w-full items-center gap-3 px-4 py-3.5 text-left transition duration-200 hover:bg-red-500/[0.06] active:scale-[0.99] active:bg-red-500/[0.09]"
+              disabled={loggingOut}
+              className="group flex w-full items-center gap-3 px-4 py-3.5 text-left transition duration-200 hover:bg-red-500/[0.06] active:scale-[0.99] active:bg-red-500/[0.09] disabled:cursor-not-allowed disabled:opacity-60"
             >
               <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] border border-red-400/20 bg-red-500/10 text-red-300 shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition group-active:scale-95">
                 <LogOut size={17} />
@@ -262,7 +250,7 @@ export default function Settings() {
 
               <div className="min-w-0 flex-1">
                 <h3 className="text-[14px] font-semibold tracking-[-0.01em] text-red-300">
-                  Log out
+                  {loggingOut ? "Logging out..." : "Log out"}
                 </h3>
                 <p className="mt-0.5 text-[12px] leading-5 text-red-200/45">
                   End your current session
