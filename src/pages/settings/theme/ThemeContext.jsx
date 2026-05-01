@@ -16,7 +16,8 @@ export const claraThemes = [
     bg: "#070b10",
     panel: "rgba(255, 255, 255, 0.055)",
     panelStrong: "rgba(255, 255, 255, 0.095)",
-    gradient: "linear-gradient(135deg, rgba(52,211,153,0.14), rgba(15,23,42,0.9), rgba(6,78,59,0.22))",
+    gradient:
+      "linear-gradient(135deg, rgba(52,211,153,0.14), rgba(15,23,42,0.9), rgba(6,78,59,0.22))",
   },
   {
     id: "gold-prestige",
@@ -31,7 +32,8 @@ export const claraThemes = [
     bg: "#090806",
     panel: "rgba(255, 255, 255, 0.055)",
     panelStrong: "rgba(255, 255, 255, 0.10)",
-    gradient: "linear-gradient(135deg, rgba(251,191,36,0.15), rgba(15,23,42,0.88), rgba(120,53,15,0.25))",
+    gradient:
+      "linear-gradient(135deg, rgba(251,191,36,0.15), rgba(15,23,42,0.88), rgba(120,53,15,0.25))",
   },
   {
     id: "midnight-blue",
@@ -46,7 +48,8 @@ export const claraThemes = [
     bg: "#050914",
     panel: "rgba(255, 255, 255, 0.052)",
     panelStrong: "rgba(255, 255, 255, 0.095)",
-    gradient: "linear-gradient(135deg, rgba(56,189,248,0.13), rgba(15,23,42,0.9), rgba(30,64,175,0.20))",
+    gradient:
+      "linear-gradient(135deg, rgba(56,189,248,0.13), rgba(15,23,42,0.9), rgba(30,64,175,0.20))",
   },
   {
     id: "rose-aura",
@@ -61,7 +64,8 @@ export const claraThemes = [
     bg: "#10070c",
     panel: "rgba(255, 255, 255, 0.055)",
     panelStrong: "rgba(255, 255, 255, 0.10)",
-    gradient: "linear-gradient(135deg, rgba(251,113,133,0.14), rgba(15,23,42,0.88), rgba(831,16,38,0.18))",
+    gradient:
+      "linear-gradient(135deg, rgba(251,113,133,0.14), rgba(15,23,42,0.88), rgba(131,16,38,0.18))",
   },
 ];
 
@@ -69,18 +73,50 @@ const fallbackTheme = claraThemes[0];
 
 const ThemeContext = createContext(null);
 
+function buildThemeSystem(theme) {
+  return {
+    ...theme,
+    text: "rgba(255, 255, 255, 0.94)",
+    textSoft: "rgba(255, 255, 255, 0.72)",
+    textMuted: "rgba(255, 255, 255, 0.48)",
+    textFaint: "rgba(255, 255, 255, 0.30)",
+    border: "rgba(255, 255, 255, 0.105)",
+    borderStrong: theme.accentBorder,
+    card: theme.panel,
+    cardStrong: theme.panelStrong,
+    glass: `linear-gradient(135deg, ${theme.panelStrong}, ${theme.panel})`,
+    glowSoft: theme.glow,
+    glowPremium: `0 0 28px ${theme.glow}, inset 0 1px 0 rgba(255,255,255,0.10)`,
+    surfaceGlow: `radial-gradient(circle at 50% 0%, ${theme.glow}, transparent 42%)`,
+  };
+}
+
 function applyTheme(theme) {
   const root = document.documentElement;
+  const themeSystem = buildThemeSystem(theme);
 
-  root.style.setProperty("--clara-bg", theme.bg);
-  root.style.setProperty("--clara-panel", theme.panel);
-  root.style.setProperty("--clara-panel-strong", theme.panelStrong);
-  root.style.setProperty("--clara-accent", theme.accent);
-  root.style.setProperty("--clara-accent-soft", theme.accentSoft);
-  root.style.setProperty("--clara-accent-border", theme.accentBorder);
-  root.style.setProperty("--clara-accent-text", theme.accentText);
-  root.style.setProperty("--clara-glow", theme.glow);
-  root.style.setProperty("--clara-gradient", theme.gradient);
+  root.style.setProperty("--clara-bg", themeSystem.bg);
+  root.style.setProperty("--clara-panel", themeSystem.panel);
+  root.style.setProperty("--clara-panel-strong", themeSystem.panelStrong);
+  root.style.setProperty("--clara-card", themeSystem.card);
+  root.style.setProperty("--clara-card-strong", themeSystem.cardStrong);
+  root.style.setProperty("--clara-glass", themeSystem.glass);
+  root.style.setProperty("--clara-border", themeSystem.border);
+  root.style.setProperty("--clara-border-strong", themeSystem.borderStrong);
+  root.style.setProperty("--clara-text", themeSystem.text);
+  root.style.setProperty("--clara-text-soft", themeSystem.textSoft);
+  root.style.setProperty("--clara-text-muted", themeSystem.textMuted);
+  root.style.setProperty("--clara-text-faint", themeSystem.textFaint);
+  root.style.setProperty("--clara-accent", themeSystem.accent);
+  root.style.setProperty("--clara-accent-soft", themeSystem.accentSoft);
+  root.style.setProperty("--clara-accent-border", themeSystem.accentBorder);
+  root.style.setProperty("--clara-accent-text", themeSystem.accentText);
+  root.style.setProperty("--clara-glow", themeSystem.glow);
+  root.style.setProperty("--clara-glow-soft", themeSystem.glowSoft);
+  root.style.setProperty("--clara-glow-premium", themeSystem.glowPremium);
+  root.style.setProperty("--clara-surface-glow", themeSystem.surfaceGlow);
+  root.style.setProperty("--clara-gradient", themeSystem.gradient);
+  root.style.colorScheme = "dark";
 }
 
 export function ClaraThemeProvider({ children }) {
@@ -100,7 +136,7 @@ export function ClaraThemeProvider({ children }) {
   const value = useMemo(
     () => ({
       themes: claraThemes,
-      selectedTheme,
+      selectedTheme: buildThemeSystem(selectedTheme),
       selectedThemeId: selectedTheme.id,
       setThemeId,
     }),
