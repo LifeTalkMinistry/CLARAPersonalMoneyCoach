@@ -208,19 +208,22 @@ export default function DashboardQuickOrb({
           type="button"
           aria-label="Close CLARA command menu"
           onClick={closeMenu}
-          className="fixed inset-0 -z-10 bg-black/35 backdrop-blur-[2px]"
+          className="fixed inset-0 -z-10 bg-black/40 backdrop-blur-[2px]"
         />
       )}
 
       <div
-        className={`absolute bottom-[76px] ${menuAlignment} w-[320px] max-w-[calc(100vw-32px)] overflow-hidden rounded-[30px] border border-lime-300/20 bg-[#071008]/92 p-3 text-white shadow-[0_24px_90px_rgba(132,204,22,0.20)] backdrop-blur-2xl transition-all duration-300 ease-out ${
+        className={`absolute bottom-[76px] ${menuAlignment} w-[320px] max-w-[calc(100vw-32px)] overflow-hidden rounded-[30px] border border-white/[0.10] bg-[#070b10]/92 p-3 text-white shadow-[0_26px_90px_rgba(0,0,0,0.52)] backdrop-blur-2xl transition-all duration-300 ease-out ${
           open
             ? "translate-y-0 scale-100 opacity-100"
             : "pointer-events-none translate-y-5 scale-95 opacity-0"
         }`}
       >
-        <div className="mb-2 rounded-[22px] border border-lime-300/10 bg-lime-300/[0.06] px-3 py-3">
-          <p className="text-[10px] font-black uppercase tracking-[0.24em] text-lime-200/60">
+        <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent" />
+        <div className="pointer-events-none absolute -right-20 -top-20 h-44 w-44 rounded-full bg-lime-200/[0.055] blur-3xl" />
+
+        <div className="relative mb-2 rounded-[22px] border border-white/[0.08] bg-white/[0.045] px-3 py-3 shadow-inner shadow-white/[0.025]">
+          <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white/38">
             CLARA Command
           </p>
           <h3 className="mt-1 text-lg font-black tracking-[-0.03em] text-white">
@@ -231,7 +234,7 @@ export default function DashboardQuickOrb({
           </p>
         </div>
 
-        <div className="space-y-1.5">
+        <div className="relative space-y-1.5">
           {commandItems.map((item, index) => {
             const Icon = item.icon;
 
@@ -240,9 +243,9 @@ export default function DashboardQuickOrb({
                 key={item.label}
                 type="button"
                 onClick={() => handleCommandClick(index)}
-                className="group flex w-full items-center gap-3 rounded-[22px] border border-lime-300/[0.08] bg-white/[0.045] px-3 py-3 text-left transition duration-200 hover:bg-lime-300/[0.08] active:scale-[0.98]"
+                className="group flex w-full items-center gap-3 rounded-[22px] border border-white/[0.075] bg-white/[0.04] px-3 py-3 text-left shadow-inner shadow-white/[0.015] transition duration-200 hover:border-white/[0.14] hover:bg-white/[0.065] active:scale-[0.98]"
               >
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-lime-300/15 bg-lime-300/[0.10] text-lime-200 shadow-[0_0_18px_rgba(132,204,22,0.12)]">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-white/[0.10] bg-white/[0.055] text-white/76 shadow-[0_10px_24px_rgba(0,0,0,0.22)] transition duration-200 group-hover:text-lime-100">
                   <Icon size={18} strokeWidth={1.9} />
                 </span>
 
@@ -268,25 +271,37 @@ export default function DashboardQuickOrb({
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerEnd}
         onPointerCancel={handlePointerEnd}
-        className={`touch-none group relative flex h-[60px] w-[60px] items-center justify-center rounded-full border border-lime-200/25 bg-[#0b1307]/80 text-white shadow-[0_16px_44px_rgba(0,0,0,0.45)] backdrop-blur-2xl transition-all duration-300 ease-out ${
+        className={`touch-none group relative flex h-[60px] w-[60px] items-center justify-center rounded-full border border-white/[0.13] bg-[#080d12]/82 text-white shadow-[0_14px_34px_rgba(0,0,0,0.48),inset_0_1px_0_rgba(255,255,255,0.13),inset_0_-18px_32px_rgba(0,0,0,0.22)] backdrop-blur-2xl transition-all duration-300 ease-out ${
           isDragging ? "scale-95 cursor-grabbing" : "cursor-grab active:scale-95"
         } ${open ? "scale-105" : "scale-100"}`}
         aria-label="CLARA quick action"
         aria-expanded={open}
       >
-        <span className="absolute -inset-4 rounded-full bg-lime-300/20 blur-2xl" />
-        <span className="absolute -inset-2 rounded-full bg-sky-400/10 blur-xl" />
+        <span className="pointer-events-none absolute -inset-[10px] rounded-full bg-lime-200/[0.055] blur-2xl transition duration-500 group-hover:bg-lime-200/[0.075]" />
+        <span className="pointer-events-none absolute -inset-[3px] rounded-full border border-white/[0.055]" />
+        <span
+          className={`pointer-events-none absolute -inset-[5px] rounded-full border border-lime-100/0 transition-all duration-500 ${
+            open
+              ? "scale-110 border-lime-100/20 opacity-100"
+              : "scale-100 border-white/[0.045] opacity-70 group-active:scale-110 group-active:border-lime-100/18"
+          }`}
+        />
 
-        <span className="absolute inset-0 rounded-full bg-gradient-to-br from-lime-200/35 via-lime-400/15 to-sky-400/20" />
-        <span className="absolute inset-[5px] rounded-full border border-lime-100/20 bg-[#071008]/80" />
+        <span className="pointer-events-none absolute inset-0 rounded-full bg-[radial-gradient(circle_at_32%_24%,rgba(255,255,255,0.22),rgba(255,255,255,0.055)_34%,rgba(132,204,22,0.055)_58%,rgba(0,0,0,0.16)_100%)]" />
+        <span className="pointer-events-none absolute inset-[5px] rounded-full border border-white/[0.085] bg-[#071008]/72 shadow-inner shadow-black/40" />
+        <span className="pointer-events-none absolute inset-[13px] rounded-full bg-[radial-gradient(circle_at_35%_28%,rgba(255,255,255,0.18),rgba(163,230,53,0.12)_42%,rgba(4,9,8,0.88)_100%)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.14),inset_0_-10px_18px_rgba(0,0,0,0.34)]" />
 
-        <span className="relative flex h-[46px] w-[46px] items-center justify-center rounded-full bg-gradient-to-br from-lime-200 via-lime-400 to-sky-300 text-[#071008] shadow-[0_0_28px_rgba(163,230,53,0.38)]">
+        <span className="relative flex h-[42px] w-[42px] items-center justify-center rounded-full text-white/82 transition duration-300 group-hover:text-white">
           <Plus
-            className={`h-5 w-5 stroke-[2.6] transition duration-300 ${
-              open ? "rotate-45" : "rotate-0"
+            className={`h-5 w-5 stroke-[2.3] drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)] transition duration-300 ${
+              open ? "rotate-45 scale-95" : "rotate-0 scale-100"
             }`}
           />
-          <Sparkles className="absolute -right-1 -top-1 h-3.5 w-3.5 text-white drop-shadow-[0_0_8px_rgba(255,255,255,0.8)]" />
+          <Sparkles
+            className={`absolute -right-0.5 -top-0.5 h-3 w-3 text-lime-100/75 drop-shadow-[0_0_8px_rgba(217,249,157,0.25)] transition duration-300 ${
+              open ? "scale-90 opacity-60" : "scale-100 opacity-80"
+            }`}
+          />
         </span>
       </button>
     </div>
