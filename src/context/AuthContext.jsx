@@ -33,8 +33,12 @@ export function AuthProvider({ children }) {
     return data;
   };
 
-  const upsertProfile = async (authUser) => {
+  const ensureProfile = async (authUser) => {
     if (!supabase || !authUser) return null;
+
+    const existing = await fetchProfile(authUser.id);
+
+    if (existing) return existing;
 
     const baseProfile = {
       id: authUser.id,
@@ -45,12 +49,12 @@ export function AuthProvider({ children }) {
 
     const { data, error } = await supabase
       .from("profiles")
-      .upsert(baseProfile, { onConflict: "id" })
+      .insert(baseProfile)
       .select()
       .maybeSingle();
 
     if (error) {
-      console.warn("Unable to upsert profile", error);
+      console.warn("Unable to create profile", error);
       return null;
     }
 
@@ -73,7 +77,7 @@ export function AuthProvider({ children }) {
     });
 
     if (!error && data?.user) {
-      await upsertProfile(data.user);
+      await ensureProfile(data.user);
     }
 
     return { data, error };
@@ -85,7 +89,7 @@ export function AuthProvider({ children }) {
     const result = await supabase.auth.signInWithPassword({ email, password });
 
     if (!result.error && result.data?.user) {
-      await upsertProfile(result.data.user);
+      await ensureProfile(result.data.user);
       await fetchProfile(result.data.user.id);
     }
 
@@ -130,7 +134,7 @@ export function AuthProvider({ children }) {
         setUser(currentUser);
 
         if (currentUser) {
-          await upsertProfile(currentUser);
+          await ensureProfile(currentUser);
           await fetchProfile(currentUser.id);
         }
       } catch (err) {
@@ -150,7 +154,7 @@ export function AuthProvider({ children }) {
         setUser(nextUser);
 
         if (nextUser) {
-          await upsertProfile(nextUser);
+          await ensureProfile(nextUser);
           await fetchProfile(nextUser.id);
         } else {
           setProfile(null);
