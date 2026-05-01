@@ -77,6 +77,16 @@ export default function ThemeAppearance() {
         <section className="space-y-3">
           {visibleThemes.map((theme) => {
             const selected = selectedThemeId === theme.id;
+            const previewGradient =
+              theme.gradient ||
+              `linear-gradient(135deg, ${theme.accentSoft}, ${theme.panel}, ${theme.bg})`;
+            const previewGlow = theme.surfaceGlow || theme.glowSoft || theme.glow;
+            const swatches = [
+              theme.accent,
+              theme.secondary || theme.accent,
+              theme.highlight || theme.accentText,
+              theme.bg,
+            ];
 
             return (
               <button
@@ -124,22 +134,62 @@ export default function ThemeAppearance() {
                       {theme.description}
                     </p>
 
-                    <div className="mt-3 flex items-center gap-2">
-                      <span
-                        className="h-7 flex-1 rounded-full border"
-                        style={{
-                          borderColor: theme.accentBorder,
-                          background: theme.gradient,
-                        }}
+                    <div
+                      className="relative mt-3 overflow-hidden rounded-[20px] border p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.10)]"
+                      style={{
+                        borderColor: selected ? theme.accentBorder : "rgba(255,255,255,0.10)",
+                        background: previewGradient,
+                      }}
+                    >
+                      <div
+                        className="pointer-events-none absolute inset-0 opacity-90"
+                        style={{ background: previewGlow }}
                       />
-                      <span
-                        className="h-7 w-7 rounded-full border"
-                        style={{
-                          borderColor: theme.accentBorder,
-                          background: theme.accent,
-                          boxShadow: `0 0 18px ${theme.glow}`,
-                        }}
+
+                      <div
+                        className="pointer-events-none absolute -right-10 -top-10 h-24 w-24 rounded-full blur-2xl"
+                        style={{ background: theme.secondarySoft || theme.accentSoft }}
                       />
+
+                      <div className="relative flex items-center justify-between gap-3">
+                        <div
+                          className="h-9 flex-1 rounded-2xl border"
+                          style={{
+                            borderColor: theme.accentBorder,
+                            background:
+                              theme.glass ||
+                              `linear-gradient(135deg, ${theme.panelStrong || theme.panel}, ${theme.panel})`,
+                            boxShadow:
+                              theme.premiumGlow ||
+                              `0 0 18px ${theme.glowSoft || theme.glow}`,
+                          }}
+                        />
+
+                        <div className="flex shrink-0 items-center gap-1.5 rounded-full border border-white/10 bg-black/20 px-2 py-1.5 backdrop-blur-xl">
+                          {swatches.map((color, index) => (
+                            <span
+                              key={`${theme.id}-swatch-${index}`}
+                              className="h-4 w-4 rounded-full border border-white/20 shadow-[inset_0_1px_0_rgba(255,255,255,0.16)]"
+                              style={{ background: color }}
+                            />
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="relative mt-2 flex items-center gap-2">
+                        <span
+                          className="h-1.5 flex-1 rounded-full"
+                          style={{ background: theme.accentSoft }}
+                        />
+                        <span
+                          className="h-1.5 flex-1 rounded-full"
+                          style={{ background: theme.secondarySoft || theme.accentSoft }}
+                        />
+                        <span
+                          className="h-1.5 flex-1 rounded-full"
+                          style={{ background: theme.highlightSoft || theme.accentSoft }}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
