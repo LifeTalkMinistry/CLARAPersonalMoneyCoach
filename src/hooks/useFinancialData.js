@@ -31,6 +31,10 @@ function normalizeText(value) {
   return String(value || "").trim().toLowerCase();
 }
 
+function normalizeKey(value) {
+  return normalizeText(value).replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+}
+
 function getCurrentMonthKey() {
   const now = new Date();
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
@@ -44,7 +48,15 @@ function getDateMonthKey(value) {
 }
 
 function getExpenseDate(expense) {
-  return expense?.created_at || expense?.createdAt || expense?.date || expense?.expense_date || expense?.transaction_date || expense?.timestamp;
+  return (
+    expense?.created_at ||
+    expense?.createdAt ||
+    expense?.date ||
+    expense?.expense_date ||
+    expense?.transaction_date ||
+    expense?.timestamp ||
+    ""
+  );
 }
 
 function getExpenseCategory(expense) {
@@ -56,18 +68,29 @@ function getBudgetCategory(budget) {
 }
 
 function getBudgetAllocated(budget) {
-  return safeNumber(budget?.allocated ?? budget?.allocated_amount ?? budget?.amount ?? budget?.limit);
+  return safeNumber(
+    budget?.allocated_amount ??
+      budget?.allocated ??
+      budget?.amount ??
+      budget?.limit ??
+      budget?.budget_amount
+  );
 }
 
 function getExpenseAmount(expense) {
   return safeNumber(expense?.amount ?? expense?.value ?? expense?.total);
 }
 
-function isBudgetForMonth(budget, monthKey) {
+function getBudgetMonthKey(budget) {
   const directMonth = budget?.month || budget?.month_key || budget?.monthKey;
-  if (directMonth) return String(directMonth).slice(0, 7) === monthKey;
-  const datedMonth = getDateMonthKey(budget?.created_at || budget?.createdAt || budget?.date || budget?.start_date || budget?.updated_at);
-  return !datedMonth || datedMonth === monthKey;
+  if (directMonth) return String(directMonth).slice(0, 7);
+  return getDateMonthKey(
+    budget?.created_at || budget?.createdAt || budget?.date || budget?.start_date || budget?.updated_at
+  );
+}
+
+function isBudgetForMonth(budget, monthKey) {
+  return getBudgetMonthKey(budget) === monthKey;
 }
 
 function getUsagePercentage(spent, allocated) {
@@ -84,12 +107,72 @@ function getBudgetRiskLevel(usagePercentage) {
   return "safe";
 }
 
+function normalizeBudgetRecord(budget, fallbackMonth = getCurrentMonthKey()) {
+  const category = String(getBudgetCategory(budget)).trim();
+  const month = String(getBudgetMonthKey(budget) || fallbackMonth).slice(0, 7);
+  const allocatedAmount = getBudgetAllocated(budget);
+
+  if (!category || allocatedAmount <= 0) return null;
+
+  return {
+    id: budget?.id || `budget-${month}-${normalizeKey(category)}`,
+    month,
+    category,
+    allocated_amount: allocatedAmount,
+    created_at: budget?.created_at || budget?.createdAt || new Date().toISOString(),
+  };
+}
+
+function mergeBudgetRecords(records = [], monthKey = getCurrentMonthKey()) {
+  const mergedMap = new Map();
+
+  (Array.isArray(records) ? records : []).forEach((record) => {
+    const normalized = normalizeBudgetRecord(record, monthKey);
+    if (!normalized || normalized.month !== monthKey) return;
+
+    const key = normalizeText(normalized.category);
+    const existing = mergedMap.get(key);
+
+    if (!existing) {
+      mergedMap.set(key, normalized);
+      return;
+    }
+
+    mergedMap.set(key, {
+      ...existing,
+      allocated_amount: safeNumber(existing.allocated_amount) + safeNumber(normalized.allocated_amount),
+      created_at: existing.created_at || normalized.created_at,
+    });
+  });
+
+  return Array.from(mergedMap.values()).map((record) => ({
+    ...record,
+    id: `budget-${record.month}-${normalizeKey(record.category)}`,
+  }));
+}
+
+function normalizeExpenseRecord(expense = {}) {
+  const now = new Date().toISOString();
+  const createdAt = getExpenseDate(expense) || now;
+  const amount = getExpenseAmount(expense);
+  const category = String(getExpenseCategory(expense) || "").trim();
+
+  return {
+    ...expense,
+    id: expense?.id || `expense-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    amount,
+    category,
+    created_at: createdAt,
+  };
+}
+
 function attachBudgetSummary(categories, summary) {
   const budgetArray = [...categories];
   budgetArray.month = summary.month;
   budgetArray.monthKey = summary.monthKey;
   budgetArray.total = summary.total;
   budgetArray.spent = summary.spent;
+  budgetArray.remaining = summary.remaining;
   budgetArray.totalExpenses = summary.totalExpenses;
   budgetArray.unplannedSpent = summary.unplannedSpent;
   budgetArray.undocumentedSpent = summary.undocumentedSpent;
@@ -103,34 +186,33 @@ function attachBudgetSummary(categories, summary) {
 
 function buildBudgetFromExpenses(rawBudgets = [], rawExpenses = []) {
   const monthKey = getCurrentMonthKey();
-  const currentMonthBudgets = (Array.isArray(rawBudgets) ? rawBudgets : []).filter((budget) => isBudgetForMonth(budget, monthKey));
-  const currentMonthExpenses = (Array.isArray(rawExpenses) ? rawExpenses : []).filter((expense) => getDateMonthKey(getExpenseDate(expense)) === monthKey);
+  const currentMonthBudgets = mergeBudgetRecords(rawBudgets, monthKey);
+  const currentMonthExpenses = (Array.isArray(rawExpenses) ? rawExpenses : [])
+    .map((expense) => normalizeExpenseRecord(expense))
+    .filter((expense) => getDateMonthKey(getExpenseDate(expense)) === monthKey);
 
-  const categories = currentMonthBudgets.map((budget) => {
-    const categoryName = getBudgetCategory(budget);
-    const allocated = getBudgetAllocated(budget);
-    return {
-      ...budget,
-      category: categoryName,
-      category_name: budget?.category_name || categoryName,
-      allocated,
-      allocated_amount: budget?.allocated_amount ?? allocated,
-      amount: budget?.amount ?? allocated,
-      limit: budget?.limit ?? allocated,
-      spent: 0,
-      remaining: allocated,
-      usagePercentage: 0,
-      riskLevel: "safe",
-    };
-  });
+  const categories = currentMonthBudgets.map((budget) => ({
+    ...budget,
+    spent: 0,
+    remaining: safeNumber(budget.allocated_amount),
+    usagePercentage: 0,
+    riskLevel: "safe",
+  }));
 
-  const categoryMap = new Map(categories.map((category) => [normalizeText(getBudgetCategory(category)), category]).filter(([key]) => Boolean(key)));
+  const categoryMap = new Map(
+    categories
+      .map((category) => [normalizeText(category.category), category])
+      .filter(([key]) => Boolean(key))
+  );
+
   let spent = 0;
   let unplannedSpent = 0;
   let undocumentedSpent = 0;
 
   currentMonthExpenses.forEach((expense) => {
     const amount = getExpenseAmount(expense);
+    if (amount <= 0) return;
+
     const key = normalizeText(getExpenseCategory(expense));
     spent += amount;
 
@@ -140,45 +222,53 @@ function buildBudgetFromExpenses(rawBudgets = [], rawExpenses = []) {
     }
 
     const matchedCategory = categoryMap.get(key);
+
     if (!matchedCategory) {
       unplannedSpent += amount;
       return;
     }
 
     matchedCategory.spent = safeNumber(matchedCategory.spent) + amount;
-    matchedCategory.remaining = getBudgetAllocated(matchedCategory) - safeNumber(matchedCategory.spent);
+    matchedCategory.remaining = safeNumber(matchedCategory.allocated_amount) - safeNumber(matchedCategory.spent);
   });
 
   const enrichedCategories = categories.map((category) => {
-    const allocated = getBudgetAllocated(category);
-    const categorySpent = safeNumber(category?.spent);
-    const usagePercentage = getUsagePercentage(categorySpent, allocated);
+    const allocatedAmount = safeNumber(category.allocated_amount);
+    const categorySpent = safeNumber(category.spent);
+    const usagePercentage = getUsagePercentage(categorySpent, allocatedAmount);
+
     return {
       ...category,
-      allocated,
-      allocated_amount: category?.allocated_amount ?? allocated,
-      amount: category?.amount ?? allocated,
-      limit: category?.limit ?? allocated,
+      allocated_amount: allocatedAmount,
       spent: categorySpent,
-      remaining: allocated - categorySpent,
+      remaining: allocatedAmount - categorySpent,
       usagePercentage,
       riskLevel: getBudgetRiskLevel(usagePercentage),
     };
   });
 
-  const total = enrichedCategories.reduce((sum, category) => sum + getBudgetAllocated(category), 0);
+  const total = enrichedCategories.reduce((sum, category) => sum + safeNumber(category.allocated_amount), 0);
+  const remaining = total - spent;
   const overallUsagePercentage = getUsagePercentage(spent, total);
+
   const summary = {
     month: monthKey,
     monthKey,
     total,
     spent,
+    remaining,
     totalExpenses: spent,
     unplannedSpent,
     undocumentedSpent,
     budgetRiskLevel: getBudgetRiskLevel(overallUsagePercentage),
-    highRiskCategories: enrichedCategories.filter((category) => category.riskLevel === "risk" || category.riskLevel === "overspent"),
-    topSpendingCategory: enrichedCategories.length ? enrichedCategories.reduce((top, category) => safeNumber(category?.spent) > safeNumber(top?.spent) ? category : top) : null,
+    highRiskCategories: enrichedCategories.filter(
+      (category) => category.riskLevel === "risk" || category.riskLevel === "overspent"
+    ),
+    topSpendingCategory: enrichedCategories.length
+      ? enrichedCategories.reduce((top, category) =>
+          safeNumber(category?.spent) > safeNumber(top?.spent) ? category : top
+        )
+      : null,
     categories: enrichedCategories,
   };
 
@@ -198,6 +288,9 @@ function openIndexedDb(dbName, version) {
         if (!db.objectStoreNames.contains("budgets")) {
           db.createObjectStore("budgets", { keyPath: "id" });
         }
+        if (!db.objectStoreNames.contains("expenses")) {
+          db.createObjectStore("expenses", { keyPath: "id" });
+        }
       };
     } catch (error) {
       console.warn(`CLARA IndexedDB open skipped for ${dbName}:`, error);
@@ -206,7 +299,7 @@ function openIndexedDb(dbName, version) {
   });
 }
 
-function openDbWithBudgetStore(dbName) {
+function openDbWithStores(dbName, requiredStores = []) {
   return new Promise((resolve, reject) => {
     if (typeof window === "undefined" || !window.indexedDB) {
       reject(new Error("IndexedDB is not available"));
@@ -220,8 +313,9 @@ function openDbWithBudgetStore(dbName) {
 
     firstOpen.onsuccess = () => {
       const existingDb = firstOpen.result;
+      const missingStores = requiredStores.filter((storeName) => !existingDb.objectStoreNames.contains(storeName));
 
-      if (existingDb.objectStoreNames.contains("budgets")) {
+      if (missingStores.length === 0) {
         resolve(existingDb);
         return;
       }
@@ -233,14 +327,16 @@ function openDbWithBudgetStore(dbName) {
 
       upgradeOpen.onupgradeneeded = () => {
         const upgradedDb = upgradeOpen.result;
-        if (!upgradedDb.objectStoreNames.contains("budgets")) {
-          upgradedDb.createObjectStore("budgets", { keyPath: "id" });
-        }
+        missingStores.forEach((storeName) => {
+          if (!upgradedDb.objectStoreNames.contains(storeName)) {
+            upgradedDb.createObjectStore(storeName, { keyPath: "id" });
+          }
+        });
       };
 
       upgradeOpen.onsuccess = () => resolve(upgradeOpen.result);
-      upgradeOpen.onerror = () => reject(upgradeOpen.error || new Error("Unable to create budget store"));
-      upgradeOpen.onblocked = () => reject(new Error("Budget store upgrade is blocked"));
+      upgradeOpen.onerror = () => reject(upgradeOpen.error || new Error("Unable to create finance stores"));
+      upgradeOpen.onblocked = () => reject(new Error("Finance store upgrade is blocked"));
     };
   });
 }
@@ -293,6 +389,20 @@ function replaceMonthBudgets(db, storeName, monthKey, rows) {
   });
 }
 
+function addRecordToStore(db, storeName, record) {
+  return new Promise((resolve, reject) => {
+    try {
+      const transaction = db.transaction(storeName, "readwrite");
+      transaction.objectStore(storeName).put(record);
+      transaction.oncomplete = () => resolve(record);
+      transaction.onerror = () => reject(transaction.error || new Error(`Unable to save ${storeName}`));
+      transaction.onabort = () => reject(transaction.error || new Error(`${storeName} save aborted`));
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
 async function readFinanceDataFromIndexedDb() {
   if (typeof window === "undefined" || !window.indexedDB) return null;
 
@@ -329,34 +439,33 @@ function buildBudgetRows({ month, categories }) {
   const now = new Date().toISOString();
   const cleanCategories = Array.isArray(categories) ? categories : [];
 
-  return cleanCategories
-    .map((item, index) => {
-      const categoryName = getBudgetCategory(item);
-      const amount = getBudgetAllocated(item);
-      if (!categoryName || amount <= 0) return null;
-      return {
-        ...item,
-        id: item?.id || `budget-${monthKey}-${normalizeText(categoryName).replace(/\s+/g, "-")}-${Date.now()}-${index}`,
-        month: monthKey,
-        month_key: item?.month_key || monthKey,
-        monthKey: item?.monthKey || monthKey,
-        category: categoryName,
-        category_name: item?.category_name || categoryName,
-        allocated_amount: amount,
-        allocated: amount,
-        amount,
-        created_at: item?.created_at || now,
-        updated_at: now,
-      };
-    })
-    .filter(Boolean);
+  return mergeBudgetRecords(
+    cleanCategories.map((item) => ({
+      id: item?.id,
+      month: monthKey,
+      category: getBudgetCategory(item),
+      allocated_amount: getBudgetAllocated(item),
+      created_at: item?.created_at || now,
+    })),
+    monthKey
+  );
 }
 
 async function saveBudgetRowsToIndexedDb(monthKey, rows) {
-  const db = await openDbWithBudgetStore(PRIMARY_FINANCE_DB);
+  const db = await openDbWithStores(PRIMARY_FINANCE_DB, ["budgets"]);
   try {
     await replaceMonthBudgets(db, "budgets", monthKey, rows);
     return rows;
+  } finally {
+    db.close?.();
+  }
+}
+
+async function saveExpenseToIndexedDb(expense) {
+  const db = await openDbWithStores(PRIMARY_FINANCE_DB, ["expenses"]);
+  try {
+    await addRecordToStore(db, "expenses", expense);
+    return expense;
   } finally {
     db.close?.();
   }
@@ -372,7 +481,7 @@ export default function useFinancialData() {
   async function applyFinanceSnapshot() {
     const localData = await readFinanceDataFromIndexedDb();
     setWallets(Array.isArray(localData?.wallets) ? localData.wallets : FALLBACK_WALLETS);
-    setExpenses(Array.isArray(localData?.expenses) ? localData.expenses : FALLBACK_EXPENSES);
+    setExpenses(Array.isArray(localData?.expenses) ? localData.expenses.map((item) => normalizeExpenseRecord(item)) : FALLBACK_EXPENSES);
     setRawBudgets(Array.isArray(localData?.budgets) ? localData.budgets : FALLBACK_BUDGETS);
     setSavingsGoals(Array.isArray(localData?.savingsGoals) ? localData.savingsGoals : FALLBACK_SAVINGS_GOALS);
   }
@@ -385,9 +494,9 @@ export default function useFinancialData() {
     }
   }
 
-  async function saveBudget({ month, total, categories }) {
+  async function saveBudget({ month, categories }) {
     const monthKey = String(month || getCurrentMonthKey()).slice(0, 7);
-    const rows = buildBudgetRows({ month: monthKey, total, categories });
+    const rows = buildBudgetRows({ month: monthKey, categories });
 
     setRawBudgets((currentRows) => {
       const existingRows = Array.isArray(currentRows) ? currentRows : [];
@@ -398,6 +507,18 @@ export default function useFinancialData() {
     return rows;
   }
 
+  async function addExpense(expense) {
+    const normalizedExpense = normalizeExpenseRecord(expense);
+
+    setExpenses((currentRows) => {
+      const existingRows = Array.isArray(currentRows) ? currentRows : [];
+      return [...existingRows, normalizedExpense];
+    });
+
+    await saveExpenseToIndexedDb(normalizedExpense);
+    return normalizedExpense;
+  }
+
   useEffect(() => {
     let mounted = true;
 
@@ -406,7 +527,7 @@ export default function useFinancialData() {
         const localData = await readFinanceDataFromIndexedDb();
         if (!mounted) return;
         setWallets(Array.isArray(localData?.wallets) ? localData.wallets : FALLBACK_WALLETS);
-        setExpenses(Array.isArray(localData?.expenses) ? localData.expenses : FALLBACK_EXPENSES);
+        setExpenses(Array.isArray(localData?.expenses) ? localData.expenses.map((item) => normalizeExpenseRecord(item)) : FALLBACK_EXPENSES);
         setRawBudgets(Array.isArray(localData?.budgets) ? localData.budgets : FALLBACK_BUDGETS);
         setSavingsGoals(Array.isArray(localData?.savingsGoals) ? localData.savingsGoals : FALLBACK_SAVINGS_GOALS);
       } catch (error) {
@@ -437,5 +558,6 @@ export default function useFinancialData() {
     loading,
     refreshFinanceData,
     saveBudget,
+    addExpense,
   };
 }
