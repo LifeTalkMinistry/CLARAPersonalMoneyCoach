@@ -8,6 +8,7 @@ import DashboardFinancialCarousel from "../components/main-dashboard/DashboardFi
 import DashboardMoneySummary from "../components/main-dashboard/DashboardMoneySummary";
 
 import useFinancialData from "../hooks/useFinancialData";
+import { supabase } from "../lib/supabaseClient";
 
 function getAdaptiveDashboardScale() {
   if (typeof window === "undefined") return 1;
@@ -20,11 +21,78 @@ function getAdaptiveDashboardScale() {
   return 1;
 }
 
+function normalizeBillboard(billboard) {
+  if (!billboard) return null;
+
+  const mediaUrl = billboard.media_url || "";
+  const isVideo = /\.(mp4|webm|ogg)(\?.*)?$/i.test(mediaUrl);
+
+  return {
+    ...billboard,
+    video_url: billboard.video_url || (isVideo ? mediaUrl : ""),
+    thumbnail_url: billboard.thumbnail_url || (!isVideo ? mediaUrl : ""),
+    caption: billboard.caption || billboard.description || billboard.cta_text || "",
+  };
+}
+
 export default function Dashboard() {
   const { wallets, expenses, budgets, savingsGoals, loading, saveBudget, addExpense } =
     useFinancialData();
 
   const [dashboardScale, setDashboardScale] = useState(getAdaptiveDashboardScale);
+  const [activeBillboard, setActiveBillboard] = useState(null);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const fetchActiveBillboard = async () => {
+      if (!supabase) return;
+
+      try {
+        const { data, error } = await supabase
+          .from("dashboard_billboards")
+          .select("*")
+          .eq("is_active", true)
+          .limit(1)
+          .single();
+
+        if (error) {
+          if (error.code !== "PGRST116") {
+            console.warn("Unable to load active dashboard billboard:", error.message);
+          }
+          return;
+        }
+
+        if (isMounted) {
+          setActiveBillboard(normalizeBillboard(data));
+        }
+      } catch (error) {
+        console.warn("Unable to load active dashboard billboard:", error);
+      }
+    };
+
+    fetchActiveBillboard();
+
+    const channel = supabase
+      ?.channel("dashboard-active-billboard")
+      .on(
+        "postgres_changes",
+        {
+          event: "*",
+          schema: "public",
+          table: "dashboard_billboards",
+        },
+        fetchActiveBillboard
+      )
+      .subscribe();
+
+    return () => {
+      isMounted = false;
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
+    };
+  }, []);
 
   useEffect(() => {
     const updateDashboardScale = () => {
@@ -40,6 +108,12 @@ export default function Dashboard() {
       window.removeEventListener("orientationchange", updateDashboardScale);
     };
   }, []);
+
+  const handleBillboardClick = () => {
+    if (activeBillboard?.cta_url) {
+      window.location.href = activeBillboard.cta_url;
+    }
+  };
 
   const now = new Date();
   const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
@@ -97,7 +171,10 @@ export default function Dashboard() {
             willChange: dashboardScale === 1 ? "auto" : "transform",
           }}
         >
-          <DashboardBillboard />
+          <DashboardBillboard
+            billboard={activeBillboard}
+            onClick={handleBillboardClick}
+          />
 
           <DashboardWalletDrawer wallets={wallets} />
 
