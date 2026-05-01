@@ -69,7 +69,7 @@ export default function DashboardFinancialCarousel({
   };
 
   return (
-    <div className="relative mt-1 overflow-hidden rounded-[30px] px-1 py-1 sm:mt-2">
+    <div className="relative flex flex-col gap-3 overflow-hidden rounded-[30px] px-1 py-1">
       <div
         className="pointer-events-none absolute inset-x-0 top-4 h-32 rounded-full bg-emerald-400/[0.045] blur-3xl transition-transform duration-500 ease-out"
         style={{ transform: `translate3d(${(scrollProgress - activeSlide) * 12}px, 0, 0)` }}
@@ -87,7 +87,7 @@ export default function DashboardFinancialCarousel({
         ref={carouselRef}
         onScroll={handleScroll}
         aria-label="Financial dashboard cards"
-        className="relative flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth px-1 pb-1 pt-1 scrollbar-none sm:pb-2"
+        className="relative flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth px-1 pb-1 pt-1 scrollbar-none"
       >
         {items.map((item, index) => {
           const distance = index - scrollProgress;
@@ -124,7 +124,7 @@ export default function DashboardFinancialCarousel({
         })}
       </section>
 
-      <div className="mt-1 flex items-center justify-center gap-2 sm:mt-2">
+      <div className="flex items-center justify-center gap-2">
         {items.map((item, index) => {
           const isActive = activeSlide === index;
 
