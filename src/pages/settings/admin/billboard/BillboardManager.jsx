@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../../../../lib/supabaseClient";
 
+const BILLBOARD_BUCKET = "dashboard-billboards";
+
 const EMPTY_FORM = {
   title: "",
   subtitle: "",
@@ -15,6 +17,7 @@ export default function BillboardManager() {
   const [editingId, setEditingId] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploadingMedia, setUploadingMedia] = useState(false);
   const [actionLoading, setActionLoading] = useState({});
   const [pageError, setPageError] = useState("");
   const [formError, setFormError] = useState("");
@@ -70,6 +73,66 @@ export default function BillboardManager() {
       cta_url: billboard.cta_url || "",
     });
     setFormError("");
+  }
+
+  async function handleMediaUpload(event) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    setFormError("");
+
+    const isAllowedMedia = file.type.startsWith("image/") || file.type.startsWith("video/");
+
+    if (!isAllowedMedia) {
+      setFormError("Please upload an image or video file only.");
+      event.target.value = "";
+      return;
+    }
+
+    const maxSize = file.type.startsWith("video/") ? 30 * 1024 * 1024 : 8 * 1024 * 1024;
+
+    if (file.size > maxSize) {
+      setFormError(
+        file.type.startsWith("video/")
+          ? "Video file is too large. Maximum size is 30MB."
+          : "Image file is too large. Maximum size is 8MB."
+      );
+      event.target.value = "";
+      return;
+    }
+
+    setUploadingMedia(true);
+
+    const fileExt = file.name.split(".").pop()?.toLowerCase() || "file";
+    const safeName = file.name
+      .replace(`.${fileExt}`, "")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 40);
+    const filePath = `billboards/${Date.now()}-${safeName || "media"}.${fileExt}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from(BILLBOARD_BUCKET)
+      .upload(filePath, file, {
+        cacheControl: "3600",
+        upsert: false,
+      });
+
+    if (uploadError) {
+      setFormError(uploadError.message || "Failed to upload billboard media.");
+      setUploadingMedia(false);
+      event.target.value = "";
+      return;
+    }
+
+    const { data } = supabase.storage
+      .from(BILLBOARD_BUCKET)
+      .getPublicUrl(filePath);
+
+    updateForm("media_url", data?.publicUrl || "");
+    setUploadingMedia(false);
+    event.target.value = "";
   }
 
   async function handleSave(e) {
@@ -244,15 +307,53 @@ export default function BillboardManager() {
         </div>
 
         <div className="rounded-[20px] border border-white/10 bg-white/[0.04] px-4 py-3">
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/35">
-            Media URL
-          </p>
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/35">
+              Media
+            </p>
+
+            <label className="shrink-0 cursor-pointer rounded-full border border-white/10 bg-white/[0.08] px-3 py-1.5 text-[11px] font-bold text-white/70 transition hover:bg-white/[0.12] hover:text-white">
+              {uploadingMedia ? "Uploading..." : "Upload File"}
+              <input
+                type="file"
+                accept="image/*,video/*"
+                onChange={handleMediaUpload}
+                disabled={uploadingMedia || saving}
+                className="hidden"
+              />
+            </label>
+          </div>
+
           <input
             value={form.media_url}
             onChange={(e) => updateForm("media_url", e.target.value)}
-            placeholder="https://..."
-            className="mt-1 w-full bg-transparent text-sm text-white outline-none placeholder:text-white/25"
+            placeholder="Upload file or paste https://..."
+            className="mt-2 w-full bg-transparent text-sm text-white outline-none placeholder:text-white/25"
           />
+
+          {form.media_url && (
+            <div className="mt-3 overflow-hidden rounded-[18px] border border-white/10 bg-black/20">
+              {/\.(mp4|webm|ogg)(\?.*)?$/i.test(form.media_url) ? (
+                <video
+                  src={form.media_url}
+                  className="h-32 w-full object-cover"
+                  muted
+                  playsInline
+                  controls
+                />
+              ) : (
+                <img
+                  src={form.media_url}
+                  alt="Billboard preview"
+                  className="h-32 w-full object-cover"
+                />
+              )}
+            </div>
+          )}
+
+          <p className="mt-2 text-[11px] leading-5 text-white/35">
+            Upload image up to 8MB or video up to 30MB. The uploaded public URL will be saved as the billboard media URL.
+          </p>
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
@@ -286,7 +387,7 @@ export default function BillboardManager() {
         <div className="flex flex-wrap gap-2">
           <button
             type="submit"
-            disabled={saving}
+            disabled={saving || uploadingMedia}
             className="rounded-full border border-white/10 bg-white/10 px-4 py-2 text-xs font-bold text-white transition hover:bg-white/[0.14] disabled:opacity-50"
           >
             {saving ? "Saving..." : editingId ? "Save Changes" : "Create Billboard"}
