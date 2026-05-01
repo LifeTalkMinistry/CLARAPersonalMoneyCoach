@@ -5,7 +5,7 @@ const envUrl = import.meta.env.VITE_SUPABASE_URL;
 const envKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
 
 // 🔥 FALLBACK (for GitHub Pages)
-const fallbackUrl = "https://xzbjeffacbdgsagrtzth";
+const fallbackUrl = "https://xzbjeffacbdgsagrtzth.supabase.co";
 const fallbackKey = "sb_publishable_s7RCarxHtrW4Mhohyh51-A_D4iEl-c7";
 
 // Decide which to use
