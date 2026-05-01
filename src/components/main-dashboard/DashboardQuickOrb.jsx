@@ -26,6 +26,7 @@ export default function DashboardQuickOrb({
   onDoubleTap,
   onLongPressStart,
   onLongPressEnd,
+  state = "idle", // idle | thinking | attention | response
 }) {
   const [open, setOpen] = useState(false);
   const [position, setPosition] = useState(null);
@@ -182,20 +183,12 @@ export default function DashboardQuickOrb({
     onTap?.();
   };
 
-  const handleCommandClick = (index) => {
-    closeMenu();
-
-    if (index === 0) onLongPressStart?.();
-    if (index === 1) onTap?.();
-    if (index === 2) onDoubleTap?.();
+  const stateClasses = {
+    idle: "",
+    thinking: "animate-pulse scale-[1.02]",
+    attention: "ring-1 ring-amber-300/30",
+    response: "animate-[pulse_1.2s_ease-out]",
   };
-
-  const menuAlignment =
-    dockSide === "center"
-      ? "left-1/2 -translate-x-1/2 origin-bottom"
-      : dockSide === "left"
-      ? "left-0 origin-bottom-left"
-      : "right-0 origin-bottom-right";
 
   return (
     <div
@@ -206,66 +199,6 @@ export default function DashboardQuickOrb({
       }`}
       style={position ? { left: position.x, top: position.y } : undefined}
     >
-      {open && (
-        <button
-          type="button"
-          aria-label="Close CLARA command menu"
-          onClick={closeMenu}
-          className="fixed inset-0 -z-10 bg-black/40 backdrop-blur-[2px]"
-        />
-      )}
-
-      <div
-        className={`absolute bottom-[76px] ${menuAlignment} w-[320px] max-w-[calc(100vw-32px)] overflow-hidden rounded-[30px] border border-white/[0.10] bg-[#070b10]/92 p-3 text-white shadow-[0_26px_90px_rgba(0,0,0,0.52)] backdrop-blur-2xl transition-all duration-300 ease-out ${
-          open
-            ? "translate-y-0 scale-100 opacity-100"
-            : "pointer-events-none translate-y-5 scale-95 opacity-0"
-        }`}
-      >
-        <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent" />
-        <div className="pointer-events-none absolute -right-20 -top-20 h-44 w-44 rounded-full bg-lime-200/[0.055] blur-3xl" />
-
-        <div className="relative mb-2 rounded-[22px] border border-white/[0.08] bg-white/[0.045] px-3 py-3 shadow-inner shadow-white/[0.025]">
-          <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white/38">
-            CLARA Command
-          </p>
-          <h3 className="mt-1 text-lg font-black tracking-[-0.03em] text-white">
-            Ask before you act
-          </h3>
-          <p className="mt-1 text-xs text-white/42">
-            Choose your next smart money move.
-          </p>
-        </div>
-
-        <div className="relative space-y-1.5">
-          {commandItems.map((item, index) => {
-            const Icon = item.icon;
-
-            return (
-              <button
-                key={item.label}
-                type="button"
-                onClick={() => handleCommandClick(index)}
-                className="group flex w-full items-center gap-3 rounded-[22px] border border-white/[0.075] bg-white/[0.04] px-3 py-3 text-left shadow-inner shadow-white/[0.015] transition duration-200 hover:border-white/[0.14] hover:bg-white/[0.065] active:scale-[0.98]"
-              >
-                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-white/[0.10] bg-white/[0.055] text-white/76 shadow-[0_10px_24px_rgba(0,0,0,0.22)] transition duration-200 group-hover:text-lime-100">
-                  <Icon size={18} strokeWidth={1.9} />
-                </span>
-
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm font-bold text-white">
-                    {item.label}
-                  </span>
-                  <span className="mt-0.5 block truncate text-xs text-white/45">
-                    {item.description}
-                  </span>
-                </span>
-              </button>
-            );
-          })}
-        </div>
-      </div>
-
       <button
         type="button"
         onClick={handleOrbClick}
@@ -274,22 +207,10 @@ export default function DashboardQuickOrb({
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerEnd}
         onPointerCancel={handlePointerEnd}
-        className={`touch-none select-none group relative flex h-[60px] w-[60px] items-center justify-center rounded-full border border-white/[0.13] bg-[#080d12]/82 text-white shadow-[0_14px_34px_rgba(0,0,0,0.48),inset_0_1px_0_rgba(255,255,255,0.13),inset_0_-18px_32px_rgba(0,0,0,0.22)] backdrop-blur-2xl transition-all duration-300 ease-out ${
+        className={`touch-none select-none group relative flex h-[60px] w-[60px] items-center justify-center rounded-full border border-white/[0.13] bg-[#080d12]/82 text-white shadow-[0_14px_34px_rgba(0,0,0,0.48),inset_0_1px_0_rgba(255,255,255,0.13),inset_0_-18px_32px_rgba(0,0,0,0.22)] backdrop-blur-2xl transition-all duration-300 ease-out ${stateClasses[state]} ${
           isDragging ? "scale-95 cursor-grabbing" : "cursor-grab active:scale-95"
         } ${open ? "scale-105" : "scale-100"}`}
-        aria-label="CLARA quick action"
-        aria-expanded={open}
       >
-        <span className="pointer-events-none absolute -inset-[10px] rounded-full bg-lime-200/[0.055] blur-2xl transition duration-500 group-hover:bg-lime-200/[0.075]" />
-        <span className="pointer-events-none absolute -inset-[3px] rounded-full border border-white/[0.055]" />
-        <span
-          className={`pointer-events-none absolute -inset-[5px] rounded-full border border-lime-100/0 transition-all duration-500 ${
-            open
-              ? "scale-110 border-lime-100/20 opacity-100"
-              : "scale-100 border-white/[0.045] opacity-70 group-active:scale-110 group-active:border-lime-100/18"
-          }`}
-        />
-
         <span className="pointer-events-none absolute inset-0 rounded-full bg-[radial-gradient(circle_at_32%_24%,rgba(255,255,255,0.22),rgba(255,255,255,0.055)_34%,rgba(132,204,22,0.055)_58%,rgba(0,0,0,0.16)_100%)]" />
         <span className="pointer-events-none absolute inset-[5px] rounded-full border border-white/[0.085] bg-[#071008]/72 shadow-inner shadow-black/40" />
         <span className="pointer-events-none absolute inset-[13px] rounded-full bg-[radial-gradient(circle_at_35%_28%,rgba(255,255,255,0.18),rgba(163,230,53,0.12)_42%,rgba(4,9,8,0.88)_100%)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.14),inset_0_-10px_18px_rgba(0,0,0,0.34)]" />
