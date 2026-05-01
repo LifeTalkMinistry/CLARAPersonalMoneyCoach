@@ -56,13 +56,17 @@ export default function Dashboard() {
         />
       }
     >
-      <div className="space-y-[10px] sm:space-y-3 overflow-hidden pb-[calc(88px+env(safe-area-inset-bottom))]">
+      <div className="dashboard-home-stack space-y-[8px] overflow-y-auto overflow-x-hidden pb-[calc(76px+env(safe-area-inset-bottom))] sm:space-y-3 sm:pb-[calc(88px+env(safe-area-inset-bottom))]">
 
         <section className="transition duration-300 active:scale-[0.99]">
           <DashboardBillboard />
         </section>
 
         <DashboardWalletDrawer wallets={wallets} />
+
+        <section className="transition duration-300 active:scale-[0.99]">
+          <DashboardFinancialCarousel />
+        </section>
 
         <section className="transition duration-300 active:scale-[0.99]">
           <DashboardFinancialCarousel
@@ -78,7 +82,7 @@ export default function Dashboard() {
           />
         </section>
 
-        <section className="mt-1 transition duration-300 active:scale-[0.99]">
+        <section className="transition duration-300 active:scale-[0.99]">
           <DashboardMoneySummary
             moneyLeft={totalMoney - totalExpenses}
             totalExpenses={totalExpenses}
