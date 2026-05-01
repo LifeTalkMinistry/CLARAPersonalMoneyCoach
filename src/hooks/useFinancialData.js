@@ -93,6 +93,46 @@ function getExpenseAmount(expense) {
   return safeNumber(expense?.amount ?? expense?.value ?? expense?.total);
 }
 
+function getUsagePercentage(spent, allocated) {
+  const cleanSpent = safeNumber(spent);
+  const cleanAllocated = safeNumber(allocated);
+
+  if (cleanAllocated <= 0) {
+    return cleanSpent > 0 ? 1.01 : 0;
+  }
+
+  return safeNumber(cleanSpent / cleanAllocated);
+}
+
+function getBudgetRiskLevel(usagePercentage) {
+  const usage = safeNumber(usagePercentage);
+
+  if (usage > 1) return "overspent";
+  if (usage >= 0.85) return "risk";
+  if (usage >= 0.6) return "warning";
+  return "safe";
+}
+
+function enrichBudgetCategory(category) {
+  const allocated = getBudgetAllocated(category);
+  const spent = safeNumber(category?.spent);
+  const remaining = allocated - spent;
+  const usagePercentage = getUsagePercentage(spent, allocated);
+  const riskLevel = getBudgetRiskLevel(usagePercentage);
+
+  return {
+    ...category,
+    allocated,
+    allocated_amount: category?.allocated_amount ?? allocated,
+    amount: category?.amount ?? allocated,
+    limit: category?.limit ?? allocated,
+    spent,
+    remaining,
+    usagePercentage,
+    riskLevel,
+  };
+}
+
 function isCurrentMonthExpense(expense, monthKey) {
   const expenseMonthKey = getDateMonthKey(getExpenseDate(expense));
   return expenseMonthKey === monthKey;
@@ -126,6 +166,9 @@ function attachBudgetSummary(categories, summary) {
   budgetArray.totalExpenses = summary.totalExpenses;
   budgetArray.unplannedSpent = summary.unplannedSpent;
   budgetArray.undocumentedSpent = summary.undocumentedSpent;
+  budgetArray.budgetRiskLevel = summary.budgetRiskLevel;
+  budgetArray.highRiskCategories = summary.highRiskCategories;
+  budgetArray.topSpendingCategory = summary.topSpendingCategory;
   budgetArray.categories = budgetArray;
   budgetArray.summary = summary;
 
@@ -159,6 +202,8 @@ function buildBudgetFromExpenses(rawBudgets = [], rawExpenses = []) {
       limit: budget?.limit ?? allocated,
       spent: 0,
       remaining: allocated,
+      usagePercentage: 0,
+      riskLevel: "safe",
     };
   });
 
@@ -196,10 +241,29 @@ function buildBudgetFromExpenses(rawBudgets = [], rawExpenses = []) {
       getBudgetAllocated(matchedCategory) - safeNumber(matchedCategory.spent);
   });
 
-  const total = categories.reduce(
+  const enrichedCategories = categories.map(enrichBudgetCategory);
+
+  const total = enrichedCategories.reduce(
     (sum, category) => sum + getBudgetAllocated(category),
     0
   );
+
+  const overallUsagePercentage = getUsagePercentage(spent, total);
+  const budgetRiskLevel = getBudgetRiskLevel(overallUsagePercentage);
+
+  const highRiskCategories = enrichedCategories.filter(
+    (category) =>
+      category.riskLevel === "risk" || category.riskLevel === "overspent"
+  );
+
+  const topSpendingCategory =
+    enrichedCategories.length > 0
+      ? enrichedCategories.reduce((topCategory, category) =>
+          safeNumber(category?.spent) > safeNumber(topCategory?.spent)
+            ? category
+            : topCategory
+        )
+      : null;
 
   const summary = {
     month: monthKey,
@@ -209,10 +273,13 @@ function buildBudgetFromExpenses(rawBudgets = [], rawExpenses = []) {
     totalExpenses: spent,
     unplannedSpent,
     undocumentedSpent,
-    categories,
+    budgetRiskLevel,
+    highRiskCategories,
+    topSpendingCategory,
+    categories: enrichedCategories,
   };
 
-  return attachBudgetSummary(categories, summary);
+  return attachBudgetSummary(enrichedCategories, summary);
 }
 
 function readObjectStore(db, storeName) {
