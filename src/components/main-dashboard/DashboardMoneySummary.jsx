@@ -7,6 +7,10 @@ const SWIPE_RESISTANCE = 0.55;
 const MAX_SLIDE = 68;
 const SWIPE_THRESHOLD = 46;
 const COMPLETE_SLIDE = 92;
+const TAP_MOVE_TOLERANCE = 8;
+const INTENT_LOCK_DISTANCE = 12;
+const VERTICAL_CANCEL_DISTANCE = 10;
+const VERTICAL_CANCEL_RATIO = 1.15;
 const PREMIUM_EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
 
 export default function DashboardMoneySummary({
@@ -24,6 +28,9 @@ export default function DashboardMoneySummary({
   const startPoint = useRef(null);
   const didLongPress = useRef(false);
   const didSwipe = useRef(false);
+  const didMove = useRef(false);
+  const gestureLock = useRef(null);
+  const didVibrate = useRef(false);
 
   const [isPressing, setIsPressing] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
@@ -61,12 +68,21 @@ export default function DashboardMoneySummary({
     closeExpense();
   };
 
+  const resetGesture = () => {
+    startPoint.current = null;
+    gestureLock.current = null;
+    didVibrate.current = false;
+  };
+
   const handlePointerDown = (event) => {
     event.stopPropagation();
     event.currentTarget.setPointerCapture?.(event.pointerId);
 
     didLongPress.current = false;
     didSwipe.current = false;
+    didMove.current = false;
+    gestureLock.current = null;
+    didVibrate.current = false;
 
     setIsPressing(true);
     setIsDragging(false);
@@ -81,6 +97,8 @@ export default function DashboardMoneySummary({
     clearTimer();
 
     pressTimer.current = setTimeout(() => {
+      if (gestureLock.current === "vertical") return;
+
       didLongPress.current = true;
       setIsPressing(false);
       setIsDragging(false);
@@ -93,21 +111,66 @@ export default function DashboardMoneySummary({
 
     const diffX = event.clientX - startPoint.current.x;
     const diffY = event.clientY - startPoint.current.y;
-    const isHorizontalSwipe = diffX < 0 && Math.abs(diffY) < 34;
+    const absX = Math.abs(diffX);
+    const absY = Math.abs(diffY);
 
-    if (isHorizontalSwipe) {
-      const resistedSlide = Math.max(diffX * SWIPE_RESISTANCE, -MAX_SLIDE);
-
-      setIsDragging(true);
-      setSlideX(resistedSlide);
-    }
-
-    if (Math.abs(diffX) > 10 || Math.abs(diffY) > 10) {
+    if (absX > TAP_MOVE_TOLERANCE || absY > TAP_MOVE_TOLERANCE) {
+      didMove.current = true;
       clearTimer();
     }
 
-    if (Math.abs(slideX) >= SWIPE_THRESHOLD && Math.abs(diffY) < 30) {
+    if (!gestureLock.current) {
+      const clearVerticalIntent =
+        absY >= VERTICAL_CANCEL_DISTANCE &&
+        absY > absX * VERTICAL_CANCEL_RATIO;
+
+      const clearHorizontalIntent =
+        diffX < 0 &&
+        absX >= INTENT_LOCK_DISTANCE &&
+        absX > absY * 1.35;
+
+      if (clearVerticalIntent) {
+        gestureLock.current = "vertical";
+        didSwipe.current = false;
+        setIsDragging(false);
+        setSlideX(0);
+        clearTimer();
+        return;
+      }
+
+      if (clearHorizontalIntent) {
+        gestureLock.current = "horizontal";
+        setIsDragging(true);
+      } else {
+        return;
+      }
+    }
+
+    if (gestureLock.current === "vertical") {
+      setIsDragging(false);
+      setSlideX(0);
+      return;
+    }
+
+    if (gestureLock.current !== "horizontal") return;
+
+    const resistedSlide = Math.max(diffX * SWIPE_RESISTANCE, -MAX_SLIDE);
+
+    if (resistedSlide >= 0) {
+      setSlideX(0);
+      return;
+    }
+
+    setIsDragging(true);
+    setSlideX(resistedSlide);
+
+    if (Math.abs(resistedSlide) >= SWIPE_THRESHOLD) {
+      if (!didSwipe.current) {
+        navigator?.vibrate?.(8);
+      }
+
       didSwipe.current = true;
+      didVibrate.current = true;
       clearTimer();
       setIsPressing(false);
     }
@@ -124,11 +187,17 @@ export default function DashboardMoneySummary({
     if (didLongPress.current) {
       endClaraAiLongPress?.();
       setSlideX(0);
-      startPoint.current = null;
+      resetGesture();
       return;
     }
 
-    if (didSwipe.current || Math.abs(slideX) >= SWIPE_THRESHOLD) {
+    if (gestureLock.current === "vertical") {
+      setSlideX(0);
+      resetGesture();
+      return;
+    }
+
+    if (didSwipe.current) {
       setIsSliding(true);
       setSlideX(-COMPLETE_SLIDE);
 
@@ -141,13 +210,17 @@ export default function DashboardMoneySummary({
         setSlideX(0);
       }, 260);
 
-      startPoint.current = null;
+      resetGesture();
       return;
     }
 
     setSlideX(0);
-    setShowExpense(true);
-    startPoint.current = null;
+
+    if (!didMove.current) {
+      setShowExpense(true);
+    }
+
+    resetGesture();
   };
 
   return (
