@@ -88,46 +88,38 @@ export default function Dashboard() {
 
   return (
     <ClaraPageShell compactHeader>
-      <div className="dashboard-home-stack flex h-[calc(100svh-74px)] flex-col gap-4 overflow-hidden pb-[calc(70px+env(safe-area-inset-bottom))] sm:h-auto sm:gap-4 sm:overflow-y-auto sm:pb-[calc(88px+env(safe-area-inset-bottom))]">
+      <div className="flex h-[calc(100svh-74px)] flex-col gap-4 overflow-hidden pb-[calc(70px+env(safe-area-inset-bottom))] sm:h-auto sm:overflow-y-auto sm:pb-[calc(88px+env(safe-area-inset-bottom))]">
         <div
-          className="flex min-h-0 origin-top flex-col gap-4 sm:gap-4"
+          className="flex min-h-0 origin-top flex-col gap-4"
           style={{
             transform: `scale(${dashboardScale})`,
             transformOrigin: "top center",
             willChange: dashboardScale === 1 ? "auto" : "transform",
           }}
         >
-          <section className="flex-shrink-0 transition duration-300 active:scale-[0.99]">
-            <DashboardBillboard />
-          </section>
+          <DashboardBillboard />
 
-          <div className="flex-shrink-0">
-            <DashboardWalletDrawer wallets={wallets} />
-          </div>
+          <DashboardWalletDrawer wallets={wallets} />
 
-          <section className="min-h-0 flex-shrink transition duration-300 active:scale-[0.99]">
-            <DashboardFinancialCarousel
-              budgetData={budget}
-              emergencyFundData={{
-                saved: emergencyGoal?.saved_amount || 0,
-                target: emergencyGoal?.target_amount || 0,
-              }}
-              savingsData={savings}
-              investmentData={investments}
-              debtData={debts}
-              onSaveBudget={saveBudget}
-            />
-          </section>
+          <DashboardFinancialCarousel
+            budgetData={budget}
+            emergencyFundData={{
+              saved: emergencyGoal?.saved_amount || 0,
+              target: emergencyGoal?.target_amount || 0,
+            }}
+            savingsData={savings}
+            investmentData={investments}
+            debtData={debts}
+            onSaveBudget={saveBudget}
+          />
 
-          <section className="flex-shrink-0 transition duration-300 active:scale-[0.99]">
-            <DashboardMoneySummary
-              moneyLeft={totalMoney - totalExpenses}
-              totalExpenses={totalExpenses}
-              handleQuickExpense={addExpense}
-              startClaraAiLongPress={startClaraAiLongPress}
-              endClaraAiLongPress={endClaraAiLongPress}
-            />
-          </section>
+          <DashboardMoneySummary
+            moneyLeft={totalMoney - totalExpenses}
+            totalExpenses={totalExpenses}
+            handleQuickExpense={addExpense}
+            startClaraAiLongPress={startClaraAiLongPress}
+            endClaraAiLongPress={endClaraAiLongPress}
+          />
         </div>
       </div>
     </ClaraPageShell>
