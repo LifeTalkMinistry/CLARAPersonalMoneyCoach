@@ -1,9 +1,28 @@
+import { useState } from "react";
 import ClaraPageShell from "../components/shared/layout/ClaraPageShell";
 import CreatePost from "./feed/components/CreatePost";
 import FeedList from "./feed/components/FeedList";
+import PostComposerModal from "./feed/components/PostComposerModal";
 
 export default function Feed() {
-  const posts = [];
+  const [posts, setPosts] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [content, setContent] = useState("");
+  const [category, setCategory] = useState("Insight");
+
+  const handleSubmit = () => {
+    const newPost = {
+      id: Date.now(),
+      name: "You",
+      content,
+      category,
+    };
+
+    setPosts([newPost, ...posts]);
+    setContent("");
+    setCategory("Insight");
+    setOpen(false);
+  };
 
   return (
     <ClaraPageShell>
@@ -22,10 +41,20 @@ export default function Feed() {
           </p>
         </header>
 
-        <CreatePost />
+        <CreatePost onOpen={() => setOpen(true)} />
 
         <FeedList posts={posts} />
       </div>
+
+      <PostComposerModal
+        open={open}
+        content={content}
+        selectedCategory={category}
+        onClose={() => setOpen(false)}
+        onContentChange={setContent}
+        onCategoryChange={setCategory}
+        onSubmit={handleSubmit}
+      />
     </ClaraPageShell>
   );
 }
