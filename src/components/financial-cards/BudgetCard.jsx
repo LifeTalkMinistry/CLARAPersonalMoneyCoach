@@ -350,20 +350,7 @@ export default function BudgetCard({
         progress={progress}
         progressClassName={panelProgressClassName}
         insight={insight}
-        actions={[
-          {
-            label: total ? "Manage Budget" : "Start Budgeting",
-            description: total
-              ? "Edit your monthly spending plan"
-              : "Create this month's spending plan",
-            onClick: () => openBudgetBuilder(total ? "manage" : "create"),
-          },
-          {
-            label: total ? "Reallocate" : "Create Budget",
-            description: total ? "Move money between categories" : "Declare amount and categories",
-            onClick: total ? handleReallocate : () => openBudgetBuilder("create"),
-          },
-        ]}
+        actions={[]}
         details={[
           { label: "Declared", value: money(total) },
           { label: "Spent", value: money(spent) },
@@ -374,7 +361,13 @@ export default function BudgetCard({
           { label: "Unplanned", value: money(unplanned) },
           { label: "Undocumented", value: money(undocumented) },
         ]}
-        footer="Budget buttons are now interactive. The local builder works immediately, and external handlers can connect this to the offline finance store later."
+        footerAction={{
+          label: total ? "Manage Budget" : "Start Budgeting",
+          description: total
+            ? "Edit your monthly spending plan"
+            : "Create this month's spending plan",
+          onClick: () => openBudgetBuilder(total ? "manage" : "create"),
+        }}
       />
 
       <BudgetBuilderPanel
