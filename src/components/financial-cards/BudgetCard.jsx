@@ -235,22 +235,14 @@ export default function BudgetCard({
       : "from-rose-300 to-rose-500";
 
   const panelProgressClassName =
-    progress < 50
-      ? "bg-emerald-400"
-      : progress < 80
-      ? "bg-amber-400"
-      : "bg-rose-400";
+    progress < 50 ? "bg-emerald-400" : progress < 80 ? "bg-amber-400" : "bg-rose-400";
 
   const badgeClassName =
-    progress < 50
-      ? "text-emerald-400"
-      : progress < 80
-      ? "text-amber-400"
-      : "text-rose-400";
+    progress < 50 ? "text-emerald-400" : progress < 80 ? "text-amber-400" : "text-rose-400";
 
   const insight =
     total === 0
-      ? "Declare this month's spending amount first."
+      ? "No plan yet. Start your monthly budget to stay in control."
       : unplanned > 0
       ? `${money(unplanned)} is unplanned. Consider adding categories.`
       : progress < 50
@@ -279,6 +271,12 @@ export default function BudgetCard({
     setBuilderOpen(true);
   };
 
+  const handleCardClick = () => {
+    if (total === 0) {
+      openBudgetBuilder("create");
+    }
+  };
+
   const handleSaveBudget = (nextBudget) => {
     setLocalBudget({
       ...source,
@@ -300,7 +298,16 @@ export default function BudgetCard({
   return (
     <>
       <div
-        className={`h-full w-full ${
+        onClick={handleCardClick}
+        role={total === 0 ? "button" : undefined}
+        tabIndex={total === 0 ? 0 : undefined}
+        onKeyDown={(event) => {
+          if (total === 0 && (event.key === "Enter" || event.key === " ")) {
+            event.preventDefault();
+            openBudgetBuilder("create");
+          }
+        }}
+        className={`h-full w-full ${total === 0 ? "cursor-pointer" : ""} ${
           panelOpen ? "scale-[0.98] opacity-80 transition duration-300" : "transition duration-300"
         }`}
       >
@@ -317,7 +324,10 @@ export default function BudgetCard({
         >
           <button
             type="button"
-            onClick={() => setPanelOpen(true)}
+            onClick={(event) => {
+              event.stopPropagation();
+              setPanelOpen(true);
+            }}
             className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-left text-sm text-white/70 transition duration-300 hover:bg-white/[0.06] hover:text-white"
           >
             <span className="font-medium">Show details</span>
@@ -350,9 +360,7 @@ export default function BudgetCard({
           },
           {
             label: total ? "Reallocate" : "Create Budget",
-            description: total
-              ? "Move money between categories"
-              : "Declare amount and categories",
+            description: total ? "Move money between categories" : "Declare amount and categories",
             onClick: total ? handleReallocate : () => openBudgetBuilder("create"),
           },
         ]}
