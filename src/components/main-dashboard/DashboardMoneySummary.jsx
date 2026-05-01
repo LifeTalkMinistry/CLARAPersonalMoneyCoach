@@ -51,8 +51,6 @@ export default function DashboardMoneySummary({
           <p className="mt-3 text-[clamp(1.15rem,5.2vw,1.55rem)] font-extrabold leading-none tracking-tight text-white">
             {moneyVisible ? formatMoney(moneyLeft) : "••••"}
           </p>
-
-          <p className="mt-2 text-[11px] text-white/45">After expenses</p>
         </div>
 
         <div className="min-h-[90px] px-4 pb-3 pt-3">
