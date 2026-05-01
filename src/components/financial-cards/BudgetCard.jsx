@@ -2,12 +2,28 @@ import { useMemo, useState } from "react";
 import FinancialCardShell from "./FinancialCardShell";
 import FinancialFocusPanel from "./FinancialFocusPanel";
 
+function money(v) {
+  return `₱${Number(v || 0).toLocaleString()}`;
+}
+
 export default function BudgetCard({ data, onAdjustBudget, onReallocate }) {
   const [panelOpen, setPanelOpen] = useState(false);
 
-  const total = data?.total || 0;
-  const spent = data?.spent || 0;
+  const total = data?.total || 0; // Declared
+  const spent = data?.spent || 0; // Budgeted (planned) spend
+  const totalExpenses = data?.totalExpenses ?? spent; // All expenses
+  const unplanned = data?.unplannedSpent || 0; // No matching category
+  const categories = Array.isArray(data?.categories) ? data.categories : [];
+
+  const allocated = categories.reduce(
+    (s, c) => s + Number(c?.allocated ?? c?.allocated_amount ?? 0),
+    0
+  );
+
+  const unallocated = Math.max(total - allocated, 0);
   const remaining = Math.max(total - spent, 0);
+
+  const undocumented = Math.max(totalExpenses - spent - unplanned, 0);
 
   const progress = useMemo(() => {
     if (!total) return 0;
@@ -38,10 +54,14 @@ export default function BudgetCard({ data, onAdjustBudget, onReallocate }) {
       : "text-rose-400";
 
   const insight =
-    progress < 50
-      ? "You're spending within a healthy range."
+    total === 0
+      ? "Declare this month's spending amount first."
+      : unplanned > 0
+      ? `${money(unplanned)} is unplanned. Consider adding categories.`
+      : progress < 50
+      ? "You're within a healthy range."
       : progress < 80
-      ? "You're approaching your budget limit."
+      ? "You're approaching your limit."
       : "Budget is tight. Adjustments recommended.";
 
   return (
@@ -55,9 +75,13 @@ export default function BudgetCard({ data, onAdjustBudget, onReallocate }) {
           eyebrow="Budget"
           title="Monthly Plan"
           icon="₱"
-          badge={status}
-          hero={`₱${total.toLocaleString()}`}
-          heroSubtext={`₱${spent.toLocaleString()} spent`}
+          badge={total ? status : "No Plan"}
+          hero={money(total)}
+          heroSubtext={
+            total
+              ? `${money(remaining)} left`
+              : "No plan"
+          }
           progress={progress}
           progressClassName={progressClassName}
           insight={insight}
@@ -67,8 +91,10 @@ export default function BudgetCard({ data, onAdjustBudget, onReallocate }) {
             onClick={() => setPanelOpen(true)}
             className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-left text-sm text-white/70 transition duration-300 hover:bg-white/[0.06] hover:text-white"
           >
-            <span className="font-medium">Show more</span>
-            <span className="text-lg leading-none text-white/60" aria-hidden="true">⌄</span>
+            <span className="font-medium">Show details</span>
+            <span className="text-lg leading-none text-white/60" aria-hidden>
+              ⌄
+            </span>
           </button>
         </FinancialCardShell>
       </div>
@@ -78,8 +104,8 @@ export default function BudgetCard({ data, onAdjustBudget, onReallocate }) {
         onClose={() => setPanelOpen(false)}
         eyebrow="Budget"
         title="Monthly Plan"
-        primaryLabel="Monthly budget"
-        primaryValue={`₱${total.toLocaleString()}`}
+        primaryLabel={total ? "Remaining" : "No Plan"}
+        primaryValue={money(remaining)}
         badge={status}
         badgeClassName={badgeClassName}
         progress={progress}
@@ -87,8 +113,10 @@ export default function BudgetCard({ data, onAdjustBudget, onReallocate }) {
         insight={insight}
         actions={[
           {
-            label: "Adjust",
-            description: "Update your budget plan",
+            label: total ? "Manage Budget" : "Start",
+            description: total
+              ? "Adjust or reallocate your plan"
+              : "Create this month's spending plan",
             onClick: onAdjustBudget,
           },
           {
@@ -98,11 +126,16 @@ export default function BudgetCard({ data, onAdjustBudget, onReallocate }) {
           },
         ]}
         details={[
-          { label: "Total budget", value: `₱${total.toLocaleString()}` },
-          { label: "Spent", value: `₱${spent.toLocaleString()}` },
-          { label: "Remaining", value: `₱${remaining.toLocaleString()}` },
+          { label: "Declared", value: money(total) },
+          { label: "Spent", value: money(spent) },
+          { label: "Remaining", value: money(remaining) },
+          { label: "Categories", value: String(categories.length) },
+          { label: "Unallocated", value: money(unallocated) },
+          { label: "Allocated", value: money(allocated) },
+          { label: "Unplanned", value: money(unplanned) },
+          { label: "Undocumented", value: money(undocumented) },
         ]}
-        footer="This is your budget control layer. Keep the dashboard clean, then open this panel when you need to adjust or reallocate."
+        footer="Budget updates are derived from your logged expenses so this works even offline."
       />
     </>
   );
