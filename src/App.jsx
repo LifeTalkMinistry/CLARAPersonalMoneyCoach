@@ -6,6 +6,10 @@ import Messages from "./pages/Messages";
 import Settings from "./pages/settings/Settings";
 import ThemeAppearance from "./pages/settings/ThemeAppearance";
 import AdminPanel from "./pages/settings/admin/AdminPanel";
+import BillboardManager from "./pages/settings/admin/billboard/BillboardManager";
+import UserManagement from "./pages/settings/admin/users/UserManagement";
+import PlanAccessControl from "./pages/settings/admin/access/PlanAccessControl";
+import FeatureFlags from "./pages/settings/admin/feature-flags/FeatureFlags";
 import AuthPage from "./pages/auth/AuthPage";
 
 import { useAuth } from "./context/AuthContext";
@@ -51,6 +55,10 @@ export default function App() {
       <Route path="/settings" element={<Settings />} />
       <Route path="/settings/theme" element={<ThemeAppearance />} />
       <Route path="/settings/admin" element={<AdminPanel />} />
+      <Route path="/settings/admin/billboard" element={<BillboardManager />} />
+      <Route path="/settings/admin/users" element={<UserManagement />} />
+      <Route path="/settings/admin/access" element={<PlanAccessControl />} />
+      <Route path="/settings/admin/feature-flags" element={<FeatureFlags />} />
     </Routes>
   );
 }
