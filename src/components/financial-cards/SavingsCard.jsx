@@ -53,16 +53,40 @@ export default function SavingsCard({
             : "transition duration-300"
         }`}
       >
-        <article className="group relative flex h-full max-h-full min-h-0 w-full flex-col overflow-hidden rounded-[26px] border border-white/[0.10] bg-[#0b1118]/88 px-4 pb-4 pt-4 text-white shadow-[0_18px_45px_rgba(0,0,0,0.32)] backdrop-blur-2xl transition-all duration-300 hover:scale-[1.01] hover:shadow-[0_30px_70px_rgba(0,0,0,0.5)] active:scale-[0.985]">
+        <article
+          className="group relative flex h-full max-h-full min-h-0 w-full flex-col overflow-hidden rounded-[26px] border px-4 pb-4 pt-4 text-white backdrop-blur-2xl transition-all duration-300 hover:scale-[1.01] active:scale-[0.985]"
+          style={{
+            borderColor: "var(--clara-border)",
+            background: "var(--clara-glass)",
+            boxShadow:
+              "var(--clara-glow-premium), 0 18px 45px rgba(0,0,0,0.32)",
+          }}
+        >
           <div className="pointer-events-none absolute inset-0 rounded-[26px] bg-[linear-gradient(145deg,rgba(255,255,255,0.10),rgba(255,255,255,0.03)_40%,rgba(255,255,255,0.015))]" />
-          <div className="pointer-events-none absolute -right-20 -top-20 h-48 w-48 rounded-full bg-gradient-to-br from-emerald-300/24 via-teal-300/10 to-transparent opacity-70 blur-3xl transition duration-500 group-hover:scale-110 group-hover:opacity-90" />
+          <div
+            className="pointer-events-none absolute inset-0 opacity-90 transition duration-500 group-hover:opacity-100"
+            style={{ background: "var(--clara-surface-glow)" }}
+          />
+          <div
+            className="pointer-events-none absolute -right-20 -top-20 h-48 w-48 rounded-full opacity-70 blur-3xl transition duration-500 group-hover:scale-110 group-hover:opacity-90"
+            style={{ background: "var(--clara-glow-soft)" }}
+          />
           <div className="pointer-events-none absolute -bottom-24 left-10 h-44 w-44 rounded-full bg-white/[0.025] blur-3xl" />
           <div className="pointer-events-none absolute inset-x-6 top-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent opacity-60 group-hover:opacity-90" />
 
           <div className="relative z-10 flex h-full min-h-0 flex-1 flex-col">
             <header className="flex h-[48px] shrink-0 items-start justify-between gap-3">
               <div className="flex min-w-0 items-center gap-3">
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.08] text-sm font-bold text-emerald-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.10),0_0_18px_rgba(52,211,153,0.10)] transition-all duration-300 group-hover:bg-white/[0.14] group-active:scale-95">
+                <div
+                  className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border text-sm font-bold shadow-[inset_0_1px_0_rgba(255,255,255,0.10)] transition-all duration-300 group-hover:bg-white/[0.14] group-active:scale-95"
+                  style={{
+                    borderColor: "var(--clara-accent-border)",
+                    background: "var(--clara-accent-soft)",
+                    color: "var(--clara-accent-text)",
+                    boxShadow:
+                      "inset 0 1px 0 rgba(255,255,255,0.10), 0 0 18px var(--clara-glow-soft)",
+                  }}
+                >
                   ₱
                 </div>
 
@@ -76,7 +100,15 @@ export default function SavingsCard({
                 </div>
               </div>
 
-              <span className="mt-0.5 shrink-0 rounded-full border border-emerald-300/15 bg-emerald-400/10 px-2.5 py-1 text-[10px] font-bold uppercase leading-none tracking-[0.12em] text-emerald-200 shadow-[0_0_18px_rgba(52,211,153,0.10)] transition-all duration-300 group-hover:scale-105">
+              <span
+                className="mt-0.5 shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase leading-none tracking-[0.12em] transition-all duration-300 group-hover:scale-105"
+                style={{
+                  borderColor: "var(--clara-accent-border)",
+                  background: "var(--clara-accent-soft)",
+                  color: "var(--clara-accent-text)",
+                  boxShadow: "0 0 18px var(--clara-glow-soft)",
+                }}
+              >
                 {status}
               </span>
             </header>
@@ -91,7 +123,13 @@ export default function SavingsCard({
               </p>
             </section>
 
-            <section className="mt-4 min-h-0 flex-1 rounded-[22px] border border-white/[0.08] bg-white/[0.035] p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
+            <section
+              className="mt-4 min-h-0 flex-1 rounded-[22px] border p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]"
+              style={{
+                borderColor: "var(--clara-border)",
+                background: "var(--clara-panel)",
+              }}
+            >
               {hasGoal ? (
                 <>
                   <div className="flex items-end justify-between gap-3">
@@ -111,8 +149,13 @@ export default function SavingsCard({
 
                   <div className="mt-3 h-1.5 overflow-hidden rounded-full border border-white/[0.05] bg-white/[0.06] shadow-[inset_0_1px_2px_rgba(0,0,0,0.28)]">
                     <div
-                      className="h-full rounded-full bg-gradient-to-r from-emerald-200 via-teal-300 to-emerald-400 shadow-[0_0_16px_rgba(52,211,153,0.25)] transition-all duration-500 ease-out"
-                      style={{ width: `${progress}%` }}
+                      className="h-full rounded-full transition-all duration-500 ease-out"
+                      style={{
+                        width: `${progress}%`,
+                        background:
+                          "linear-gradient(90deg, var(--clara-accent-text), var(--clara-accent), var(--clara-accent-text))",
+                        boxShadow: "0 0 16px var(--clara-glow)",
+                      }}
                     />
                   </div>
                 </>
@@ -127,7 +170,11 @@ export default function SavingsCard({
               <button
                 type="button"
                 onClick={() => setPanelOpen(true)}
-                className="flex flex-1 items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-left text-sm text-white/70 transition duration-300 hover:bg-white/[0.06] hover:text-white"
+                className="flex flex-1 items-center justify-between rounded-2xl border px-4 py-3 text-left text-sm text-white/70 transition duration-300 hover:text-white"
+                style={{
+                  borderColor: "var(--clara-border)",
+                  background: "var(--clara-panel)",
+                }}
               >
                 <span className="font-medium">Show more</span>
                 <span className="text-lg leading-none text-white/60" aria-hidden="true">
@@ -139,7 +186,13 @@ export default function SavingsCard({
                 type="button"
                 onClick={onAddSavings}
                 aria-label="Add savings"
-                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-emerald-200/15 bg-emerald-300/[0.12] text-xl font-semibold text-emerald-100 shadow-[0_0_22px_rgba(52,211,153,0.14)] backdrop-blur-xl transition duration-300 hover:scale-105 hover:bg-emerald-300/[0.16] active:scale-95"
+                className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border text-xl font-semibold backdrop-blur-xl transition duration-300 hover:scale-105 active:scale-95"
+                style={{
+                  borderColor: "var(--clara-accent-border)",
+                  background: "var(--clara-accent-soft)",
+                  color: "var(--clara-accent-text)",
+                  boxShadow: "0 0 22px var(--clara-glow-soft)",
+                }}
               >
                 +
               </button>
@@ -156,9 +209,9 @@ export default function SavingsCard({
         primaryLabel="Saved amount"
         primaryValue={`₱${saved.toLocaleString()}`}
         badge={status}
-        badgeClassName="text-emerald-400"
+        badgeClassName="text-[var(--clara-accent-text)]"
         progress={progress}
-        progressClassName="bg-emerald-400"
+        progressClassName="bg-[var(--clara-accent)]"
         insight={insight}
         actions={[
           {
