@@ -88,7 +88,7 @@ export default function Dashboard() {
 
   return (
     <ClaraPageShell compactHeader>
-      <div className="flex h-[calc(100svh-74px)] flex-col gap-4 overflow-hidden pb-[calc(70px+env(safe-area-inset-bottom))] sm:h-auto sm:overflow-y-auto sm:pb-[calc(88px+env(safe-area-inset-bottom))]">
+      <div className="flex min-h-[100dvh] flex-col gap-4 overflow-x-hidden overflow-y-auto pb-[calc(70px+env(safe-area-inset-bottom))] sm:h-auto sm:overflow-y-auto sm:pb-[calc(88px+env(safe-area-inset-bottom))]">
         <div
           className="flex min-h-0 origin-top flex-col gap-4"
           style={{
