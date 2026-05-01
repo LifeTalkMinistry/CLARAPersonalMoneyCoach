@@ -1,11 +1,10 @@
-import { Eye, EyeOff, Plus } from "lucide-react";
+import { Check, Eye, EyeOff, Plus, X } from "lucide-react";
 import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { formatMoney } from "../../lib/dashboard/financeUtils";
 
 export default function DashboardMoneySummary({
   moneyLeft = 0,
-  totalExpenses = 0,
   moneyVisible = true,
   onToggleMoneyVisible,
   handleQuickExpense,
@@ -15,159 +14,215 @@ export default function DashboardMoneySummary({
 }) {
   const navigate = useNavigate();
 
-  const lastTap = useRef(0);
-  const orbPressTimer = useRef(null);
-  const orbStartPoint = useRef(null);
+  const pressTimer = useRef(null);
+  const startPoint = useRef(null);
   const didLongPress = useRef(false);
   const didSwipe = useRef(false);
 
-  const [isPressingOrb, setIsPressingOrb] = useState(false);
+  const [isPressing, setIsPressing] = useState(false);
+  const [showExpense, setShowExpense] = useState(false);
+  const [amount, setAmount] = useState("");
 
-  const triggerQuickExpense = handleQuickExpense || onQuickExpense;
+  const saveExpense = handleQuickExpense || onQuickExpense;
 
-  const handleTap = () => {
-    const now = Date.now();
-
-    if (now - lastTap.current < 300) {
-      navigate("/transactions");
-    }
-
-    lastTap.current = now;
-  };
-
-  const clearOrbTimer = () => {
-    if (orbPressTimer.current) {
-      clearTimeout(orbPressTimer.current);
-      orbPressTimer.current = null;
+  const clearTimer = () => {
+    if (pressTimer.current) {
+      clearTimeout(pressTimer.current);
+      pressTimer.current = null;
     }
   };
 
-  const handleOrbPointerDown = (event) => {
+  const closeExpense = () => {
+    setShowExpense(false);
+    setAmount("");
+  };
+
+  const handleSaveExpense = () => {
+    const cleanAmount = Number(amount);
+
+    if (!Number.isFinite(cleanAmount) || cleanAmount <= 0) return;
+
+    saveExpense?.({
+      amount: cleanAmount,
+      category: "Unplanned",
+      budgetStatus: "unplanned",
+      created_at: new Date().toISOString(),
+    });
+
+    closeExpense();
+  };
+
+  const handlePointerDown = (event) => {
     event.stopPropagation();
     event.currentTarget.setPointerCapture?.(event.pointerId);
 
     didLongPress.current = false;
     didSwipe.current = false;
-    setIsPressingOrb(true);
+    setIsPressing(true);
 
-    orbStartPoint.current = {
+    startPoint.current = {
       x: event.clientX,
       y: event.clientY,
     };
 
-    clearOrbTimer();
+    clearTimer();
 
-    orbPressTimer.current = setTimeout(() => {
+    pressTimer.current = setTimeout(() => {
       didLongPress.current = true;
-      setIsPressingOrb(false);
+      setIsPressing(false);
       startClaraAiLongPress?.();
     }, 420);
   };
 
-  const handleOrbPointerMove = (event) => {
-    if (!orbStartPoint.current) return;
+  const handlePointerMove = (event) => {
+    if (!startPoint.current) return;
 
-    const diffX = event.clientX - orbStartPoint.current.x;
-    const diffY = event.clientY - orbStartPoint.current.y;
+    const diffX = event.clientX - startPoint.current.x;
+    const diffY = event.clientY - startPoint.current.y;
 
     if (diffX < -35 && Math.abs(diffY) < 28) {
       didSwipe.current = true;
-      clearOrbTimer();
-      setIsPressingOrb(false);
+      clearTimer();
+      setIsPressing(false);
     }
 
     if (Math.abs(diffX) > 10 || Math.abs(diffY) > 10) {
-      clearOrbTimer();
+      clearTimer();
     }
   };
 
-  const handleOrbPointerEnd = (event) => {
+  const handlePointerEnd = (event) => {
     event.stopPropagation();
     event.currentTarget.releasePointerCapture?.(event.pointerId);
 
-    clearOrbTimer();
-    setIsPressingOrb(false);
+    clearTimer();
+    setIsPressing(false);
 
     if (didLongPress.current) {
       endClaraAiLongPress?.();
-      orbStartPoint.current = null;
+      startPoint.current = null;
       return;
     }
 
     if (didSwipe.current) {
       navigate("/transactions");
-      orbStartPoint.current = null;
+      startPoint.current = null;
       return;
     }
 
-    triggerQuickExpense?.();
-
-    orbStartPoint.current = null;
+    setShowExpense(true);
+    startPoint.current = null;
   };
 
   return (
-    <section
-      onClick={handleTap}
-      className="relative overflow-hidden rounded-[26px] border border-white/[0.10] bg-[#0b1118]/88 shadow-[0_18px_45px_rgba(0,0,0,0.32)] backdrop-blur-2xl transition active:scale-[0.99]"
-    >
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(255,255,255,0.05),transparent_40%)]" />
+    <>
+      {showExpense && (
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/55 backdrop-blur-md">
+          <button
+            type="button"
+            onClick={closeExpense}
+            className="absolute inset-0"
+            aria-label="Close quick expense"
+          />
 
-      <div className="relative flex min-h-[92px] items-center justify-between gap-4 px-4 py-4">
-        <div className="min-w-0 flex-1">
-          <div className="flex items-center gap-2">
-            <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/45">
-              Money Left
-            </p>
+          <section className="relative w-full max-w-sm rounded-t-[32px] border border-white/[0.10] bg-[#080d12]/95 px-5 pb-5 pt-4 text-white shadow-[0_-30px_90px_rgba(0,0,0,0.72)] backdrop-blur-2xl">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.26em] text-white/38">
+                  Quick Expense
+                </p>
+                <h3 className="mt-1 text-lg font-black tracking-[-0.03em]">
+                  Log spending
+                </h3>
+              </div>
+
+              <button
+                type="button"
+                onClick={closeExpense}
+                className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/[0.10] bg-white/[0.055] text-white/65"
+              >
+                <X size={17} />
+              </button>
+            </div>
+
+            <div className="mt-5 rounded-[26px] border border-white/[0.09] bg-white/[0.045] px-4 py-4">
+              <p className="text-[10px] font-bold uppercase tracking-[0.20em] text-white/35">
+                Amount
+              </p>
+
+              <div className="mt-2 flex items-center gap-2">
+                <span className="text-3xl font-black text-white/45">₱</span>
+                <input
+                  autoFocus
+                  value={amount}
+                  onChange={(event) => setAmount(event.target.value)}
+                  inputMode="decimal"
+                  placeholder="0.00"
+                  className="min-w-0 flex-1 bg-transparent text-4xl font-black tracking-[-0.05em] text-white outline-none placeholder:text-white/18"
+                />
+              </div>
+            </div>
 
             <button
               type="button"
-              onClick={(event) => {
-                event.stopPropagation();
-                onToggleMoneyVisible?.();
-              }}
-              className="rounded-full border border-white/10 bg-white/[0.05] p-1.5 text-white/45 transition hover:bg-white/[0.10] hover:text-white"
-              aria-label={moneyVisible ? "Hide money" : "Show money"}
+              onClick={handleSaveExpense}
+              className="mt-4 flex w-full items-center justify-center gap-2 rounded-[22px] border border-lime-200/[0.14] bg-lime-300/[0.12] py-3.5 text-sm font-bold text-lime-50"
             >
-              {moneyVisible ? <Eye size={12} /> : <EyeOff size={12} />}
+              <Check size={17} />
+              Save expense
             </button>
+          </section>
+        </div>
+      )}
+
+      <section className="relative overflow-hidden rounded-[26px] border border-white/[0.10] bg-[#0b1118]/88 shadow-[0_18px_45px_rgba(0,0,0,0.32)] backdrop-blur-2xl">
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_0%,rgba(255,255,255,0.05),transparent_40%)]" />
+
+        <div className="relative flex min-h-[92px] items-center justify-between gap-4 px-4 py-4">
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center gap-2">
+              <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/45">
+                Money Left
+              </p>
+
+              <button
+                type="button"
+                onClick={(event) => {
+                  event.stopPropagation();
+                  onToggleMoneyVisible?.();
+                }}
+                className="rounded-full border border-white/10 bg-white/[0.05] p-1.5 text-white/45"
+              >
+                {moneyVisible ? <Eye size={12} /> : <EyeOff size={12} />}
+              </button>
+            </div>
+
+            <p className="mt-2 truncate text-[clamp(1.35rem,6vw,1.8rem)] font-extrabold leading-none tracking-tight text-white">
+              {moneyVisible ? formatMoney(moneyLeft) : "••••"}
+            </p>
           </div>
 
-          <p className="mt-2 truncate text-[clamp(1.35rem,6vw,1.8rem)] font-extrabold leading-none tracking-tight text-white">
-            {moneyVisible ? formatMoney(moneyLeft) : "••••"}
-          </p>
-        </div>
-
-        <button
-          type="button"
-          onClick={(event) => event.stopPropagation()}
-          onPointerDown={handleOrbPointerDown}
-          onPointerMove={handleOrbPointerMove}
-          onPointerUp={handleOrbPointerEnd}
-          onPointerCancel={handleOrbPointerEnd}
-          className={`group relative flex h-[60px] w-[60px] shrink-0 touch-none select-none items-center justify-center rounded-full border border-white/[0.13] bg-[#080d12]/82 text-white shadow-[0_14px_34px_rgba(0,0,0,0.48),inset_0_1px_0_rgba(255,255,255,0.13),inset_0_-18px_32px_rgba(0,0,0,0.22)] backdrop-blur-2xl transition-all duration-300 ease-out ${
-            isPressingOrb ? "scale-[0.97]" : "active:scale-95"
-          }`}
-          aria-label="CLARA quick action"
-        >
-          <span className="pointer-events-none absolute -inset-[10px] rounded-full bg-lime-200/[0.055] blur-2xl" />
-          <span className="pointer-events-none absolute -inset-[3px] rounded-full border border-white/[0.055]" />
-          <span className="pointer-events-none absolute inset-0 rounded-full bg-[radial-gradient(circle_at_32%_24%,rgba(255,255,255,0.22),rgba(255,255,255,0.055)_34%,rgba(132,204,22,0.055)_58%,rgba(0,0,0,0.16)_100%)]" />
-          <span className="pointer-events-none absolute inset-[5px] rounded-full border border-white/[0.085] bg-[#071008]/72 shadow-inner shadow-black/40" />
-          <span className="pointer-events-none absolute inset-[13px] rounded-full bg-[radial-gradient(circle_at_35%_28%,rgba(255,255,255,0.18),rgba(163,230,53,0.12)_42%,rgba(4,9,8,0.88)_100%)] shadow-[inset_0_1px_1px_rgba(255,255,255,0.14),inset_0_-10px_18px_rgba(0,0,0,0.34)]" />
-
-          <span
-            className={`pointer-events-none absolute -inset-[5px] rounded-full border transition-all duration-300 ${
-              isPressingOrb
-                ? "scale-110 border-lime-100/18 opacity-100"
-                : "scale-100 border-white/[0.045] opacity-65"
+          <button
+            type="button"
+            onPointerDown={handlePointerDown}
+            onPointerMove={handlePointerMove}
+            onPointerUp={handlePointerEnd}
+            onPointerCancel={handlePointerEnd}
+            className={`group relative flex h-[60px] w-[60px] shrink-0 touch-none select-none items-center justify-center rounded-full border border-white/[0.13] bg-[#080d12]/82 text-white shadow-[0_14px_34px_rgba(0,0,0,0.48),inset_0_1px_0_rgba(255,255,255,0.13),inset_0_-18px_32px_rgba(0,0,0,0.22)] backdrop-blur-2xl transition-all duration-300 ${
+              isPressing ? "scale-[0.97]" : "active:scale-95"
             }`}
-          />
+          >
+            <span className="pointer-events-none absolute -inset-[10px] rounded-full bg-lime-200/[0.055] blur-2xl" />
+            <span className="pointer-events-none absolute inset-0 rounded-full bg-[radial-gradient(circle_at_32%_24%,rgba(255,255,255,0.22),rgba(255,255,255,0.055)_34%,rgba(132,204,22,0.055)_58%,rgba(0,0,0,0.16)_100%)]" />
+            <span className="pointer-events-none absolute inset-[5px] rounded-full border border-white/[0.085] bg-[#071008]/72 shadow-inner shadow-black/40" />
+            <span className="pointer-events-none absolute inset-[13px] rounded-full bg-[radial-gradient(circle_at_35%_28%,rgba(255,255,255,0.18),rgba(163,230,53,0.12)_42%,rgba(4,9,8,0.88)_100%)]" />
 
-          <span className="relative flex h-[42px] w-[42px] items-center justify-center rounded-full text-white/82 transition duration-300 group-hover:text-white">
-            <Plus className="h-5 w-5 stroke-[2.3] drop-shadow-[0_2px_8px_rgba(0,0,0,0.45)]" />
-          </span>
-        </button>
-      </div>
-    </section>
+            <span className="relative flex h-[42px] w-[42px] items-center justify-center text-white/82">
+              <Plus className="h-5 w-5 stroke-[2.3]" />
+            </span>
+          </button>
+        </div>
+      </section>
+    </>
   );
 }
