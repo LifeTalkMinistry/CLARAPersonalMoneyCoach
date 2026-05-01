@@ -50,12 +50,14 @@ function getInitials(value = "") {
 
   if (!cleaned) return "CP";
 
-  return cleaned
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((part) => part[0]?.toUpperCase())
-    .join("") || "CP";
+  return (
+    cleaned
+      .split(" ")
+      .filter(Boolean)
+      .slice(0, 2)
+      .map((part) => part[0]?.toUpperCase())
+      .join("") || "CP"
+  );
 }
 
 function StateCard({ title, description }) {
@@ -141,18 +143,20 @@ export default function Messages() {
           return;
         }
 
-        const [{ data: conversationRows, error: conversationError }, { data: memberRows, error: memberError }] =
-          await Promise.all([
-            supabase
-              .from("conversations")
-              .select("id, title, type, created_by, created_at, updated_at")
-              .in("id", conversationIds)
-              .order("updated_at", { ascending: false }),
-            supabase
-              .from("conversation_members")
-              .select("id, conversation_id, user_id, display_name, avatar_initials, role, created_at")
-              .in("conversation_id", conversationIds),
-          ]);
+        const [conversationResult, memberResult] = await Promise.all([
+          supabase
+            .from("conversations")
+            .select("id, title, type, created_by, created_at, updated_at")
+            .in("id", conversationIds)
+            .order("updated_at", { ascending: false }),
+          supabase
+            .from("conversation_members")
+            .select("id, conversation_id, user_id, display_name, avatar_initials, role, created_at")
+            .in("conversation_id", conversationIds),
+        ]);
+
+        const { data: conversationRows, error: conversationError } = conversationResult;
+        const { data: memberRows, error: memberError } = memberResult;
 
         if (conversationError) throw conversationError;
         if (memberError) throw memberError;
@@ -362,9 +366,9 @@ export default function Messages() {
     !chatError && !loadingMessages && activeConversationId && messages.length === 0;
 
   return (
-    <ClaraPageShell hideTopNav={true}>
-      <section className="flex min-h-[calc(100vh-2rem)] flex-col overflow-hidden rounded-[30px] border border-white/10 bg-slate-950/80 shadow-[0_24px_80px_rgba(0,0,0,0.45)] backdrop-blur-2xl">
-        <header className="border-b border-white/10 bg-white/[0.045] px-4 pb-3 pt-4">
+    <ClaraPageShell>
+      <section className="flex h-[calc(100vh-8.5rem)] min-h-[560px] flex-col overflow-hidden rounded-[30px] border border-white/10 bg-slate-950/80 shadow-[0_24px_80px_rgba(0,0,0,0.45)] backdrop-blur-2xl">
+        <header className="shrink-0 border-b border-white/10 bg-white/[0.045] px-4 pb-3 pt-4">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-3">
               <button
@@ -406,8 +410,8 @@ export default function Messages() {
           </div>
         </header>
 
-        <div className="grid flex-1 grid-rows-[auto_1fr_auto] overflow-hidden">
-          <div className="flex gap-2 overflow-x-auto border-b border-white/10 px-4 py-3">
+        <div className="grid min-h-0 flex-1 grid-rows-[auto_1fr_auto] overflow-hidden">
+          <div className="flex shrink-0 gap-2 overflow-x-auto border-b border-white/10 px-4 py-3">
             {authLoading || loadingConversations ? (
               <div className="flex min-w-[210px] items-center gap-3 rounded-3xl border border-white/10 bg-white/[0.035] p-3 text-left">
                 <div className="h-11 w-11 shrink-0 animate-pulse rounded-2xl bg-white/10" />
@@ -458,7 +462,7 @@ export default function Messages() {
           </div>
 
           <div className="flex min-h-0 flex-col">
-            <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
+            <div className="flex shrink-0 items-center justify-between border-b border-white/10 px-4 py-3">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/10 bg-white/10 text-xs font-bold text-white/85">
                   {activeConversation?.initials || "CP"}
@@ -482,7 +486,7 @@ export default function Messages() {
               </button>
             </div>
 
-            <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
+            <div className="min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-4">
               {showSignedOutState && (
                 <StateCard
                   title="Sign in to use Messages"
@@ -558,7 +562,7 @@ export default function Messages() {
             </div>
           </div>
 
-          <div className="border-t border-white/10 bg-slate-950/90 px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-3">
+          <div className="shrink-0 border-t border-white/10 bg-slate-950/90 px-4 pb-[calc(1rem+env(safe-area-inset-bottom))] pt-3">
             <div className="flex items-end gap-2 rounded-[26px] border border-white/10 bg-white/[0.055] p-2 shadow-[0_18px_50px_rgba(0,0,0,0.28)]">
               <textarea
                 rows={1}
