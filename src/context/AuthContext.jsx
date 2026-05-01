@@ -1,12 +1,54 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 
 const AuthContext = createContext(null);
+
+const AUTH_INIT_TIMEOUT_MS = 7000;
 
 const supabaseMissingError = {
   message:
     "Supabase is not configured yet. Please add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to your environment variables.",
 };
+
+function getAuthName(authUser) {
+  return (
+    authUser?.user_metadata?.full_name ||
+    authUser?.user_metadata?.display_name ||
+    authUser?.user_metadata?.name ||
+    ""
+  );
+}
+
+function createFallbackProfile(authUser, reason = "fallback") {
+  const fullName = getAuthName(authUser);
+
+  return {
+    id: authUser?.id || null,
+    email: authUser?.email || "",
+    full_name: fullName,
+    display_name: fullName,
+    avatar_url: authUser?.user_metadata?.avatar_url || null,
+    role: "user",
+    is_admin: false,
+    __temporary: true,
+    __reason: reason,
+  };
+}
+
+function withTimeout(promise, ms, label) {
+  let timeoutId;
+
+  const timeoutPromise = new Promise((resolve) => {
+    timeoutId = window.setTimeout(() => {
+      console.warn(`${label} timed out. Continuing with safe fallback.`);
+      resolve({ timedOut: true });
+    }, ms);
+  });
+
+  return Promise.race([promise, timeoutPromise]).finally(() => {
+    window.clearTimeout(timeoutId);
+  });
+}
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
@@ -15,51 +57,103 @@ export function AuthProvider({ children }) {
   const [loading, setLoading] = useState(true);
   const [authReady, setAuthReady] = useState(Boolean(supabase));
 
-  const fetchProfile = async (userId) => {
+  const fetchProfile = async (userId, options = {}) => {
+    const { silent = false } = options;
+
     if (!supabase || !userId) return null;
 
-    const { data, error } = await supabase
-      .from("profiles")
-      .select("*")
-      .eq("id", userId)
-      .maybeSingle();
+    try {
+      const { data, error } = await supabase
+        .from("profiles")
+        .select("*")
+        .eq("id", userId)
+        .maybeSingle();
 
-    if (error) {
-      console.warn("Unable to fetch profile", error);
+      if (error) {
+        if (!silent) console.warn("Unable to fetch profile", error);
+        return null;
+      }
+
+      return data || null;
+    } catch (err) {
+      if (!silent) console.warn("Profile fetch crashed", err);
       return null;
     }
-
-    setProfile(data);
-    return data;
   };
 
   const ensureProfile = async (authUser) => {
     if (!supabase || !authUser) return null;
 
-    const existing = await fetchProfile(authUser.id);
+    const fallbackProfile = createFallbackProfile(authUser, "profile_unavailable");
 
-    if (existing) return existing;
+    try {
+      const existing = await fetchProfile(authUser.id);
 
-    const baseProfile = {
-      id: authUser.id,
-      email: authUser.email,
-      role: "user",
-      is_admin: false,
-    };
+      if (existing) {
+        setProfile(existing);
+        return existing;
+      }
 
-    const { data, error } = await supabase
-      .from("profiles")
-      .insert(baseProfile)
-      .select()
-      .maybeSingle();
+      const fullName = getAuthName(authUser);
 
-    if (error) {
-      console.warn("Unable to create profile", error);
-      return null;
+      const baseProfile = {
+        id: authUser.id,
+        email: authUser.email || "",
+        full_name: fullName || null,
+        avatar_url: authUser?.user_metadata?.avatar_url || null,
+        role: "user",
+        is_admin: false,
+      };
+
+      const { data, error } = await supabase
+        .from("profiles")
+        .insert(baseProfile)
+        .select()
+        .maybeSingle();
+
+      if (error) {
+        console.warn("Unable to create profile. Using temporary profile.", error);
+        setProfile(fallbackProfile);
+        return fallbackProfile;
+      }
+
+      const nextProfile = data || {
+        ...fallbackProfile,
+        ...baseProfile,
+        display_name: fullName,
+        __temporary: false,
+      };
+
+      setProfile(nextProfile);
+      return nextProfile;
+    } catch (err) {
+      console.warn("Profile setup failed. Using temporary profile.", err);
+      setProfile(fallbackProfile);
+      return fallbackProfile;
     }
+  };
 
-    setProfile(data || baseProfile);
-    return data || baseProfile;
+  const refreshProfile = async () => {
+    if (!user?.id) return null;
+
+    try {
+      const freshProfile = await fetchProfile(user.id);
+
+      if (freshProfile) {
+        setProfile(freshProfile);
+        return freshProfile;
+      }
+
+      const fallbackProfile = createFallbackProfile(user, "refresh_profile_failed");
+      setProfile((current) => current || fallbackProfile);
+      return fallbackProfile;
+    } catch (err) {
+      console.warn("Unable to refresh profile", err);
+
+      const fallbackProfile = createFallbackProfile(user, "refresh_profile_crashed");
+      setProfile((current) => current || fallbackProfile);
+      return fallbackProfile;
+    }
   };
 
   const signUp = async (email, password, displayName = "") => {
@@ -90,7 +184,6 @@ export function AuthProvider({ children }) {
 
     if (!result.error && result.data?.user) {
       await ensureProfile(result.data.user);
-      await fetchProfile(result.data.user.id);
     }
 
     return result;
@@ -100,15 +193,13 @@ export function AuthProvider({ children }) {
     if (!supabase) return { error: supabaseMissingError };
 
     const result = await supabase.auth.signOut();
+
     setSession(null);
     setUser(null);
     setProfile(null);
-    return result;
-  };
+    setLoading(false);
 
-  const refreshProfile = async () => {
-    if (!user?.id) return null;
-    return fetchProfile(user.id);
+    return result;
   };
 
   useEffect(() => {
@@ -122,10 +213,30 @@ export function AuthProvider({ children }) {
 
     async function initAuth() {
       try {
-        const { data, error } = await supabase.auth.getSession();
+        const result = await withTimeout(
+          supabase.auth.getSession(),
+          AUTH_INIT_TIMEOUT_MS,
+          "Auth initialization"
+        );
 
-        if (error) throw error;
         if (!alive) return;
+
+        if (result?.timedOut) {
+          setSession(null);
+          setUser(null);
+          setProfile(null);
+          return;
+        }
+
+        const { data, error } = result;
+
+        if (error) {
+          console.warn("Unable to initialize auth", error);
+          setSession(null);
+          setUser(null);
+          setProfile(null);
+          return;
+        }
 
         const currentSession = data?.session ?? null;
         const currentUser = currentSession?.user ?? null;
@@ -134,11 +245,25 @@ export function AuthProvider({ children }) {
         setUser(currentUser);
 
         if (currentUser) {
-          await ensureProfile(currentUser);
-          await fetchProfile(currentUser.id);
+          const profileResult = await withTimeout(
+            ensureProfile(currentUser),
+            AUTH_INIT_TIMEOUT_MS,
+            "Profile initialization"
+          );
+
+          if (!alive) return;
+
+          if (profileResult?.timedOut) {
+            setProfile(createFallbackProfile(currentUser, "profile_timeout"));
+          }
+        } else {
+          setProfile(null);
         }
       } catch (err) {
         console.warn("Unable to initialize auth", err);
+        setSession(null);
+        setUser(null);
+        setProfile(null);
       } finally {
         if (alive) setLoading(false);
       }
@@ -153,14 +278,28 @@ export function AuthProvider({ children }) {
         setSession(nextSession);
         setUser(nextUser);
 
-        if (nextUser) {
-          await ensureProfile(nextUser);
-          await fetchProfile(nextUser.id);
-        } else {
+        if (!nextUser) {
           setProfile(null);
+          setLoading(false);
+          return;
         }
 
-        setLoading(false);
+        try {
+          const profileResult = await withTimeout(
+            ensureProfile(nextUser),
+            AUTH_INIT_TIMEOUT_MS,
+            "Auth state profile sync"
+          );
+
+          if (profileResult?.timedOut) {
+            setProfile(createFallbackProfile(nextUser, "auth_state_profile_timeout"));
+          }
+        } catch (err) {
+          console.warn("Auth profile sync failed", err);
+          setProfile(createFallbackProfile(nextUser, "auth_state_profile_failed"));
+        } finally {
+          setLoading(false);
+        }
       }
     );
 
@@ -170,23 +309,23 @@ export function AuthProvider({ children }) {
     };
   }, []);
 
-  return (
-    <AuthContext.Provider
-      value={{
-        user,
-        session,
-        profile,
-        loading,
-        authReady,
-        signUp,
-        signIn,
-        signOut,
-        refreshProfile,
-      }}
-    >
-      {children}
-    </AuthContext.Provider>
+  const value = useMemo(
+    () => ({
+      user,
+      session,
+      profile,
+      loading,
+      authReady,
+      signUp,
+      signIn,
+      signOut,
+      refreshProfile,
+      isAdmin: profile?.role === "admin" || profile?.is_admin === true,
+    }),
+    [user, session, profile, loading, authReady]
   );
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
 
 export function useAuth() {
