@@ -3,6 +3,12 @@ import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { formatMoney } from "../../lib/dashboard/financeUtils";
 
+const SWIPE_RESISTANCE = 0.55;
+const MAX_SLIDE = 68;
+const SWIPE_THRESHOLD = 46;
+const COMPLETE_SLIDE = 92;
+const PREMIUM_EASE = "cubic-bezier(0.22, 1, 0.36, 1)";
+
 export default function DashboardMoneySummary({
   moneyLeft = 0,
   moneyVisible = true,
@@ -20,12 +26,14 @@ export default function DashboardMoneySummary({
   const didSwipe = useRef(false);
 
   const [isPressing, setIsPressing] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
   const [isSliding, setIsSliding] = useState(false);
   const [slideX, setSlideX] = useState(0);
   const [showExpense, setShowExpense] = useState(false);
   const [amount, setAmount] = useState("");
 
   const saveExpense = handleQuickExpense || onQuickExpense;
+  const swipeProgress = Math.min(Math.abs(slideX) / MAX_SLIDE, 1);
 
   const clearTimer = () => {
     if (pressTimer.current) {
@@ -41,7 +49,6 @@ export default function DashboardMoneySummary({
 
   const handleSaveExpense = () => {
     const cleanAmount = Number(amount);
-
     if (!Number.isFinite(cleanAmount) || cleanAmount <= 0) return;
 
     saveExpense?.({
@@ -60,7 +67,9 @@ export default function DashboardMoneySummary({
 
     didLongPress.current = false;
     didSwipe.current = false;
+
     setIsPressing(true);
+    setIsDragging(false);
     setIsSliding(false);
     setSlideX(0);
 
@@ -74,6 +83,7 @@ export default function DashboardMoneySummary({
     pressTimer.current = setTimeout(() => {
       didLongPress.current = true;
       setIsPressing(false);
+      setIsDragging(false);
       startClaraAiLongPress?.();
     }, 420);
   };
@@ -83,19 +93,23 @@ export default function DashboardMoneySummary({
 
     const diffX = event.clientX - startPoint.current.x;
     const diffY = event.clientY - startPoint.current.y;
+    const isHorizontalSwipe = diffX < 0 && Math.abs(diffY) < 34;
 
-    if (diffX < 0 && Math.abs(diffY) < 34) {
-      setSlideX(Math.max(diffX, -58));
-    }
+    if (isHorizontalSwipe) {
+      const resistedSlide = Math.max(diffX * SWIPE_RESISTANCE, -MAX_SLIDE);
 
-    if (diffX < -42 && Math.abs(diffY) < 30) {
-      didSwipe.current = true;
-      clearTimer();
-      setIsPressing(false);
+      setIsDragging(true);
+      setSlideX(resistedSlide);
     }
 
     if (Math.abs(diffX) > 10 || Math.abs(diffY) > 10) {
       clearTimer();
+    }
+
+    if (Math.abs(slideX) >= SWIPE_THRESHOLD && Math.abs(diffY) < 30) {
+      didSwipe.current = true;
+      clearTimer();
+      setIsPressing(false);
     }
   };
 
@@ -105,6 +119,7 @@ export default function DashboardMoneySummary({
 
     clearTimer();
     setIsPressing(false);
+    setIsDragging(false);
 
     if (didLongPress.current) {
       endClaraAiLongPress?.();
@@ -113,13 +128,13 @@ export default function DashboardMoneySummary({
       return;
     }
 
-    if (didSwipe.current) {
+    if (didSwipe.current || Math.abs(slideX) >= SWIPE_THRESHOLD) {
       setIsSliding(true);
-      setSlideX(-92);
+      setSlideX(-COMPLETE_SLIDE);
 
       window.setTimeout(() => {
         navigate("/transactions");
-      }, 180);
+      }, 160);
 
       window.setTimeout(() => {
         setIsSliding(false);
@@ -226,11 +241,16 @@ export default function DashboardMoneySummary({
           </div>
 
           <div className="relative shrink-0">
-            <div className="pointer-events-none absolute inset-y-0 -left-14 flex items-center">
+            <div className="pointer-events-none absolute inset-y-0 -left-16 flex items-center">
               <div
-                className={`rounded-full border border-white/[0.08] bg-white/[0.04] px-2 py-1 text-[9px] font-bold uppercase tracking-[0.18em] text-white/35 transition ${
-                  slideX < -18 ? "opacity-100" : "opacity-0"
-                }`}
+                className="rounded-full border border-white/[0.08] bg-white/[0.04] px-2 py-1 text-[9px] font-bold uppercase tracking-[0.18em] text-white/35"
+                style={{
+                  opacity: swipeProgress,
+                  transform: `translateX(${14 - swipeProgress * 14}px)`,
+                  transition: isDragging
+                    ? "none"
+                    : `opacity 260ms ${PREMIUM_EASE}, transform 260ms ${PREMIUM_EASE}`,
+                }}
               >
                 Transactions
               </div>
@@ -242,17 +262,31 @@ export default function DashboardMoneySummary({
               onPointerMove={handlePointerMove}
               onPointerUp={handlePointerEnd}
               onPointerCancel={handlePointerEnd}
-              className={`group relative flex h-[60px] w-[60px] touch-none select-none items-center justify-center rounded-full border border-white/[0.13] bg-[#080d12]/82 text-white shadow-[0_14px_34px_rgba(0,0,0,0.48),inset_0_1px_0_rgba(255,255,255,0.13),inset_0_-18px_32px_rgba(0,0,0,0.22)] backdrop-blur-2xl transition-all duration-200 ${
+              className={`group relative flex h-[60px] w-[60px] touch-none select-none items-center justify-center rounded-full border border-white/[0.13] bg-[#080d12]/82 text-white backdrop-blur-2xl ${
                 isPressing ? "scale-[0.97]" : "active:scale-95"
-              } ${isSliding ? "opacity-80" : ""}`}
+              }`}
               style={{
+                opacity: 1 - swipeProgress * 0.22,
+                filter: `blur(${swipeProgress * 0.7}px)`,
                 transform: `translateX(${slideX}px) scale(${
                   isPressing ? 0.97 : 1
                 })`,
+                transition: isDragging
+                  ? "none"
+                  : `transform 360ms ${PREMIUM_EASE}, opacity 220ms ${PREMIUM_EASE}, filter 220ms ${PREMIUM_EASE}, box-shadow 220ms ${PREMIUM_EASE}`,
+                boxShadow:
+                  isDragging || isSliding
+                    ? "0 18px 42px rgba(0,0,0,0.52), 0 0 26px rgba(190,242,100,0.11), inset 0 1px 0 rgba(255,255,255,0.15), inset 0 -18px 32px rgba(0,0,0,0.24)"
+                    : "0 14px 34px rgba(0,0,0,0.48), inset 0 1px 0 rgba(255,255,255,0.13), inset 0 -18px 32px rgba(0,0,0,0.22)",
               }}
               aria-label="CLARA quick action"
             >
-              <span className="pointer-events-none absolute -inset-[10px] rounded-full bg-lime-200/[0.055] blur-2xl" />
+              <span
+                className="pointer-events-none absolute -inset-[10px] rounded-full bg-lime-200/[0.055] blur-2xl"
+                style={{
+                  opacity: 0.65 + swipeProgress * 0.35,
+                }}
+              />
               <span className="pointer-events-none absolute inset-0 rounded-full bg-[radial-gradient(circle_at_32%_24%,rgba(255,255,255,0.22),rgba(255,255,255,0.055)_34%,rgba(132,204,22,0.055)_58%,rgba(0,0,0,0.16)_100%)]" />
               <span className="pointer-events-none absolute inset-[5px] rounded-full border border-white/[0.085] bg-[#071008]/72 shadow-inner shadow-black/40" />
               <span className="pointer-events-none absolute inset-[13px] rounded-full bg-[radial-gradient(circle_at_35%_28%,rgba(255,255,255,0.18),rgba(163,230,53,0.12)_42%,rgba(4,9,8,0.88)_100%)]" />
