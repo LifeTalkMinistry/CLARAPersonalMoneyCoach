@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react";
+
 import ClaraPageShell from "../components/shared/layout/ClaraPageShell";
 
 import DashboardBillboard from "../components/main-dashboard/DashboardBillboard";
@@ -8,8 +10,35 @@ import DashboardQuickOrb from "../components/main-dashboard/DashboardQuickOrb";
 
 import useFinancialData from "../hooks/useFinancialData";
 
+function getAdaptiveDashboardScale() {
+  if (typeof window === "undefined") return 1;
+
+  const height = window.innerHeight || 0;
+
+  if (height > 0 && height <= 640) return 0.92;
+  if (height > 0 && height <= 700) return 0.95;
+
+  return 1;
+}
+
 export default function Dashboard() {
   const { wallets, expenses, budgets, savingsGoals, loading, saveBudget, addExpense } = useFinancialData();
+  const [dashboardScale, setDashboardScale] = useState(getAdaptiveDashboardScale);
+
+  useEffect(() => {
+    const updateDashboardScale = () => {
+      setDashboardScale(getAdaptiveDashboardScale());
+    };
+
+    updateDashboardScale();
+    window.addEventListener("resize", updateDashboardScale);
+    window.addEventListener("orientationchange", updateDashboardScale);
+
+    return () => {
+      window.removeEventListener("resize", updateDashboardScale);
+      window.removeEventListener("orientationchange", updateDashboardScale);
+    };
+  }, []);
 
   const now = new Date();
   const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
@@ -56,39 +85,44 @@ export default function Dashboard() {
         />
       }
     >
-      <div className="dashboard-home-stack space-y-[8px] overflow-y-auto overflow-x-hidden pb-[calc(76px+env(safe-area-inset-bottom))] sm:space-y-3 sm:pb-[calc(88px+env(safe-area-inset-bottom))]">
+      <div className="dashboard-home-stack flex h-[calc(100svh-74px)] flex-col gap-[6px] overflow-hidden pb-[calc(70px+env(safe-area-inset-bottom))] sm:h-auto sm:gap-3 sm:overflow-y-auto sm:pb-[calc(88px+env(safe-area-inset-bottom))]">
+        <div
+          className="flex min-h-0 origin-top flex-col gap-[6px] sm:gap-3"
+          style={{
+            transform: `scale(${dashboardScale})`,
+            transformOrigin: "top center",
+            willChange: dashboardScale === 1 ? "auto" : "transform",
+          }}
+        >
+          <section className="flex-shrink-0 transition duration-300 active:scale-[0.99]">
+            <DashboardBillboard />
+          </section>
 
-        <section className="transition duration-300 active:scale-[0.99]">
-          <DashboardBillboard />
-        </section>
+          <div className="flex-shrink-0">
+            <DashboardWalletDrawer wallets={wallets} />
+          </div>
 
-        <DashboardWalletDrawer wallets={wallets} />
+          <section className="min-h-0 flex-shrink transition duration-300 active:scale-[0.99]">
+            <DashboardFinancialCarousel
+              budgetData={budget}
+              emergencyFundData={{
+                saved: emergencyGoal?.saved_amount || 0,
+                target: emergencyGoal?.target_amount || 0,
+              }}
+              savingsData={savings}
+              investmentData={investments}
+              debtData={debts}
+              onSaveBudget={saveBudget}
+            />
+          </section>
 
-        <section className="transition duration-300 active:scale-[0.99]">
-          <DashboardFinancialCarousel />
-        </section>
-
-        <section className="transition duration-300 active:scale-[0.99]">
-          <DashboardFinancialCarousel
-            budgetData={budget}
-            emergencyFundData={{
-              saved: emergencyGoal?.saved_amount || 0,
-              target: emergencyGoal?.target_amount || 0,
-            }}
-            savingsData={savings}
-            investmentData={investments}
-            debtData={debts}
-            onSaveBudget={saveBudget}
-          />
-        </section>
-
-        <section className="transition duration-300 active:scale-[0.99]">
-          <DashboardMoneySummary
-            moneyLeft={totalMoney - totalExpenses}
-            totalExpenses={totalExpenses}
-          />
-        </section>
-
+          <section className="flex-shrink-0 transition duration-300 active:scale-[0.99]">
+            <DashboardMoneySummary
+              moneyLeft={totalMoney - totalExpenses}
+              totalExpenses={totalExpenses}
+            />
+          </section>
+        </div>
       </div>
     </ClaraPageShell>
   );
