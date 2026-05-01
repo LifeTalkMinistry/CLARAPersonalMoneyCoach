@@ -5,6 +5,41 @@ import { topNavItems } from "./navConfig";
 
 const PROFILE_PLAN = "Free";
 
+const pageToneMap = {
+  "/": {
+    shell:
+      "border-sky-300/22 bg-gradient-to-br from-sky-400/14 via-indigo-500/10 to-fuchsia-500/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_14px_42px_rgba(14,165,233,0.10)]",
+    active:
+      "bg-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.13),0_10px_22px_rgba(56,189,248,0.10)]",
+    sweep: "bg-gradient-to-r from-transparent via-sky-100/[0.13] to-transparent",
+    icon: "scale-[1.03] border-sky-100/45 bg-sky-200/[0.11] text-white shadow-[0_0_12px_rgba(125,211,252,0.14)]",
+  },
+  "/feed": {
+    shell:
+      "border-violet-300/20 bg-gradient-to-br from-violet-400/13 via-fuchsia-500/[0.09] to-sky-400/[0.07] shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_14px_42px_rgba(167,139,250,0.09)]",
+    active:
+      "bg-white/[0.075] shadow-[inset_0_1px_0_rgba(255,255,255,0.13),0_10px_22px_rgba(167,139,250,0.10)]",
+    sweep: "bg-gradient-to-r from-transparent via-violet-100/[0.13] to-transparent",
+    icon: "scale-[1.03] border-violet-100/42 bg-violet-200/[0.105] text-white shadow-[0_0_12px_rgba(196,181,253,0.13)]",
+  },
+  "/messages": {
+    shell:
+      "border-cyan-300/20 bg-gradient-to-br from-cyan-400/[0.12] via-sky-500/[0.08] to-indigo-500/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_14px_42px_rgba(34,211,238,0.085)]",
+    active:
+      "bg-white/[0.075] shadow-[inset_0_1px_0_rgba(255,255,255,0.13),0_10px_22px_rgba(34,211,238,0.10)]",
+    sweep: "bg-gradient-to-r from-transparent via-cyan-100/[0.13] to-transparent",
+    icon: "scale-[1.03] border-cyan-100/42 bg-cyan-200/[0.105] text-white shadow-[0_0_12px_rgba(103,232,249,0.13)]",
+  },
+  "/settings": {
+    shell:
+      "border-white/[0.14] bg-gradient-to-br from-white/[0.095] via-slate-500/[0.07] to-sky-500/[0.055] shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_14px_42px_rgba(148,163,184,0.08)]",
+    active:
+      "bg-white/[0.085] shadow-[inset_0_1px_0_rgba(255,255,255,0.13),0_10px_22px_rgba(148,163,184,0.095)]",
+    sweep: "bg-gradient-to-r from-transparent via-white/[0.13] to-transparent",
+    icon: "scale-[1.03] border-white/35 bg-white/[0.10] text-white shadow-[0_0_12px_rgba(255,255,255,0.10)]",
+  },
+};
+
 export default function TopNavigationBar({ compact = false }) {
   const location = useLocation();
   const navigate = useNavigate();
@@ -12,6 +47,7 @@ export default function TopNavigationBar({ compact = false }) {
 
   const profileName = avatar?.name || "CLARA User";
   const firstName = profileName.split(" ").filter(Boolean)[0] || "CLARA";
+  const pageTone = pageToneMap[location.pathname] || pageToneMap["/"];
 
   const activeIndex = Math.max(
     0,
@@ -73,7 +109,7 @@ export default function TopNavigationBar({ compact = false }) {
       <div
         className={`relative overflow-hidden rounded-[28px] border backdrop-blur-2xl transition-all duration-300 ${
           compact
-            ? "border-sky-300/22 bg-gradient-to-br from-sky-400/14 via-indigo-500/10 to-fuchsia-500/[0.08] p-1 shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_14px_42px_rgba(14,165,233,0.10)]"
+            ? `${pageTone.shell} p-1`
             : "border-amber-400/24 bg-gradient-to-br from-white/8 via-slate-900/82 to-amber-950/24 p-1.5 shadow-[0_0_28px_rgba(245,158,11,0.10)]"
         }`}
       >
@@ -81,7 +117,7 @@ export default function TopNavigationBar({ compact = false }) {
           <div
             className={`absolute bottom-0 top-0 overflow-hidden rounded-[22px] transition-all duration-500 ease-out ${
               compact
-                ? "bg-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.13),0_10px_22px_rgba(56,189,248,0.10)]"
+                ? pageTone.active
                 : "bg-white/[0.10] shadow-[inset_0_0_18px_rgba(255,255,255,0.09),0_0_18px_rgba(251,191,36,0.10)]"
             }`}
             style={{
@@ -92,7 +128,7 @@ export default function TopNavigationBar({ compact = false }) {
             <span
               className={`pointer-events-none absolute inset-y-0 -left-1/3 w-[135%] rounded-[22px] ${
                 compact
-                  ? "bg-gradient-to-r from-transparent via-sky-100/[0.13] to-transparent"
+                  ? pageTone.sweep
                   : "bg-gradient-to-r from-transparent via-amber-100/[0.12] to-transparent"
               }`}
             />
@@ -127,7 +163,7 @@ export default function TopNavigationBar({ compact = false }) {
                   className={`flex h-8 w-8 items-center justify-center rounded-full border transition-all duration-300 ${
                     isActive
                       ? compact
-                        ? "scale-[1.03] border-sky-100/45 bg-sky-200/[0.11] text-white shadow-[0_0_12px_rgba(125,211,252,0.14)]"
+                        ? pageTone.icon
                         : "scale-[1.03] border-amber-200/55 bg-amber-300/12 text-amber-50 shadow-[0_0_10px_rgba(251,191,36,0.16)]"
                       : "border-white/22 bg-white/[0.055] text-white/76 group-hover:bg-white/[0.09] group-hover:text-white"
                   }`}
