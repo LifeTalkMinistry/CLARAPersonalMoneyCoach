@@ -4,6 +4,7 @@ export default function ClaraPageShell({
   children,
   floatingAction = null,
   compactHeader = true,
+  hideTopNav = false,
 }) {
   return (
     <main
@@ -11,7 +12,7 @@ export default function ClaraPageShell({
       style={{ background: "var(--clara-bg)" }}
     >
       <div className="flex w-full max-w-sm flex-col gap-4 px-4 pt-2 pb-6">
-        <TopNavigationBar compact={compactHeader} />
+        {!hideTopNav && <TopNavigationBar compact={compactHeader} />}
         {children}
       </div>
 
