@@ -27,138 +27,64 @@ function safeNumber(value, fallback = 0) {
 }
 
 function normalizeText(value) {
-  return String(value || "")
-    .trim()
-    .toLowerCase();
+  return String(value || "").trim().toLowerCase();
 }
 
 function getCurrentMonthKey() {
   const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  return `${year}-${month}`;
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 }
 
 function getDateMonthKey(value) {
   if (!value) return "";
-
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "";
-
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  return `${year}-${month}`;
+  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
 }
 
 function getExpenseDate(expense) {
-  return (
-    expense?.created_at ||
-    expense?.createdAt ||
-    expense?.date ||
-    expense?.expense_date ||
-    expense?.transaction_date ||
-    expense?.timestamp
-  );
+  return expense?.created_at || expense?.createdAt || expense?.date || expense?.expense_date || expense?.transaction_date || expense?.timestamp;
 }
 
 function getExpenseCategory(expense) {
-  return (
-    expense?.category ||
-    expense?.category_name ||
-    expense?.budget_category ||
-    ""
-  );
+  return expense?.category || expense?.category_name || expense?.budget_category || "";
 }
 
 function getBudgetCategory(budget) {
-  return (
-    budget?.category ||
-    budget?.category_name ||
-    budget?.name ||
-    budget?.title ||
-    ""
-  );
+  return budget?.category || budget?.category_name || budget?.name || budget?.title || "";
 }
 
 function getBudgetAllocated(budget) {
-  return safeNumber(
-    budget?.allocated ??
-      budget?.allocated_amount ??
-      budget?.amount ??
-      budget?.limit
-  );
+  return safeNumber(budget?.allocated ?? budget?.allocated_amount ?? budget?.amount ?? budget?.limit);
 }
 
 function getExpenseAmount(expense) {
   return safeNumber(expense?.amount ?? expense?.value ?? expense?.total);
 }
 
+function isBudgetForMonth(budget, monthKey) {
+  const directMonth = budget?.month || budget?.month_key || budget?.monthKey;
+  if (directMonth) return String(directMonth).slice(0, 7) === monthKey;
+  const datedMonth = getDateMonthKey(budget?.created_at || budget?.createdAt || budget?.date || budget?.start_date || budget?.updated_at);
+  return !datedMonth || datedMonth === monthKey;
+}
+
 function getUsagePercentage(spent, allocated) {
   const cleanSpent = safeNumber(spent);
   const cleanAllocated = safeNumber(allocated);
-
-  if (cleanAllocated <= 0) {
-    return cleanSpent > 0 ? 1.01 : 0;
-  }
-
-  return safeNumber(cleanSpent / cleanAllocated);
+  if (cleanAllocated <= 0) return cleanSpent > 0 ? 1.01 : 0;
+  return cleanSpent / cleanAllocated;
 }
 
 function getBudgetRiskLevel(usagePercentage) {
-  const usage = safeNumber(usagePercentage);
-
-  if (usage > 1) return "overspent";
-  if (usage >= 0.85) return "risk";
-  if (usage >= 0.6) return "warning";
+  if (usagePercentage > 1) return "overspent";
+  if (usagePercentage >= 0.85) return "risk";
+  if (usagePercentage >= 0.6) return "warning";
   return "safe";
-}
-
-function enrichBudgetCategory(category) {
-  const allocated = getBudgetAllocated(category);
-  const spent = safeNumber(category?.spent);
-  const remaining = allocated - spent;
-  const usagePercentage = getUsagePercentage(spent, allocated);
-  const riskLevel = getBudgetRiskLevel(usagePercentage);
-
-  return {
-    ...category,
-    allocated,
-    allocated_amount: category?.allocated_amount ?? allocated,
-    amount: category?.amount ?? allocated,
-    limit: category?.limit ?? allocated,
-    spent,
-    remaining,
-    usagePercentage,
-    riskLevel,
-  };
-}
-
-function isCurrentMonthExpense(expense, monthKey) {
-  const expenseMonthKey = getDateMonthKey(getExpenseDate(expense));
-  return expenseMonthKey === monthKey;
-}
-
-function isBudgetForCurrentMonth(budget, monthKey) {
-  const directMonth = budget?.month || budget?.month_key || budget?.monthKey;
-
-  if (directMonth) {
-    return String(directMonth).slice(0, 7) === monthKey;
-  }
-
-  const datedMonth = getDateMonthKey(
-    budget?.created_at ||
-      budget?.createdAt ||
-      budget?.date ||
-      budget?.start_date ||
-      budget?.updated_at
-  );
-
-  return !datedMonth || datedMonth === monthKey;
 }
 
 function attachBudgetSummary(categories, summary) {
   const budgetArray = [...categories];
-
   budgetArray.month = summary.month;
   budgetArray.monthKey = summary.monthKey;
   budgetArray.total = summary.total;
@@ -171,27 +97,17 @@ function attachBudgetSummary(categories, summary) {
   budgetArray.topSpendingCategory = summary.topSpendingCategory;
   budgetArray.categories = budgetArray;
   budgetArray.summary = summary;
-
   return budgetArray;
 }
 
 function buildBudgetFromExpenses(rawBudgets = [], rawExpenses = []) {
   const monthKey = getCurrentMonthKey();
-  const budgetRows = Array.isArray(rawBudgets) ? rawBudgets : [];
-  const expenseRows = Array.isArray(rawExpenses) ? rawExpenses : [];
-
-  const currentMonthBudgets = budgetRows.filter((budget) =>
-    isBudgetForCurrentMonth(budget, monthKey)
-  );
-
-  const currentMonthExpenses = expenseRows.filter((expense) =>
-    isCurrentMonthExpense(expense, monthKey)
-  );
+  const currentMonthBudgets = (Array.isArray(rawBudgets) ? rawBudgets : []).filter((budget) => isBudgetForMonth(budget, monthKey));
+  const currentMonthExpenses = (Array.isArray(rawExpenses) ? rawExpenses : []).filter((expense) => getDateMonthKey(getExpenseDate(expense)) === monthKey);
 
   const categories = currentMonthBudgets.map((budget) => {
     const categoryName = getBudgetCategory(budget);
     const allocated = getBudgetAllocated(budget);
-
     return {
       ...budget,
       category: categoryName,
@@ -207,12 +123,7 @@ function buildBudgetFromExpenses(rawBudgets = [], rawExpenses = []) {
     };
   });
 
-  const categoryMap = new Map(
-    categories
-      .map((category) => [normalizeText(getBudgetCategory(category)), category])
-      .filter(([key]) => Boolean(key))
-  );
-
+  const categoryMap = new Map(categories.map((category) => [normalizeText(getBudgetCategory(category)), category]).filter(([key]) => Boolean(key)));
   let spent = 0;
   let unplannedSpent = 0;
   let undocumentedSpent = 0;
@@ -220,51 +131,40 @@ function buildBudgetFromExpenses(rawBudgets = [], rawExpenses = []) {
   currentMonthExpenses.forEach((expense) => {
     const amount = getExpenseAmount(expense);
     const expenseCategory = getExpenseCategory(expense);
-    const normalizedExpenseCategory = normalizeText(expenseCategory);
-
+    const key = normalizeText(expenseCategory);
     spent += amount;
-
-    if (!normalizedExpenseCategory) {
+    if (!key) {
       undocumentedSpent += amount;
       return;
     }
-
-    const matchedCategory = categoryMap.get(normalizedExpenseCategory);
-
+    const matchedCategory = categoryMap.get(key);
     if (!matchedCategory) {
       unplannedSpent += amount;
       return;
     }
-
     matchedCategory.spent = safeNumber(matchedCategory.spent) + amount;
-    matchedCategory.remaining =
-      getBudgetAllocated(matchedCategory) - safeNumber(matchedCategory.spent);
+    matchedCategory.remaining = getBudgetAllocated(matchedCategory) - safeNumber(matchedCategory.spent);
   });
 
-  const enrichedCategories = categories.map(enrichBudgetCategory);
+  const enrichedCategories = categories.map((category) => {
+    const allocated = getBudgetAllocated(category);
+    const categorySpent = safeNumber(category?.spent);
+    const usagePercentage = getUsagePercentage(categorySpent, allocated);
+    return {
+      ...category,
+      allocated,
+      allocated_amount: category?.allocated_amount ?? allocated,
+      amount: category?.amount ?? allocated,
+      limit: category?.limit ?? allocated,
+      spent: categorySpent,
+      remaining: allocated - categorySpent,
+      usagePercentage,
+      riskLevel: getBudgetRiskLevel(usagePercentage),
+    };
+  });
 
-  const total = enrichedCategories.reduce(
-    (sum, category) => sum + getBudgetAllocated(category),
-    0
-  );
-
+  const total = enrichedCategories.reduce((sum, category) => sum + getBudgetAllocated(category), 0);
   const overallUsagePercentage = getUsagePercentage(spent, total);
-  const budgetRiskLevel = getBudgetRiskLevel(overallUsagePercentage);
-
-  const highRiskCategories = enrichedCategories.filter(
-    (category) =>
-      category.riskLevel === "risk" || category.riskLevel === "overspent"
-  );
-
-  const topSpendingCategory =
-    enrichedCategories.length > 0
-      ? enrichedCategories.reduce((topCategory, category) =>
-          safeNumber(category?.spent) > safeNumber(topCategory?.spent)
-            ? category
-            : topCategory
-        )
-      : null;
-
   const summary = {
     month: monthKey,
     monthKey,
@@ -273,50 +173,20 @@ function buildBudgetFromExpenses(rawBudgets = [], rawExpenses = []) {
     totalExpenses: spent,
     unplannedSpent,
     undocumentedSpent,
-    budgetRiskLevel,
-    highRiskCategories,
-    topSpendingCategory,
+    budgetRiskLevel: getBudgetRiskLevel(overallUsagePercentage),
+    highRiskCategories: enrichedCategories.filter((category) => category.riskLevel === "risk" || category.riskLevel === "overspent"),
+    topSpendingCategory: enrichedCategories.length ? enrichedCategories.reduce((top, category) => safeNumber(category?.spent) > safeNumber(top?.spent) ? category : top) : null,
     categories: enrichedCategories,
   };
 
   return attachBudgetSummary(enrichedCategories, summary);
 }
 
-function readObjectStore(db, storeName) {
-  return new Promise((resolve) => {
-    if (!db?.objectStoreNames?.contains(storeName)) {
-      resolve([]);
-      return;
-    }
-
-    try {
-      const transaction = db.transaction(storeName, "readonly");
-      const store = transaction.objectStore(storeName);
-      const request = store.getAll();
-
-      request.onsuccess = () => {
-        resolve(Array.isArray(request.result) ? request.result : []);
-      };
-
-      request.onerror = () => resolve([]);
-      transaction.onerror = () => resolve([]);
-    } catch (error) {
-      console.warn(`CLARA finance store read skipped for ${storeName}:`, error);
-      resolve([]);
-    }
-  });
-}
-
 function openIndexedDb(dbName) {
   return new Promise((resolve) => {
-    if (typeof window === "undefined" || !window.indexedDB) {
-      resolve(null);
-      return;
-    }
-
+    if (typeof window === "undefined" || !window.indexedDB) return resolve(null);
     try {
       const request = window.indexedDB.open(dbName);
-
       request.onsuccess = () => resolve(request.result);
       request.onerror = () => resolve(null);
       request.onblocked = () => resolve(null);
@@ -333,48 +203,74 @@ function openIndexedDb(dbName) {
 
 function pickExistingStoreName(db, candidates) {
   if (!db?.objectStoreNames) return undefined;
-
   return candidates.find((storeName) => db.objectStoreNames.contains(storeName));
 }
 
+function readObjectStore(db, storeName) {
+  return new Promise((resolve) => {
+    if (!db?.objectStoreNames?.contains(storeName)) return resolve([]);
+    try {
+      const transaction = db.transaction(storeName, "readonly");
+      const request = transaction.objectStore(storeName).getAll();
+      request.onsuccess = () => resolve(Array.isArray(request.result) ? request.result : []);
+      request.onerror = () => resolve([]);
+      transaction.onerror = () => resolve([]);
+    } catch (error) {
+      console.warn(`CLARA finance store read skipped for ${storeName}:`, error);
+      resolve([]);
+    }
+  });
+}
+
+function replaceMonthBudgets(db, storeName, monthKey, rows) {
+  return new Promise((resolve, reject) => {
+    try {
+      const transaction = db.transaction(storeName, "readwrite");
+      const store = transaction.objectStore(storeName);
+      const request = store.openCursor();
+
+      request.onsuccess = (event) => {
+        const cursor = event.target.result;
+        if (!cursor) {
+          rows.forEach((row) => store.put(row));
+          return;
+        }
+        if (isBudgetForMonth(cursor.value, monthKey)) cursor.delete();
+        cursor.continue();
+      };
+
+      request.onerror = () => reject(request.error || new Error("Unable to scan budgets"));
+      transaction.oncomplete = () => resolve(rows);
+      transaction.onerror = () => reject(transaction.error || new Error("Unable to save budgets"));
+      transaction.onabort = () => reject(transaction.error || new Error("Budget save aborted"));
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
 async function readFinanceDataFromIndexedDb() {
-  if (typeof window === "undefined" || !window.indexedDB) {
-    return null;
-  }
+  if (typeof window === "undefined" || !window.indexedDB) return null;
 
   for (const dbName of FINANCE_DB_CANDIDATES) {
     const db = await openIndexedDb(dbName);
-
     if (!db) continue;
 
     try {
       const walletStore = pickExistingStoreName(db, STORE_CANDIDATES.wallets);
       const expenseStore = pickExistingStoreName(db, STORE_CANDIDATES.expenses);
       const budgetStore = pickExistingStoreName(db, STORE_CANDIDATES.budgets);
-      const savingsGoalStore = pickExistingStoreName(
-        db,
-        STORE_CANDIDATES.savingsGoals
-      );
+      const savingsGoalStore = pickExistingStoreName(db, STORE_CANDIDATES.savingsGoals);
 
       const [wallets, expenses, budgets, savingsGoals] = await Promise.all([
         walletStore ? readObjectStore(db, walletStore) : Promise.resolve([]),
         expenseStore ? readObjectStore(db, expenseStore) : Promise.resolve([]),
         budgetStore ? readObjectStore(db, budgetStore) : Promise.resolve([]),
-        savingsGoalStore
-          ? readObjectStore(db, savingsGoalStore)
-          : Promise.resolve([]),
+        savingsGoalStore ? readObjectStore(db, savingsGoalStore) : Promise.resolve([]),
       ]);
 
       db.close?.();
-
-      if (
-        walletStore ||
-        expenseStore ||
-        budgetStore ||
-        savingsGoalStore
-      ) {
-        return { wallets, expenses, budgets, savingsGoals };
-      }
+      if (walletStore || expenseStore || budgetStore || savingsGoalStore) return { wallets, expenses, budgets, savingsGoals };
     } catch (error) {
       console.warn(`CLARA IndexedDB load skipped for ${dbName}:`, error);
       db.close?.();
@@ -384,6 +280,59 @@ async function readFinanceDataFromIndexedDb() {
   return null;
 }
 
+function buildBudgetRows({ month, categories }) {
+  const monthKey = String(month || getCurrentMonthKey()).slice(0, 7);
+  const now = new Date().toISOString();
+  const cleanCategories = Array.isArray(categories) ? categories : [];
+
+  return cleanCategories
+    .map((item, index) => {
+      const categoryName = getBudgetCategory(item);
+      const amount = getBudgetAllocated(item);
+      if (!categoryName || amount <= 0) return null;
+      return {
+        ...item,
+        id: item?.id || `budget-${monthKey}-${normalizeText(categoryName).replace(/\s+/g, "-")}-${Date.now()}-${index}`,
+        month: monthKey,
+        month_key: item?.month_key || monthKey,
+        monthKey: item?.monthKey || monthKey,
+        category: categoryName,
+        category_name: item?.category_name || categoryName,
+        allocated_amount: amount,
+        allocated: amount,
+        amount,
+        created_at: item?.created_at || now,
+        updated_at: now,
+      };
+    })
+    .filter(Boolean);
+}
+
+async function saveBudgetRowsToIndexedDb(monthKey, rows) {
+  if (typeof window === "undefined" || !window.indexedDB) throw new Error("IndexedDB is not available");
+
+  for (const dbName of FINANCE_DB_CANDIDATES) {
+    const db = await openIndexedDb(dbName);
+    if (!db) continue;
+
+    try {
+      const budgetStore = pickExistingStoreName(db, STORE_CANDIDATES.budgets);
+      if (!budgetStore) {
+        db.close?.();
+        continue;
+      }
+      await replaceMonthBudgets(db, budgetStore, monthKey, rows);
+      db.close?.();
+      return rows;
+    } catch (error) {
+      console.warn(`CLARA budget save skipped for ${dbName}:`, error);
+      db.close?.();
+    }
+  }
+
+  throw new Error("No CLARA budget store found");
+}
+
 export default function useFinancialData() {
   const [wallets, setWallets] = useState(FALLBACK_WALLETS);
   const [expenses, setExpenses] = useState(FALLBACK_EXPENSES);
@@ -391,43 +340,49 @@ export default function useFinancialData() {
   const [savingsGoals, setSavingsGoals] = useState(FALLBACK_SAVINGS_GOALS);
   const [loading, setLoading] = useState(true);
 
+  async function applyFinanceSnapshot() {
+    const localData = await readFinanceDataFromIndexedDb();
+    setWallets(Array.isArray(localData?.wallets) ? localData.wallets : FALLBACK_WALLETS);
+    setExpenses(Array.isArray(localData?.expenses) ? localData.expenses : FALLBACK_EXPENSES);
+    setRawBudgets(Array.isArray(localData?.budgets) ? localData.budgets : FALLBACK_BUDGETS);
+    setSavingsGoals(Array.isArray(localData?.savingsGoals) ? localData.savingsGoals : FALLBACK_SAVINGS_GOALS);
+  }
+
+  async function refreshFinanceData() {
+    try {
+      await applyFinanceSnapshot();
+    } catch (error) {
+      console.warn("CLARA finance data refresh skipped:", error);
+    }
+  }
+
+  async function saveBudget({ month, total, categories }) {
+    const monthKey = String(month || getCurrentMonthKey()).slice(0, 7);
+    const rows = buildBudgetRows({ month: monthKey, total, categories });
+
+    await saveBudgetRowsToIndexedDb(monthKey, rows);
+    setRawBudgets((currentRows) => {
+      const existingRows = Array.isArray(currentRows) ? currentRows : [];
+      return [...existingRows.filter((budget) => !isBudgetForMonth(budget, monthKey)), ...rows];
+    });
+    await refreshFinanceData();
+    return rows;
+  }
+
   useEffect(() => {
     let mounted = true;
 
     async function loadData() {
       try {
         const localData = await readFinanceDataFromIndexedDb();
-
         if (!mounted) return;
-
-        setWallets(
-          Array.isArray(localData?.wallets)
-            ? localData.wallets
-            : FALLBACK_WALLETS
-        );
-
-        setExpenses(
-          Array.isArray(localData?.expenses)
-            ? localData.expenses
-            : FALLBACK_EXPENSES
-        );
-
-        setRawBudgets(
-          Array.isArray(localData?.budgets)
-            ? localData.budgets
-            : FALLBACK_BUDGETS
-        );
-
-        setSavingsGoals(
-          Array.isArray(localData?.savingsGoals)
-            ? localData.savingsGoals
-            : FALLBACK_SAVINGS_GOALS
-        );
+        setWallets(Array.isArray(localData?.wallets) ? localData.wallets : FALLBACK_WALLETS);
+        setExpenses(Array.isArray(localData?.expenses) ? localData.expenses : FALLBACK_EXPENSES);
+        setRawBudgets(Array.isArray(localData?.budgets) ? localData.budgets : FALLBACK_BUDGETS);
+        setSavingsGoals(Array.isArray(localData?.savingsGoals) ? localData.savingsGoals : FALLBACK_SAVINGS_GOALS);
       } catch (error) {
         console.warn("CLARA finance data fallback used:", error);
-
         if (!mounted) return;
-
         setWallets(FALLBACK_WALLETS);
         setExpenses(FALLBACK_EXPENSES);
         setRawBudgets(FALLBACK_BUDGETS);
@@ -438,16 +393,12 @@ export default function useFinancialData() {
     }
 
     loadData();
-
     return () => {
       mounted = false;
     };
   }, []);
 
-  const budgets = useMemo(
-    () => buildBudgetFromExpenses(rawBudgets, expenses),
-    [rawBudgets, expenses]
-  );
+  const budgets = useMemo(() => buildBudgetFromExpenses(rawBudgets, expenses), [rawBudgets, expenses]);
 
   return {
     wallets,
@@ -455,5 +406,7 @@ export default function useFinancialData() {
     budgets,
     savingsGoals,
     loading,
+    refreshFinanceData,
+    saveBudget,
   };
 }
