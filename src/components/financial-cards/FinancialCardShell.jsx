@@ -20,7 +20,7 @@ export default function FinancialCardShell({
       <div className="pointer-events-none absolute inset-0 rounded-[26px] bg-[linear-gradient(145deg,rgba(255,255,255,0.10),rgba(255,255,255,0.03)_40%,rgba(255,255,255,0.015))]" />
 
       {/* Accent glow (controlled) */}
-      <div className={`pointer-events-none absolute -right-20 -top-20 h-48 w-48 rounded-full bg-gradient-to-br ${accentClassName} opacity-70 blur-3xl transition duration-500 group-hover:opacity-90 group-hover:scale-110`} />
+      <div className={`pointer-events-none absolute -right-20 -top-20 h-48 w-48 rounded-full bg-gradient-to-br ${accentClassName} opacity-70 blur-3xl transition duration-500 group-hover:scale-110 group-hover:opacity-90`} />
 
       {/* Base ambient glow */}
       <div className="pointer-events-none absolute -bottom-24 left-10 h-44 w-44 rounded-full bg-white/[0.025] blur-3xl" />
@@ -31,8 +31,7 @@ export default function FinancialCardShell({
       {/* Bottom subtle separator */}
       <div className="pointer-events-none absolute inset-x-6 bottom-0 h-px bg-gradient-to-r from-transparent via-white/8 to-transparent" />
 
-      <div className="relative z-10 flex h-full min-h-0 flex-1 flex-col">
-
+      <div className="relative z-10 flex h-full min-h-0 flex-1 flex-col gap-3">
         {/* HEADER */}
         <header className="flex h-[48px] shrink-0 items-start justify-between gap-3">
           <div className="flex min-w-0 items-center gap-3">
@@ -40,38 +39,38 @@ export default function FinancialCardShell({
               {icon}
             </div>
 
-            <div className="min-w-0 pt-0.5">
+            <div className="flex min-w-0 flex-col gap-2 pt-0.5">
               <p className="truncate text-[10px] font-bold uppercase leading-none tracking-[0.22em] text-white/40">
                 {eyebrow}
               </p>
-              <h2 className="mt-2 truncate text-[15px] font-semibold leading-none tracking-[-0.01em] text-white/95">
+              <h2 className="truncate text-[15px] font-semibold leading-none tracking-[-0.01em] text-white/95">
                 {title}
               </h2>
             </div>
           </div>
 
           {badge && (
-            <span className={`mt-0.5 shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase leading-none tracking-[0.12em] transition-all duration-300 group-hover:scale-105 ${badgeClassName}`}>
+            <span className={`shrink-0 rounded-full border px-2.5 py-1 text-[10px] font-bold uppercase leading-none tracking-[0.12em] transition-all duration-300 group-hover:scale-105 ${badgeClassName}`}>
               {badge}
             </span>
           )}
         </header>
 
         {/* HERO */}
-        <section className="mt-4 h-[56px] shrink-0">
+        <section className="flex h-[56px] shrink-0 flex-col gap-2">
           <p className="truncate text-[30px] font-semibold leading-none tracking-[-0.045em] text-white sm:text-[32px]">
             {hero}
           </p>
 
           {heroSubtext && (
-            <p className="mt-2 truncate text-[12px] font-medium leading-none text-white/50">
+            <p className="truncate text-[12px] font-medium leading-none text-white/50">
               {heroSubtext}
             </p>
           )}
         </section>
 
         {/* PROGRESS + INSIGHT */}
-        <section className="mt-4 min-h-0 flex-1">
+        <section className="flex min-h-0 flex-1 flex-col gap-3">
           <div className="h-2 overflow-hidden rounded-full border border-white/[0.05] bg-white/[0.06] shadow-[inset_0_1px_2px_rgba(0,0,0,0.28)]">
             <div
               className={`h-full rounded-full bg-gradient-to-r ${progressClassName} shadow-[0_0_18px_rgba(255,255,255,0.20)] transition-all duration-700 ease-out`}
@@ -80,7 +79,7 @@ export default function FinancialCardShell({
           </div>
 
           {insight && (
-            <p className="mt-3 line-clamp-2 min-h-[38px] text-[12px] leading-[1.55] text-white/60 transition-all duration-300 group-hover:text-white/75">
+            <p className="line-clamp-2 min-h-[38px] text-[12px] leading-[1.55] text-white/60 transition-all duration-300 group-hover:text-white/75">
               {insight}
             </p>
           )}
@@ -88,7 +87,7 @@ export default function FinancialCardShell({
 
         {/* ACTION */}
         {children && (
-          <div className="relative z-10 mt-auto shrink-0 pt-3 transition-transform duration-300 group-active:scale-[0.98]">
+          <div className="relative z-10 shrink-0 transition-transform duration-300 group-active:scale-[0.98]">
             {children}
           </div>
         )}
