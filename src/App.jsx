@@ -1,4 +1,4 @@
-import { HashRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 import Dashboard from "./pages/Dashboard";
 import Feed from "./pages/Feed";
@@ -8,14 +8,12 @@ import ThemeAppearance from "./pages/settings/ThemeAppearance";
 
 export default function App() {
   return (
-    <HashRouter>
-      <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/feed" element={<Feed />} />
-        <Route path="/messages" element={<Messages />} />
-        <Route path="/settings" element={<Settings />} />
-        <Route path="/settings/theme" element={<ThemeAppearance />} />
-      </Routes>
-    </HashRouter>
+    <Routes>
+      <Route path="/" element={<Dashboard />} />
+      <Route path="/feed" element={<Feed />} />
+      <Route path="/messages" element={<Messages />} />
+      <Route path="/settings" element={<Settings />} />
+      <Route path="/settings/theme" element={<ThemeAppearance />} />
+    </Routes>
   );
 }
