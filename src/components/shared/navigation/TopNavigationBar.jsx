@@ -79,16 +79,26 @@ export default function TopNavigationBar({ compact = false }) {
       >
         <nav className="relative grid grid-cols-4 gap-1.5">
           <div
-            className={`absolute bottom-0 top-0 rounded-[22px] transition-all duration-300 ease-out ${
+            className={`absolute bottom-0 top-0 overflow-hidden rounded-[22px] transition-all duration-500 ease-out ${
               compact
-                ? "bg-white/[0.095] shadow-[inset_0_1px_0_rgba(255,255,255,0.12),0_10px_22px_rgba(56,189,248,0.11)]"
-                : "bg-white/[0.12] shadow-[inset_0_0_18px_rgba(255,255,255,0.10),0_0_18px_rgba(251,191,36,0.12)]"
+                ? "bg-white/[0.08] shadow-[inset_0_1px_0_rgba(255,255,255,0.13),0_10px_22px_rgba(56,189,248,0.10)]"
+                : "bg-white/[0.10] shadow-[inset_0_0_18px_rgba(255,255,255,0.09),0_0_18px_rgba(251,191,36,0.10)]"
             }`}
             style={{
               width: "calc((100% - 1.125rem) / 4)",
               transform: `translateX(calc(${activeIndex} * (100% + 0.375rem)))`,
             }}
-          />
+          >
+            <span
+              className={`pointer-events-none absolute inset-y-0 -left-1/3 w-[135%] rounded-[22px] ${
+                compact
+                  ? "bg-gradient-to-r from-transparent via-sky-100/[0.13] to-transparent"
+                  : "bg-gradient-to-r from-transparent via-amber-100/[0.12] to-transparent"
+              }`}
+            />
+            <span className="pointer-events-none absolute inset-x-3 top-0 h-px bg-gradient-to-r from-transparent via-white/28 to-transparent" />
+            <span className="pointer-events-none absolute inset-0 rounded-[22px] bg-[radial-gradient(circle_at_30%_15%,rgba(255,255,255,0.13),transparent_58%)]" />
+          </div>
 
           {topNavItems.map((item) => {
             const Icon = item.icon;
