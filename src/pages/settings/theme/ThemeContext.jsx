@@ -4,120 +4,34 @@ const THEME_STORAGE_KEY = "clara_selected_theme";
 
 export const claraThemes = [
   {
-    id: "emerald-core",
-    name: "Emerald Core",
-    category: "Classic",
-    description: "The original CLARA money-coach glow, refined with mature depth.",
-    bg: "#04110d",
-    panel: "rgba(6, 24, 19, 0.72)",
-    panelStrong: "rgba(10, 41, 34, 0.82)",
-    card: "rgba(10, 35, 29, 0.64)",
-    cardStrong: "rgba(13, 54, 45, 0.72)",
-    accent: "#34d399",
-    accentSoft: "rgba(52, 211, 153, 0.12)",
-    accentBorder: "rgba(52, 211, 153, 0.26)",
-    accentText: "#a7f3d0",
-    secondary: "#2dd4bf",
-    secondarySoft: "rgba(45, 212, 191, 0.10)",
-    highlight: "#d1fae5",
-    highlightSoft: "rgba(209, 250, 229, 0.08)",
-    glow: "rgba(16, 185, 129, 0.16)",
-    glowSoft: "rgba(45, 212, 191, 0.10)",
+    id: "clara-default",
+    name: "CLARA Default",
+    category: "Default",
+    description:
+      "The official CLARA look: deep financial green, bright growth yellow, and a controlled blue trust accent.",
+    bg: "#020b08",
+    panel: "rgba(4, 22, 16, 0.76)",
+    panelStrong: "rgba(8, 45, 31, 0.86)",
+    card: "rgba(7, 35, 25, 0.68)",
+    cardStrong: "rgba(10, 66, 42, 0.76)",
+    accent: "#7ed957",
+    accentSoft: "rgba(126, 217, 87, 0.14)",
+    accentBorder: "rgba(126, 217, 87, 0.34)",
+    accentText: "#d7ff5f",
+    secondary: "#fff22d",
+    secondarySoft: "rgba(255, 242, 45, 0.12)",
+    highlight: "#16b8ff",
+    highlightSoft: "rgba(22, 184, 255, 0.10)",
+    glow: "rgba(126, 217, 87, 0.18)",
+    glowSoft: "rgba(255, 242, 45, 0.10)",
     premiumGlow:
-      "0 0 22px rgba(16,185,129,0.14), 0 18px 60px rgba(5,46,34,0.22), inset 0 1px 0 rgba(209,250,229,0.08)",
+      "0 0 22px rgba(126,217,87,0.16), 0 18px 60px rgba(0,105,70,0.22), inset 0 1px 0 rgba(215,255,95,0.09)",
     surfaceGlow:
-      "radial-gradient(circle at 20% 0%, rgba(52,211,153,0.16), transparent 34%), radial-gradient(circle at 90% 18%, rgba(45,212,191,0.09), transparent 36%)",
+      "radial-gradient(circle at 18% 0%, rgba(126,217,87,0.18), transparent 34%), radial-gradient(circle at 88% 18%, rgba(255,242,45,0.10), transparent 35%), radial-gradient(circle at 92% 86%, rgba(22,184,255,0.12), transparent 38%)",
     glass:
-      "linear-gradient(135deg, rgba(13,54,45,0.66), rgba(4,17,13,0.82) 48%, rgba(15,23,42,0.72))",
+      "linear-gradient(135deg, rgba(11,80,48,0.68), rgba(4,22,16,0.86) 46%, rgba(2,18,25,0.78))",
     gradient:
-      "linear-gradient(135deg, rgba(52,211,153,0.18), rgba(45,212,191,0.10) 34%, rgba(4,17,13,0.92) 66%, rgba(2,6,23,0.96))",
-  },
-  {
-    id: "gold-prestige",
-    name: "Gold Prestige",
-    category: "Premium",
-    description: "Warm, luxury, and executive with champagne-bronze depth.",
-    bg: "#0c0805",
-    panel: "rgba(28, 18, 10, 0.72)",
-    panelStrong: "rgba(47, 31, 17, 0.82)",
-    card: "rgba(36, 24, 13, 0.64)",
-    cardStrong: "rgba(61, 42, 22, 0.72)",
-    accent: "#d6b56d",
-    accentSoft: "rgba(214, 181, 109, 0.12)",
-    accentBorder: "rgba(214, 181, 109, 0.28)",
-    accentText: "#f8e7bd",
-    secondary: "#b7794a",
-    secondarySoft: "rgba(183, 121, 74, 0.11)",
-    highlight: "#fff7df",
-    highlightSoft: "rgba(255, 247, 223, 0.07)",
-    glow: "rgba(180, 119, 58, 0.15)",
-    glowSoft: "rgba(214, 181, 109, 0.09)",
-    premiumGlow:
-      "0 0 22px rgba(214,181,109,0.13), 0 18px 58px rgba(92,52,24,0.22), inset 0 1px 0 rgba(255,247,223,0.08)",
-    surfaceGlow:
-      "radial-gradient(circle at 18% 0%, rgba(214,181,109,0.15), transparent 34%), radial-gradient(circle at 88% 18%, rgba(183,121,74,0.10), transparent 38%)",
-    glass:
-      "linear-gradient(135deg, rgba(61,42,22,0.64), rgba(12,8,5,0.84) 50%, rgba(33,21,12,0.72))",
-    gradient:
-      "linear-gradient(135deg, rgba(214,181,109,0.17), rgba(183,121,74,0.12) 34%, rgba(28,18,10,0.92) 66%, rgba(8,6,5,0.97))",
-  },
-  {
-    id: "midnight-blue",
-    name: "Midnight Blue",
-    category: "Classic",
-    description: "Clean, calm, and focused with premium navy-indigo contrast.",
-    bg: "#030816",
-    panel: "rgba(8, 18, 38, 0.72)",
-    panelStrong: "rgba(13, 30, 63, 0.82)",
-    card: "rgba(11, 24, 49, 0.64)",
-    cardStrong: "rgba(18, 39, 79, 0.72)",
-    accent: "#7dd3fc",
-    accentSoft: "rgba(125, 211, 252, 0.12)",
-    accentBorder: "rgba(125, 211, 252, 0.27)",
-    accentText: "#e0f2fe",
-    secondary: "#818cf8",
-    secondarySoft: "rgba(129, 140, 248, 0.10)",
-    highlight: "#cffafe",
-    highlightSoft: "rgba(207, 250, 254, 0.07)",
-    glow: "rgba(96, 165, 250, 0.15)",
-    glowSoft: "rgba(129, 140, 248, 0.09)",
-    premiumGlow:
-      "0 0 22px rgba(96,165,250,0.13), 0 18px 58px rgba(30,41,120,0.22), inset 0 1px 0 rgba(224,242,254,0.08)",
-    surfaceGlow:
-      "radial-gradient(circle at 18% 0%, rgba(125,211,252,0.14), transparent 34%), radial-gradient(circle at 88% 18%, rgba(129,140,248,0.10), transparent 38%)",
-    glass:
-      "linear-gradient(135deg, rgba(18,39,79,0.64), rgba(3,8,22,0.84) 50%, rgba(30,27,75,0.68))",
-    gradient:
-      "linear-gradient(135deg, rgba(125,211,252,0.16), rgba(129,140,248,0.11) 34%, rgba(8,18,38,0.92) 66%, rgba(2,6,23,0.97))",
-  },
-  {
-    id: "rose-aura",
-    name: "Rose Aura",
-    category: "Aesthetic",
-    description: "Soft, expressive, and modern with rose-violet wine depth.",
-    bg: "#12070d",
-    panel: "rgba(35, 15, 27, 0.72)",
-    panelStrong: "rgba(58, 24, 45, 0.82)",
-    card: "rgba(43, 18, 34, 0.64)",
-    cardStrong: "rgba(74, 30, 57, 0.72)",
-    accent: "#e8799a",
-    accentSoft: "rgba(232, 121, 154, 0.12)",
-    accentBorder: "rgba(232, 121, 154, 0.27)",
-    accentText: "#ffe4e9",
-    secondary: "#a78bfa",
-    secondarySoft: "rgba(167, 139, 250, 0.10)",
-    highlight: "#fff1f4",
-    highlightSoft: "rgba(255, 241, 244, 0.07)",
-    glow: "rgba(232, 121, 154, 0.14)",
-    glowSoft: "rgba(167, 139, 250, 0.09)",
-    premiumGlow:
-      "0 0 22px rgba(232,121,154,0.12), 0 18px 58px rgba(88,28,80,0.21), inset 0 1px 0 rgba(255,241,244,0.08)",
-    surfaceGlow:
-      "radial-gradient(circle at 18% 0%, rgba(232,121,154,0.14), transparent 34%), radial-gradient(circle at 88% 18%, rgba(167,139,250,0.10), transparent 38%)",
-    glass:
-      "linear-gradient(135deg, rgba(74,30,57,0.62), rgba(18,7,13,0.84) 50%, rgba(46,16,101,0.58))",
-    gradient:
-      "linear-gradient(135deg, rgba(232,121,154,0.16), rgba(167,139,250,0.11) 34%, rgba(35,15,27,0.92) 66%, rgba(12,6,18,0.97))",
+      "linear-gradient(135deg, rgba(126,217,87,0.18), rgba(255,242,45,0.08) 32%, rgba(4,22,16,0.94) 64%, rgba(2,18,25,0.96))",
   },
 ];
 
@@ -177,6 +91,10 @@ function applyTheme(theme) {
   root.style.setProperty("--clara-accent-soft", themeSystem.accentSoft);
   root.style.setProperty("--clara-accent-border", themeSystem.accentBorder);
   root.style.setProperty("--clara-accent-text", themeSystem.accentText);
+  root.style.setProperty("--clara-secondary", themeSystem.secondary);
+  root.style.setProperty("--clara-secondary-soft", themeSystem.secondarySoft);
+  root.style.setProperty("--clara-highlight", themeSystem.highlight);
+  root.style.setProperty("--clara-highlight-soft", themeSystem.highlightSoft);
   root.style.setProperty("--clara-glow", themeSystem.glow);
   root.style.setProperty("--clara-glow-soft", themeSystem.glowSoft);
   root.style.setProperty("--clara-glow-premium", themeSystem.glowPremium);
