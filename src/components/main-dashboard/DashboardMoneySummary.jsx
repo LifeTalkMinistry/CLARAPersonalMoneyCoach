@@ -61,48 +61,58 @@ export default function DashboardMoneySummary({
       )}
 
       <section
-        className="relative overflow-hidden rounded-[24px] border px-4 py-4"
+        className="relative overflow-hidden rounded-[26px] border px-5 py-5"
         style={{
-          borderColor: "rgba(255,255,255,0.08)",
+          borderColor: "rgba(166,232,18,0.35)",
           background:
-            "linear-gradient(180deg, rgba(19,48,88,0.85), rgba(8,25,51,0.92))",
-          boxShadow: "0 14px 34px rgba(0,0,0,0.35)",
-          backdropFilter: "blur(16px)",
+            "linear-gradient(135deg, rgba(166,232,18,0.18), rgba(4,155,104,0.28) 42%, rgba(4,18,22,0.96) 100%)",
+          boxShadow:
+            "0 18px 48px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06)",
+          backdropFilter: "blur(18px)",
         }}
       >
-        <div className="flex items-center justify-between">
+        <div
+          className="pointer-events-none absolute inset-0 opacity-70"
+          style={{
+            background:
+              "radial-gradient(circle at 10% 20%, rgba(166,232,18,0.35), transparent 35%), radial-gradient(circle at 90% 80%, rgba(39,93,255,0.18), transparent 40%)",
+          }}
+        />
+
+        <div className="relative z-10 flex items-center justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <p className="text-[10px] uppercase tracking-[0.22em] text-white/50">
+              <p className="text-[11px] font-bold uppercase tracking-[0.28em] text-[#B9F632]">
                 Money Left
               </p>
 
               <button
                 onClick={onToggleMoneyVisible}
-                className="rounded-full p-1 text-white/50"
+                className="rounded-full p-1 text-[#B9F632]/70"
               >
-                {moneyVisible ? <Eye size={12} /> : <EyeOff size={12} />}
+                {moneyVisible ? <Eye size={13} /> : <EyeOff size={13} />}
               </button>
             </div>
 
-            <p className="mt-2 text-2xl font-semibold text-white">
+            <p className="mt-3 text-[36px] font-black tracking-[-0.04em] text-[#DFFF7A]">
               {moneyVisible ? formatMoney(moneyLeft) : "••••"}
             </p>
 
-            <p className="mt-1 text-[11px] text-white/40">
+            <p className="mt-1 text-[13px] text-white/60">
               This month expenses: {moneyVisible ? formatMoney(totalExpenses) : "••••"}
             </p>
           </div>
 
           <button
             onClick={() => setShowExpense(true)}
-            className="flex h-[52px] w-[52px] items-center justify-center rounded-full border"
+            className="flex h-[56px] w-[56px] items-center justify-center rounded-full border"
             style={{
-              borderColor: "rgba(154,235,255,0.22)",
-              background: "rgba(255,255,255,0.05)",
+              borderColor: "rgba(166,232,18,0.5)",
+              background: "rgba(166,232,18,0.12)",
+              boxShadow: "0 0 18px rgba(166,232,18,0.35)",
             }}
           >
-            <Plus size={18} />
+            <Plus size={20} />
           </button>
         </div>
       </section>
