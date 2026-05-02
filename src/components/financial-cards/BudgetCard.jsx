@@ -10,6 +10,27 @@ function toNumber(value) {
   return Number.isFinite(number) ? number : 0;
 }
 
+function BudgetWalletArt() {
+  return (
+    <div
+      aria-hidden="true"
+      className="budget-wallet-art pointer-events-none absolute right-[18px] top-[30%] z-[4] h-[118px] w-[132px] -translate-y-1/2 overflow-visible opacity-90"
+    >
+      <div className="absolute left-1/2 top-1/2 h-[136px] w-[136px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#B9F632]/10 bg-[#00FF88]/[0.025]" />
+      <div className="absolute left-4 top-2 h-[74px] w-[84px] rotate-[9deg] rounded-[18px] border border-[#B9F632]/20 bg-gradient-to-br from-[#39F16F] via-[#13A65B] to-[#06613E] shadow-[0_16px_34px_rgba(31,255,110,0.14),inset_0_1px_0_rgba(255,255,255,0.22)]" />
+      <div className="absolute left-[58px] top-5 h-[72px] w-[58px] rotate-[13deg] rounded-[18px] border border-white/10 bg-gradient-to-br from-[#0B7350] to-[#05241F] shadow-[0_14px_30px_rgba(0,0,0,0.25)]" />
+      <div className="absolute left-2 top-[34px] h-[78px] w-[116px] rotate-[7deg] rounded-[24px] border border-white/10 bg-gradient-to-br from-[#17392E] via-[#0B211F] to-[#061318] shadow-[0_18px_38px_rgba(0,0,0,0.34),inset_0_1px_0_rgba(255,255,255,0.12)]" />
+      <div className="absolute left-8 top-[54px] h-[1px] w-[70px] rotate-[7deg] border-t border-dashed border-[#B9F632]/35" />
+      <div className="absolute right-[-4px] top-[62px] flex h-[42px] w-[50px] rotate-[7deg] items-center justify-center rounded-l-[22px] rounded-r-[16px] border border-white/10 bg-gradient-to-br from-[#173F32] to-[#071A1F] shadow-[0_10px_24px_rgba(0,0,0,0.28),inset_0_1px_0_rgba(255,255,255,0.10)]">
+        <div className="h-[17px] w-[17px] rounded-full bg-[#B9F632] shadow-[0_0_18px_rgba(185,246,50,0.55)]" />
+      </div>
+      <div className="absolute left-7 top-[51px] rotate-[7deg] text-[18px] font-black text-[#B9F632]/80 drop-shadow-[0_0_10px_rgba(185,246,50,0.25)]">
+        ₱
+      </div>
+    </div>
+  );
+}
+
 export default function BudgetCard({ data, onAdjustBudget, onCreateBudget, onManageBudget }) {
   const [panelOpen, setPanelOpen] = useState(false);
 
@@ -92,6 +113,19 @@ export default function BudgetCard({ data, onAdjustBudget, onCreateBudget, onMan
           .budget-card-fixed .budget-extra {
             display: none;
           }
+          .budget-card-fixed .budget-wallet-art {
+            right: 10px;
+            top: 34%;
+            transform: translateY(-50%) scale(0.78);
+            opacity: 0.72;
+          }
+        }
+
+        @media (max-width: 330px) {
+          .budget-card-fixed .budget-wallet-art {
+            opacity: 0.42;
+            transform: translateY(-50%) scale(0.66);
+          }
         }
       `}</style>
 
@@ -123,6 +157,7 @@ export default function BudgetCard({ data, onAdjustBudget, onCreateBudget, onMan
         >
           <div className="pointer-events-none absolute inset-0 rounded-[24px]" style={{ boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.04)" }} />
           <div className="pointer-events-none absolute -right-10 top-20 h-44 w-44 rounded-full border border-[#B9F632]/10 bg-[#00FF88]/[0.025] blur-[1px]" />
+          <BudgetWalletArt />
 
           <div className="relative z-10 flex shrink-0 items-start justify-between gap-3">
             <div className="flex min-w-0 items-center gap-3">
@@ -143,7 +178,7 @@ export default function BudgetCard({ data, onAdjustBudget, onCreateBudget, onMan
             </span>
           </div>
 
-          <div className="relative z-10 flex min-h-0 flex-1 flex-col justify-center overflow-hidden">
+          <div className="relative z-10 flex min-h-0 flex-1 flex-col justify-center overflow-hidden pr-[116px] max-[360px]:pr-[92px]">
             <p className="truncate font-black leading-none tracking-[-0.055em] text-white" style={{ fontSize: "var(--bc-hero)", textShadow: "0 10px 26px rgba(0,0,0,0.45)" }}>
               {money(total)}
             </p>
