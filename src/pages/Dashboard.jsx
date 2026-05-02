@@ -275,19 +275,7 @@ export default function Dashboard() {
       <div className="min-h-[100dvh] overflow-x-hidden overflow-y-auto px-4 pb-[calc(70px+env(safe-area-inset-bottom))] pt-3 sm:px-6 sm:pb-[calc(88px+env(safe-area-inset-bottom))]">
         <div className="space-y-4">
           <DashboardBillboard />
-          <DashboardWalletDrawer
-            wallets={wallets}
-            onAddWallet={handleAddWallet}
-            onEditWallet={handleEditWallet}
-            onDeleteWallet={handleDeleteWallet}
-          />
-          <DashboardMoneySummary
-            moneyLeft={safeNumber(moneyLeft)}
-            totalExpenses={safeNumber(currentMonthExpenses)}
-            moneyVisible={moneyVisible}
-            onToggleMoneyVisible={() => setMoneyVisible((current) => !current)}
-            onQuickExpense={handleQuickExpense}
-          />
+
           <DashboardFinancialCarousel
             budgetData={budgetData}
             emergencyFundData={emergencyFundData}
@@ -300,6 +288,21 @@ export default function Dashboard() {
             onDeleteSavingsGoal={handleDeleteSavingsGoal}
             onAddEmergencyFunds={handleAddEmergencyFunds}
             onSetEmergencyTarget={handleSetEmergencyTarget}
+          />
+
+          <DashboardWalletDrawer
+            wallets={wallets}
+            onAddWallet={handleAddWallet}
+            onEditWallet={handleEditWallet}
+            onDeleteWallet={handleDeleteWallet}
+          />
+
+          <DashboardMoneySummary
+            moneyLeft={safeNumber(moneyLeft)}
+            totalExpenses={safeNumber(currentMonthExpenses)}
+            moneyVisible={moneyVisible}
+            onToggleMoneyVisible={() => setMoneyVisible((current) => !current)}
+            onQuickExpense={handleQuickExpense}
           />
         </div>
       </div>
