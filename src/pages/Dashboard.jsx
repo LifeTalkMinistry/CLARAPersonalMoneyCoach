@@ -274,6 +274,7 @@ export default function Dashboard() {
     <ClaraPageShell compactHeader>
       <div className="w-full overflow-x-hidden pb-[calc(18px+env(safe-area-inset-bottom))] pt-0">
         <div className="space-y-3">
+          <DashboardBillboard />
         </div>
       </div>
     </ClaraPageShell>
