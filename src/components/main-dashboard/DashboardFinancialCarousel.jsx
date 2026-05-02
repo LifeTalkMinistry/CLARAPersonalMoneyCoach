@@ -63,12 +63,12 @@ export default function DashboardFinancialCarousel({
   };
 
   return (
-    <div className="relative w-full shrink-0 overflow-visible pb-4">
+    <div className="relative w-full shrink-0 overflow-visible">
       <section
         ref={carouselRef}
         onScroll={handleScroll}
         aria-label="Financial dashboard cards"
-        className="relative flex snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-visible scroll-smooth pb-4 scrollbar-none"
+        className="relative flex snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-visible scroll-smooth scrollbar-none"
       >
         {items.map((item, index) => {
           const isActive = activeSlide === index;
@@ -82,9 +82,7 @@ export default function DashboardFinancialCarousel({
                 zIndex: isActive ? 10 : 1,
                 transition: "opacity 240ms ease",
               }}
-              className={`flex w-full min-w-full flex-shrink-0 snap-center transition-opacity duration-300 ease-out ${
-                index === items.length - 1 ? "mr-1" : ""
-              }`}
+              className="flex w-full min-w-full flex-shrink-0 snap-center transition-opacity duration-300 ease-out"
             >
               <div className="flex w-full">
                 {item.content}
@@ -94,7 +92,7 @@ export default function DashboardFinancialCarousel({
         })}
       </section>
 
-      <div className="flex h-5 shrink-0 items-center justify-center gap-2 pt-2">
+      <div className="mt-3 flex h-3 shrink-0 items-center justify-center gap-2">
         {items.map((item, index) => {
           const isActive = activeSlide === index;
 
@@ -104,10 +102,10 @@ export default function DashboardFinancialCarousel({
               type="button"
               onClick={() => scrollToSlide(index)}
               aria-label={`Go to ${item.label}`}
-              className="h-2 rounded-full transition-all duration-300 active:scale-90"
+              className="h-1.5 rounded-full transition-all duration-300 active:scale-90"
               style={{
-                width: isActive ? "1rem" : "0.42rem",
-                background: isActive ? "rgba(255,255,255,0.84)" : "rgba(255,255,255,0.20)",
+                width: isActive ? "0.95rem" : "0.36rem",
+                background: isActive ? "rgba(255,255,255,0.82)" : "rgba(255,255,255,0.20)",
                 opacity: isActive ? 1 : 0.42,
                 boxShadow: "none",
               }}
