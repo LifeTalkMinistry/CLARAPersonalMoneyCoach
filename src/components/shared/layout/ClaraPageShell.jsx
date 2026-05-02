@@ -27,7 +27,8 @@ export default function ClaraPageShell({
         }}
       />
 
-      <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-[430px] flex-col gap-4 px-3 pb-6 pt-2 sm:px-4">
+      {/* FULL BLEED FIX */}
+      <div className="relative z-10 flex min-h-screen w-full flex-col gap-4 px-4 pb-6 pt-2">
         {!hideTopNav && <TopNavigationBar compact={compactHeader} />}
         {children}
       </div>
