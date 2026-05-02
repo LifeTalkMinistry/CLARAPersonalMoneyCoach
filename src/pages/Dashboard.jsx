@@ -275,35 +275,6 @@ export default function Dashboard() {
       <div className="w-full overflow-x-hidden pb-[calc(18px+env(safe-area-inset-bottom))] pt-0">
         <div className="space-y-3">
           <DashboardBillboard />
-
-          <DashboardFinancialCarousel
-            budgetData={budgetData}
-            emergencyFundData={emergencyFundData}
-            savingsData={savingsData}
-            investmentData={{ value: 0 }}
-            debtData={{ total: 0 }}
-            onManageBudget={handleManageBudget}
-            onAddSavings={handleAddSavings}
-            onSetSavingsGoal={handleSetSavingsGoal}
-            onDeleteSavingsGoal={handleDeleteSavingsGoal}
-            onAddEmergencyFunds={handleAddEmergencyFunds}
-            onSetEmergencyTarget={handleSetEmergencyTarget}
-          />
-
-          <DashboardWalletDrawer
-            wallets={wallets}
-            onAddWallet={handleAddWallet}
-            onEditWallet={handleEditWallet}
-            onDeleteWallet={handleDeleteWallet}
-          />
-
-          <DashboardMoneySummary
-            moneyLeft={safeNumber(moneyLeft)}
-            totalExpenses={safeNumber(currentMonthExpenses)}
-            moneyVisible={moneyVisible}
-            onToggleMoneyVisible={() => setMoneyVisible((current) => !current)}
-            onQuickExpense={handleQuickExpense}
-          />
         </div>
       </div>
     </ClaraPageShell>
