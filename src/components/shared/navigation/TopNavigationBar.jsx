@@ -11,28 +11,25 @@ export default function TopNavigationBar({ compact = false }) {
   );
 
   return (
-    <header className={compact ? "px-0 pt-1" : "px-4 pt-3"}>
+    <header style={{ marginBottom: "clamp(0.25rem, 1svh, 0.5rem)" }}>
       <div
-        className={`relative overflow-hidden rounded-[28px] border ${
-          compact ? "p-1.5" : "p-2"
-        }`}
+        className="relative overflow-hidden rounded-[28px] border"
         style={{
+          padding: "clamp(6px, 1.4svh, 10px)",
           background:
             "linear-gradient(180deg, rgba(10,40,34,0.95), rgba(4,18,22,0.96))",
           borderColor: "rgba(166,232,18,0.45)",
-          boxShadow: "0 0 0 1px rgba(166,232,18,0.18) inset",
         }}
       >
-        <nav className="relative grid grid-cols-4 gap-1.5">
+        <nav className="relative grid grid-cols-4" style={{ gap: "clamp(4px, 1vw, 8px)" }}>
           <div
             className="pointer-events-none absolute bottom-0 top-0 rounded-[22px]"
             style={{
-              width: "calc((100% - 1.125rem) / 4)",
-              transform: `translateX(calc(${activeIndex} * (100% + 0.375rem)))`,
+              width: "calc((100% - 0.75rem) / 4)",
+              transform: `translateX(calc(${activeIndex} * (100% + 0.25rem)))`,
               background:
                 "linear-gradient(180deg, rgba(166,232,18,0.45), rgba(255,255,255,0.06))",
               border: "1px solid rgba(166,232,18,0.55)",
-              boxShadow: "0 8px 18px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.14)",
             }}
           />
 
@@ -44,25 +41,28 @@ export default function TopNavigationBar({ compact = false }) {
               <button
                 key={item.path}
                 onClick={() => navigate(item.path)}
-                className="flex flex-col items-center justify-center gap-1 rounded-[22px] py-2"
+                className="flex flex-col items-center justify-center rounded-[22px]"
+                style={{
+                  paddingTop: "clamp(6px, 1.5svh, 10px)",
+                  paddingBottom: "clamp(6px, 1.5svh, 10px)",
+                }}
               >
                 <span
-                  className="flex h-9 w-9 items-center justify-center rounded-full border"
+                  className="flex items-center justify-center rounded-full border"
                   style={{
+                    height: "clamp(30px, 4.5svh, 36px)",
+                    width: "clamp(30px, 4.5svh, 36px)",
                     color: isActive ? "#F5FF9C" : "rgba(255,255,255,0.55)",
                     borderColor: isActive ? "rgba(166,232,18,0.6)" : "rgba(255,255,255,0.08)",
                     background: isActive ? "rgba(166,232,18,0.22)" : "transparent",
-                    boxShadow: isActive
-                      ? "0 0 14px rgba(166,232,18,0.45), inset 0 1px 0 rgba(255,255,255,0.18)"
-                      : "none",
                   }}
                 >
-                  <Icon size={18} strokeWidth={2} />
+                  <Icon size={16} />
                 </span>
 
                 <span
                   style={{
-                    fontSize: "9px",
+                    fontSize: "clamp(8px, 1.2svh, 10px)",
                     opacity: isActive ? 1 : 0.5,
                     color: isActive ? "#F0FFAA" : "rgba(255,255,255,0.55)",
                   }}
