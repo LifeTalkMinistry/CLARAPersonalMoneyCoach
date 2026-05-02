@@ -69,30 +69,6 @@ export default function DashboardFinancialCarousel({
 
   return (
     <div className="relative flex h-[clamp(292px,40svh,322px)] shrink-0 flex-col overflow-hidden rounded-[30px] px-1 py-1">
-      <div
-        className="pointer-events-none absolute inset-x-0 top-4 h-32 rounded-full blur-3xl transition-transform duration-500 ease-out"
-        style={{
-          background: "var(--clara-surface-glow)",
-          transform: `translate3d(${(scrollProgress - activeSlide) * 12}px, 0, 0)`,
-        }}
-      />
-
-      <div
-        className="pointer-events-none absolute left-0 top-12 h-28 w-28 rounded-full blur-3xl transition-transform duration-500 ease-out"
-        style={{
-          background: "var(--clara-glow-soft)",
-          transform: `translate3d(${scrollProgress * 6}px, 0, 0)`,
-        }}
-      />
-
-      <div
-        className="pointer-events-none absolute right-0 bottom-8 h-28 w-28 rounded-full blur-3xl transition-transform duration-500 ease-out"
-        style={{
-          background: "var(--clara-glow-premium)",
-          transform: `translate3d(${-scrollProgress * 6}px, 0, 0)`,
-        }}
-      />
-
       <section
         ref={carouselRef}
         onScroll={handleScroll}
@@ -103,12 +79,11 @@ export default function DashboardFinancialCarousel({
           const distance = index - scrollProgress;
           const absDistance = Math.min(Math.abs(distance), 2);
           const isActive = activeSlide === index;
-          const scale = isActive ? 1 : 1 - absDistance * 0.04;
-          const opacity = isActive ? 1 : Math.max(1 - absDistance * 0.24, 0.58);
-          const translateY = isActive ? 0 : absDistance * 8;
-          const rotate = Math.max(Math.min(distance * 0.9, 1.1), -1.1);
+          const scale = isActive ? 1 : 1 - absDistance * 0.035;
+          const opacity = isActive ? 1 : Math.max(1 - absDistance * 0.18, 0.68);
+          const translateY = isActive ? 0 : absDistance * 7;
+          const rotate = Math.max(Math.min(distance * 0.45, 0.65), -0.65);
           const translateX = distance * -2;
-          const blur = isActive ? 0 : Math.min(absDistance * 0.25, 0.5);
 
           return (
             <div
@@ -116,16 +91,16 @@ export default function DashboardFinancialCarousel({
               aria-label={item.label}
               style={{
                 opacity,
-                filter: `blur(${blur}px)`,
                 transform: `translate3d(${translateX}px, ${translateY}px, 0) scale(${scale}) rotate(${rotate}deg)`,
                 zIndex: isActive ? 10 : Math.max(1, 8 - Math.round(absDistance * 3)),
+                boxShadow: isActive
+                  ? "0 22px 46px rgba(0,0,0,0.38)"
+                  : "0 10px 24px rgba(0,0,0,0.22)",
                 transition: "var(--clara-theme-transition)",
               }}
-              className={`flex h-full w-full min-w-full flex-shrink-0 snap-center transition-[opacity,transform,filter] duration-300 ease-out will-change-transform ${
-                isActive
-                  ? "drop-shadow-[0_20px_38px_rgba(0,0,0,0.34)]"
-                  : "drop-shadow-[0_10px_20px_rgba(0,0,0,0.14)]"
-              } ${index === items.length - 1 ? "mr-1" : ""}`}
+              className={`flex h-full w-full min-w-full flex-shrink-0 snap-center rounded-[26px] transition-[opacity,transform,box-shadow] duration-300 ease-out will-change-transform ${
+                index === items.length - 1 ? "mr-1" : ""
+              }`}
             >
               <div className="flex h-full w-full transition-transform duration-300 ease-out active:scale-[0.985]">
                 {item.content}
@@ -149,7 +124,7 @@ export default function DashboardFinancialCarousel({
               style={{
                 width: isActive ? "1.75rem" : "0.5rem",
                 background: isActive ? "var(--clara-accent)" : "var(--clara-border-strong)",
-                boxShadow: isActive ? "var(--clara-glow-soft)" : "none",
+                boxShadow: "none",
                 opacity: isActive ? 1 : 0.62,
               }}
             />
