@@ -25,16 +25,18 @@ export default function TopNavigationBar({ compact = false }) {
           <button
             type="button"
             onClick={() => navigate("/")}
-            className="group flex min-w-0 items-center gap-3 text-left transition duration-200 active:scale-[0.98]"
+            className="group flex min-w-0 items-center gap-3 text-left transition duration-300 ease-out active:scale-[0.97]"
             aria-label="Go to dashboard"
           >
             <div
-              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border text-sm font-black tracking-tight transition group-hover:scale-105"
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border text-sm font-black tracking-tight transition duration-300 ease-out group-hover:scale-[1.03]"
               style={{
-                borderColor: "var(--clara-accent-border)",
-                background: "var(--clara-accent-soft)",
+                borderColor: "rgba(255,255,255,0.10)",
+                background: "rgba(255,255,255,0.045)",
                 color: "var(--clara-accent-text)",
-                boxShadow: "var(--clara-glow-premium)",
+                boxShadow: "0 10px 24px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.10)",
+                backdropFilter: "blur(14px)",
+                WebkitBackdropFilter: "blur(14px)",
               }}
             >
               C
@@ -59,31 +61,34 @@ export default function TopNavigationBar({ compact = false }) {
           <button
             type="button"
             onClick={() => navigate("/settings")}
-            className="group relative flex shrink-0 items-center gap-2 rounded-[22px] border px-2.5 py-2 text-left backdrop-blur-xl transition duration-200 active:scale-95"
+            className="group relative flex shrink-0 items-center gap-2 rounded-full border px-2.5 py-2 text-left transition duration-300 ease-out active:scale-[0.94]"
             style={{
-              borderColor: "var(--clara-border)",
-              background: "var(--clara-glass)",
+              borderColor: "rgba(255,255,255,0.08)",
+              background: "rgba(255,255,255,0.04)",
+              boxShadow: "0 10px 24px rgba(0,0,0,0.28), inset 0 1px 0 rgba(255,255,255,0.08)",
+              backdropFilter: "blur(16px)",
+              WebkitBackdropFilter: "blur(16px)",
             }}
             aria-label="Open profile settings"
           >
             <span className="relative block h-10 w-10">
               <Avatar
                 size={40}
-                className={`rounded-2xl text-[13px] font-black transition group-hover:scale-105 ${
+                className={`rounded-2xl text-[13px] font-black transition duration-300 ease-out group-hover:scale-[1.03] ${
                   hydrated ? "opacity-100" : "opacity-70"
                 }`}
                 style={{
-                  borderColor: "var(--clara-accent-border)",
-                  background: "var(--clara-accent-soft)",
-                  boxShadow: "var(--clara-glow-premium)",
+                  borderColor: "rgba(255,255,255,0.10)",
+                  background: "rgba(255,255,255,0.05)",
+                  boxShadow: "inset 0 1px 0 rgba(255,255,255,0.10)",
                 }}
               />
               <span
-                className="absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full border-2"
+                className="absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full border-2 opacity-80 transition duration-300 ease-out"
                 style={{
                   borderColor: "var(--clara-bg)",
                   background: "var(--clara-accent)",
-                  boxShadow: "0 0 10px var(--clara-glow)",
+                  boxShadow: "0 3px 8px rgba(199,226,58,0.18)",
                 }}
               />
             </span>
@@ -98,8 +103,8 @@ export default function TopNavigationBar({ compact = false }) {
               <span
                 className="mt-0.5 inline-flex rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase tracking-[0.14em]"
                 style={{
-                  borderColor: "var(--clara-accent-border)",
-                  background: "var(--clara-accent-soft)",
+                  borderColor: "rgba(199,226,58,0.18)",
+                  background: "rgba(199,226,58,0.08)",
                   color: "var(--clara-accent-text)",
                 }}
               >
@@ -111,39 +116,28 @@ export default function TopNavigationBar({ compact = false }) {
       )}
 
       <div
-        className={`clara-pill-panel relative overflow-hidden rounded-[28px] backdrop-blur-2xl transition-all duration-300 ${
-          compact ? "p-0.5" : "p-1"
+        className={`relative overflow-hidden rounded-full border transition-all duration-300 ease-out ${
+          compact ? "p-1" : "p-1.5"
         }`}
+        style={{
+          background: "rgba(255,255,255,0.04)",
+          borderColor: "rgba(255,255,255,0.08)",
+          boxShadow: "0 10px 30px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.06)",
+          backdropFilter: "blur(16px)",
+          WebkitBackdropFilter: "blur(16px)",
+        }}
       >
         <nav className="relative grid grid-cols-4 gap-1">
           <div
-            className="absolute bottom-0 top-0 overflow-hidden rounded-[22px] transition-all duration-500 ease-out"
+            className="pointer-events-none absolute bottom-0 top-0 overflow-hidden rounded-full"
             style={{
-              width: "calc((100% - 1rem) / 4)",
+              width: "calc((100% - 0.75rem) / 4)",
               transform: `translateX(calc(${activeIndex} * (100% + 0.25rem)))`,
-              background: "linear-gradient(145deg, rgba(98,146,49,0.48), rgba(34,82,45,0.44) 56%, rgba(13,48,76,0.36))",
-              boxShadow: "0 10px 20px rgba(0,0,0,0.16), 0 0 12px var(--clara-glow-soft), inset 0 1px 0 rgba(255,255,255,0.10)",
+              background: "rgba(199,226,58,0.18)",
+              boxShadow: "0 4px 12px rgba(199,226,58,0.18), inset 0 1px 0 rgba(255,255,255,0.15)",
+              transition: "all 280ms cubic-bezier(0.2, 0.8, 0.2, 1)",
             }}
-          >
-            <span
-              className="pointer-events-none absolute inset-y-0 -left-1/3 w-[135%] rounded-[22px]"
-              style={{
-                background:
-                  "linear-gradient(90deg, transparent, var(--clara-accent-soft), transparent)",
-              }}
-            />
-            <span
-              className="pointer-events-none absolute inset-x-3 top-0 h-px"
-              style={{
-                background:
-                  "linear-gradient(90deg, transparent, var(--clara-accent-border), transparent)",
-              }}
-            />
-            <span
-              className="pointer-events-none absolute inset-0 rounded-[22px]"
-              style={{ background: "var(--clara-surface-glow)" }}
-            />
-          </div>
+          />
 
           {topNavItems.map((item) => {
             const Icon = item.icon;
@@ -154,16 +148,26 @@ export default function TopNavigationBar({ compact = false }) {
                 key={item.path}
                 type="button"
                 onClick={() => navigate(item.path)}
-                className="group relative z-10 flex flex-col items-center justify-center gap-0.5 py-1.5 text-[9px] font-semibold transition-all duration-200 active:scale-95"
+                className="group relative z-10 flex flex-col items-center justify-center gap-0.5 rounded-full py-1.5 text-[9px] font-semibold transition-all duration-300 ease-out active:scale-[0.92]"
               >
+                {isActive && (
+                  <span
+                    className="absolute top-1 h-1 w-1 rounded-full opacity-80 transition-all duration-300 ease-out"
+                    style={{
+                      background: "rgba(199,226,58,0.82)",
+                      boxShadow: "0 2px 6px rgba(199,226,58,0.18)",
+                    }}
+                  />
+                )}
+
                 {item.badge && (
                   <span className="absolute right-3 top-1.5">
                     {item.badge === "dot" ? (
                       <span
-                        className="block h-1.5 w-1.5 rounded-full"
+                        className="block h-1.5 w-1.5 rounded-full opacity-80"
                         style={{
                           background: "var(--clara-accent)",
-                          boxShadow: "0 0 8px var(--clara-glow)",
+                          boxShadow: "0 3px 8px rgba(199,226,58,0.16)",
                         }}
                       />
                     ) : (
@@ -172,7 +176,7 @@ export default function TopNavigationBar({ compact = false }) {
                         style={{
                           background: "var(--clara-accent)",
                           color: "var(--clara-bg)",
-                          boxShadow: "0 0 8px var(--clara-glow)",
+                          boxShadow: "0 3px 8px rgba(199,226,58,0.16)",
                         }}
                       >
                         {item.badge}
@@ -182,27 +186,23 @@ export default function TopNavigationBar({ compact = false }) {
                 )}
 
                 <span
-                  className="flex h-7 w-7 items-center justify-center rounded-full border transition-all duration-300"
+                  className="flex h-7 w-7 items-center justify-center rounded-full transition-all duration-300 ease-out group-active:scale-[0.92]"
                   style={{
-                    borderColor: isActive
-                      ? "var(--clara-accent-border)"
-                      : "var(--clara-border)",
-                    background: isActive
-                      ? "linear-gradient(145deg, rgba(191,215,74,0.16), rgba(16,39,28,0.22))"
-                      : "var(--clara-panel)",
-                    color: isActive
-                      ? "var(--clara-accent-text)"
-                      : "var(--clara-text-soft)",
-                    boxShadow: isActive ? "0 0 12px var(--clara-glow-soft), inset 0 1px 0 rgba(255,255,255,0.08)" : "inset 0 1px 0 rgba(255,255,255,0.05)",
+                    opacity: isActive ? 1 : 0.6,
+                    color: isActive ? "var(--clara-text)" : "var(--clara-text-muted)",
+                    transform: isActive ? "scale(1.05)" : "scale(1)",
+                    filter: isActive ? "brightness(1.08)" : "none",
                   }}
                 >
-                  <Icon size={14} strokeWidth={1.6} />
+                  <Icon size={14} strokeWidth={1.7} />
                 </span>
 
                 <span
-                  className="transition-all duration-300"
+                  className="transition-all duration-300 ease-out group-active:scale-[0.96]"
                   style={{
+                    opacity: isActive ? 1 : 0.6,
                     color: isActive ? "var(--clara-text)" : "var(--clara-text-muted)",
+                    transform: isActive ? "scale(1.05)" : "scale(1)",
                   }}
                 >
                   {item.label}
