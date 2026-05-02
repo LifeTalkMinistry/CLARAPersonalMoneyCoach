@@ -8,7 +8,7 @@ export default function ClaraPageShell({
 }) {
   return (
     <main
-      className="relative min-h-screen w-full overflow-x-hidden"
+      className="relative min-h-[100dvh] w-full overflow-x-hidden overscroll-y-none"
       style={{
         background: "var(--clara-bg)",
         backgroundColor: "var(--clara-bg-base)",
@@ -16,6 +16,8 @@ export default function ClaraPageShell({
         backgroundRepeat: "no-repeat",
         backgroundSize: "cover",
         color: "var(--clara-text)",
+        WebkitOverflowScrolling: "touch",
+        overscrollBehaviorY: "none",
       }}
     >
       <div
@@ -26,7 +28,7 @@ export default function ClaraPageShell({
         }}
       />
 
-      <div className="relative z-10 flex min-h-screen w-full flex-col gap-4 px-3 pb-6 pt-3">
+      <div className="relative z-10 flex min-h-[100dvh] w-full flex-col gap-3 px-3 pb-4 pt-3">
         {!hideTopNav && <TopNavigationBar compact={compactHeader} />}
         {children}
       </div>
