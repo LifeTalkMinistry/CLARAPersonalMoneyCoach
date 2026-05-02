@@ -98,12 +98,12 @@ export default function DashboardFinancialCarousel({
   };
 
   return (
-    <div className="relative w-full shrink-0 overflow-visible">
+    <div className="relative flex h-full min-h-0 w-full flex-col overflow-visible">
       <section
         ref={carouselRef}
         onScroll={handleScroll}
         aria-label="Financial dashboard cards"
-        className="relative flex snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-hidden scroll-smooth scrollbar-none"
+        className="relative flex min-h-0 flex-1 snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-hidden scroll-smooth scrollbar-none"
         style={{ WebkitOverflowScrolling: "touch" }}
       >
         {items.map((item, index) => {
@@ -118,9 +118,9 @@ export default function DashboardFinancialCarousel({
                 zIndex: isActive ? 10 : 1,
                 transition: "opacity 240ms ease",
               }}
-              className="flex w-full min-w-full flex-shrink-0 snap-center transition-opacity duration-300 ease-out"
+              className="flex h-full w-full min-w-full flex-shrink-0 snap-center transition-opacity duration-300 ease-out"
             >
-              <div className="flex w-full overflow-hidden rounded-[28px]">
+              <div className="flex h-full w-full overflow-hidden rounded-[28px]">
                 {item.content}
               </div>
             </div>
@@ -128,7 +128,7 @@ export default function DashboardFinancialCarousel({
         })}
       </section>
 
-      <div className="mt-2 flex h-2 shrink-0 items-center justify-center gap-2">
+      <div className="flex h-5 shrink-0 items-center justify-center gap-2 pt-2">
         {items.map((item, index) => {
           const isActive = activeSlide === index;
 
