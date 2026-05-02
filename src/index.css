@@ -2,36 +2,35 @@
 
 :root {
   color-scheme: dark;
-  --clara-bg: #020b08;
-  --clara-panel: rgba(6, 18, 14, 0.85);
-  --clara-panel-strong: rgba(8, 26, 19, 0.92);
-  --clara-card: rgba(10, 30, 22, 0.9);
-  --clara-card-strong: rgba(10, 40, 28, 0.95);
-  --clara-glass: rgba(10, 30, 22, 0.9);
-  --clara-border: rgba(255, 255, 255, 0.105);
-  --clara-border-strong: rgba(126, 217, 87, 0.34);
-  --clara-text: rgba(255, 255, 255, 0.94);
-  --clara-text-soft: rgba(255, 255, 255, 0.72);
-  --clara-text-muted: rgba(255, 255, 255, 0.48);
-  --clara-text-faint: rgba(255, 255, 255, 0.30);
-  --clara-accent: #7ed957;
-  --clara-accent-soft: rgba(126, 217, 87, 0.12);
-  --clara-accent-border: rgba(126, 217, 87, 0.30);
-  --clara-accent-text: #d7ff5f;
-  --clara-secondary: #fff22d;
-  --clara-secondary-soft: rgba(255, 242, 45, 0.14);
-  --clara-highlight: #16b8ff;
-  --clara-highlight-soft: rgba(22, 184, 255, 0.12);
-  --clara-glow: rgba(0, 0, 0, 0);
-  --clara-glow-soft: rgba(0, 0, 0, 0);
-  --clara-glow-premium: 0 18px 48px rgba(0, 0, 0, 0.36),
+  --clara-bg: radial-gradient(circle at 50% -12%, rgba(255, 92, 78, 0.28), transparent 34%),
+    radial-gradient(circle at 50% 8%, rgba(126, 35, 71, 0.22), transparent 44%),
+    linear-gradient(180deg, #180719 0%, #050b16 42%, #020915 100%);
+  --clara-panel: rgba(6, 13, 27, 0.86);
+  --clara-panel-strong: rgba(10, 20, 42, 0.94);
+  --clara-card: linear-gradient(145deg, rgba(18, 30, 62, 0.94), rgba(5, 13, 30, 0.98));
+  --clara-card-strong: rgba(20, 34, 70, 0.96);
+  --clara-glass: rgba(7, 12, 27, 0.82);
+  --clara-border: rgba(155, 180, 255, 0.14);
+  --clara-border-strong: rgba(255, 112, 92, 0.46);
+  --clara-text: rgba(255, 255, 255, 0.95);
+  --clara-text-soft: rgba(232, 238, 255, 0.72);
+  --clara-text-muted: rgba(232, 238, 255, 0.50);
+  --clara-text-faint: rgba(232, 238, 255, 0.32);
+  --clara-accent: #ff624f;
+  --clara-accent-soft: rgba(255, 98, 79, 0.14);
+  --clara-accent-border: rgba(255, 98, 79, 0.42);
+  --clara-accent-text: #ff9a78;
+  --clara-secondary: #748cff;
+  --clara-secondary-soft: rgba(116, 140, 255, 0.14);
+  --clara-highlight: #7f97ff;
+  --clara-highlight-soft: rgba(127, 151, 255, 0.12);
+  --clara-glow: rgba(255, 98, 79, 0.20);
+  --clara-glow-soft: rgba(255, 98, 79, 0.12);
+  --clara-glow-premium: 0 22px 54px rgba(0, 0, 0, 0.44),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
-  --clara-surface-glow: none;
-  --clara-gradient: linear-gradient(
-    135deg,
-    rgba(126, 217, 87, 0.18),
-    rgba(255, 242, 45, 0.12)
-  );
+  --clara-surface-glow: radial-gradient(circle at 50% -10%, rgba(255, 98, 79, 0.16), transparent 32%),
+    radial-gradient(circle at 85% 14%, rgba(116, 140, 255, 0.10), transparent 30%);
+  --clara-gradient: linear-gradient(135deg, rgba(255, 98, 79, 0.22), rgba(116, 140, 255, 0.12));
   --clara-theme-transition: 180ms ease;
 }
 
@@ -40,13 +39,13 @@ body,
 #root {
   margin: 0;
   min-height: 100%;
-  background: var(--clara-bg);
+  background: #020915;
   color: var(--clara-text);
 }
 
 body {
   min-height: 100vh;
-  background: var(--clara-bg);
+  background: #020915;
   color: var(--clara-text);
 }
 
@@ -147,7 +146,7 @@ button {
   border-color: var(--clara-border);
   background: var(--clara-card);
   color: var(--clara-text);
-  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.32),
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.38),
     inset 0 1px 0 rgba(255, 255, 255, 0.05);
   backdrop-filter: blur(8px);
 }
@@ -156,6 +155,6 @@ button {
   border-color: var(--clara-accent-border);
   background: var(--clara-card-strong);
   color: var(--clara-accent-text);
-  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.36),
+  box-shadow: 0 18px 46px rgba(0, 0, 0, 0.42),
     inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
