@@ -34,14 +34,11 @@ export default function DashboardMoneySummary({
   return (
     <>
       {showExpense && (
-        <div className="clara-modal-backdrop fixed inset-0 z-50 flex items-end justify-center">
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/40">
           <div className="absolute inset-0" onClick={() => setShowExpense(false)} />
 
-          <div className="clara-modal-surface relative w-full max-w-sm rounded-t-[28px] p-5">
-            <p
-              className="text-[10px] font-black uppercase tracking-[0.24em]"
-              style={{ color: "var(--clara-text-faint)" }}
-            >
+          <div className="relative w-full max-w-sm rounded-t-[28px] bg-[#071426] p-5">
+            <p className="text-[10px] uppercase tracking-[0.24em] text-white/40">
               Quick Expense
             </p>
 
@@ -50,17 +47,12 @@ export default function DashboardMoneySummary({
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               placeholder="0"
-              className="mt-4 w-full rounded-[18px] bg-transparent text-3xl font-black outline-none"
-              style={{
-                border: "none",
-                boxShadow: "none",
-                color: "var(--clara-text)",
-              }}
+              className="mt-4 w-full bg-transparent text-3xl font-bold text-white outline-none"
             />
 
             <button
               onClick={handleSaveExpense}
-              className="clara-button-primary mt-4 w-full rounded-[18px] py-3 text-sm font-bold"
+              className="mt-4 w-full rounded-[18px] bg-white/10 py-3 text-sm font-semibold text-white"
             >
               Save
             </button>
@@ -69,73 +61,48 @@ export default function DashboardMoneySummary({
       )}
 
       <section
-        className="relative isolate overflow-hidden rounded-[24px] border px-4 py-4 backdrop-blur-2xl bg-clip-padding transform-gpu"
+        className="relative overflow-hidden rounded-[24px] border px-4 py-4"
         style={{
-          borderColor: "rgba(255,255,255,0.10)",
+          borderColor: "rgba(255,255,255,0.08)",
           background:
-            "linear-gradient(135deg, rgba(101,148,54,0.30) 0%, rgba(15,52,35,0.86) 44%, rgba(15,54,84,0.88) 100%)",
-          boxShadow:
-            "0 14px 34px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.04)",
-          clipPath: "inset(0 round 24px)",
-          WebkitMaskImage: "-webkit-radial-gradient(white, black)",
+            "linear-gradient(180deg, rgba(19,48,88,0.85), rgba(8,25,51,0.92))",
+          boxShadow: "0 14px 34px rgba(0,0,0,0.35)",
+          backdropFilter: "blur(16px)",
         }}
       >
-        <div
-          className="pointer-events-none absolute inset-0 rounded-[24px]"
-          style={{ background: "var(--clara-surface-glow)" }}
-        />
-
-        <div
-          className="pointer-events-none absolute inset-px rounded-[23px]"
-          style={{
-            boxShadow:
-              "inset 0 0 0 1px rgba(255,255,255,0.035), inset 0 -18px 34px rgba(0,0,0,0.12)",
-          }}
-        />
-
-        <div className="relative z-10 flex items-center justify-between gap-4">
+        <div className="flex items-center justify-between">
           <div>
             <div className="flex items-center gap-2">
-              <p
-                className="text-[10px] font-black uppercase tracking-[0.22em]"
-                style={{ color: "var(--clara-accent-text)" }}
-              >
+              <p className="text-[10px] uppercase tracking-[0.22em] text-white/50">
                 Money Left
               </p>
 
               <button
                 onClick={onToggleMoneyVisible}
-                className="clara-button-secondary rounded-full p-1"
-                style={{ color: "var(--clara-text-soft)" }}
+                className="rounded-full p-1 text-white/50"
               >
                 {moneyVisible ? <Eye size={12} /> : <EyeOff size={12} />}
               </button>
             </div>
 
-            <p className="mt-2 text-2xl font-extrabold text-white">
+            <p className="mt-2 text-2xl font-semibold text-white">
               {moneyVisible ? formatMoney(moneyLeft) : "••••"}
             </p>
 
-            <p
-              className="mt-1 text-[11px] font-medium"
-              style={{ color: "var(--clara-text-soft)" }}
-            >
+            <p className="mt-1 text-[11px] text-white/40">
               This month expenses: {moneyVisible ? formatMoney(totalExpenses) : "••••"}
             </p>
           </div>
 
           <button
             onClick={() => setShowExpense(true)}
-            className="relative flex h-[56px] w-[56px] shrink-0 items-center justify-center rounded-full border text-white"
+            className="flex h-[52px] w-[52px] items-center justify-center rounded-full border"
             style={{
-              borderColor: "rgba(214,197,72,0.22)",
-              background:
-                "radial-gradient(circle at 32% 24%, rgba(230,197,72,0.22), rgba(19,47,45,0.26) 48%, rgba(13,47,89,0.58) 100%)",
-              boxShadow:
-                "0 10px 30px rgba(0,0,0,0.26), inset 0 1px 0 rgba(255,255,255,0.10)",
+              borderColor: "rgba(154,235,255,0.22)",
+              background: "rgba(255,255,255,0.05)",
             }}
           >
-            <Plus size={20} />
+            <Plus size={18} />
           </button>
         </div>
       </section>
