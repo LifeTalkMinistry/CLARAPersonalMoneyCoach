@@ -104,6 +104,7 @@ export default function DashboardFinancialCarousel({
         onScroll={handleScroll}
         aria-label="Financial dashboard cards"
         className="relative flex snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-hidden scroll-smooth scrollbar-none"
+        style={{ WebkitOverflowScrolling: "touch" }}
       >
         {items.map((item, index) => {
           const isActive = activeSlide === index;
@@ -140,9 +141,9 @@ export default function DashboardFinancialCarousel({
               className="h-1.5 rounded-full transition-all duration-300 active:scale-90"
               style={{
                 width: isActive ? "0.95rem" : "0.36rem",
-                background: isActive ? "var(--clara-accent-text)" : "rgba(255,255,255,0.20)",
+                background: isActive ? "#B9F632" : "rgba(255,255,255,0.20)",
                 opacity: isActive ? 1 : 0.42,
-                boxShadow: isActive ? "0 0 12px var(--clara-glow-soft)" : "none",
+                boxShadow: isActive ? "0 0 10px rgba(166,232,18,0.4)" : "none",
               }}
             />
           );
