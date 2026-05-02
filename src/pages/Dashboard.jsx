@@ -13,11 +13,7 @@ function safeNumber(value) {
 }
 
 export default function Dashboard() {
-  const {
-    budgets,
-    currentMonthExpenses,
-    moneyLeft,
-  } = useFinancialData();
+  const { budgets, currentMonthExpenses, moneyLeft } = useFinancialData();
 
   const [moneyVisible, setMoneyVisible] = useState(true);
   const [activeBillboard, setActiveBillboard] = useState(null);
@@ -41,25 +37,32 @@ export default function Dashboard() {
     }
   }
 
-  const budgetData = useMemo(() => ({
-    total: safeNumber(budgets?.total),
-    spent: safeNumber(budgets?.spent),
-    totalExpenses: safeNumber(budgets?.totalExpenses),
-    unplannedSpent: safeNumber(budgets?.unplannedSpent),
-    categories: Array.isArray(budgets?.categories) ? budgets.categories : [],
-  }), [budgets]);
+  const budgetData = useMemo(
+    () => ({
+      total: safeNumber(budgets?.total),
+      spent: safeNumber(budgets?.spent),
+      totalExpenses: safeNumber(budgets?.totalExpenses),
+      unplannedSpent: safeNumber(budgets?.unplannedSpent),
+      categories: Array.isArray(budgets?.categories) ? budgets.categories : [],
+    }),
+    [budgets]
+  );
 
   return (
     <ClaraPageShell compactHeader>
       <div
-        className="flex min-h-0 flex-1 flex-col"
-        style={{ gap: "clamp(0.5rem, 1.25svh, 0.8rem)" }}
+        className="flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden"
+        style={{
+          justifyContent: "space-between",
+          gap: "clamp(0.5rem, 1.25svh, 0.8rem)",
+          WebkitOverflowScrolling: "touch",
+        }}
       >
         <div className="shrink-0">
           <DashboardBillboard billboard={activeBillboard} />
         </div>
 
-        <div className="min-h-0 flex-[1_1_auto]">
+        <div className="shrink-0">
           <DashboardFinancialCarousel
             budgetData={budgetData}
             emergencyFundData={{ current: 0, target: 0 }}
