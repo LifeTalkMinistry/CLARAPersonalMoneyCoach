@@ -69,18 +69,28 @@ export default function DashboardMoneySummary({
       )}
 
       <section
-        className="relative overflow-hidden rounded-[24px] border px-4 py-4 backdrop-blur-2xl"
+        className="relative isolate overflow-hidden rounded-[24px] border px-4 py-4 backdrop-blur-2xl bg-clip-padding transform-gpu"
         style={{
-          borderColor: "var(--clara-border)",
+          borderColor: "rgba(255,255,255,0.10)",
           background:
-            "linear-gradient(135deg, rgba(101,148,54,0.32) 0%, rgba(15,52,35,0.88) 44%, rgba(15,54,84,0.90) 100%)",
+            "linear-gradient(135deg, rgba(101,148,54,0.30) 0%, rgba(15,52,35,0.86) 44%, rgba(15,54,84,0.88) 100%)",
           boxShadow:
-            "var(--clara-shadow-soft), inset 0 1px 0 rgba(255,255,255,0.07)",
+            "0 14px 34px rgba(0,0,0,0.22), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(255,255,255,0.04)",
+          clipPath: "inset(0 round 24px)",
+          WebkitMaskImage: "-webkit-radial-gradient(white, black)",
         }}
       >
         <div
-          className="pointer-events-none absolute inset-0"
+          className="pointer-events-none absolute inset-0 rounded-[24px]"
           style={{ background: "var(--clara-surface-glow)" }}
+        />
+
+        <div
+          className="pointer-events-none absolute inset-px rounded-[23px]"
+          style={{
+            boxShadow:
+              "inset 0 0 0 1px rgba(255,255,255,0.035), inset 0 -18px 34px rgba(0,0,0,0.12)",
+          }}
         />
 
         <div className="relative z-10 flex items-center justify-between gap-4">
@@ -116,7 +126,7 @@ export default function DashboardMoneySummary({
 
           <button
             onClick={() => setShowExpense(true)}
-            className="relative flex h-[56px] w-[56px] items-center justify-center rounded-full border text-white"
+            className="relative flex h-[56px] w-[56px] shrink-0 items-center justify-center rounded-full border text-white"
             style={{
               borderColor: "rgba(214,197,72,0.22)",
               background:
