@@ -1,7 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 
 import Dashboard from "./pages/Dashboard";
-import HomeV2 from "./pages/HomeV2";
 import Feed from "./pages/Feed";
 import Messages from "./pages/Messages";
 import Settings from "./pages/settings/Settings";
@@ -51,7 +50,6 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<Dashboard />} />
-      <Route path="/home-v2" element={<HomeV2 />} />
       <Route path="/feed" element={<Feed />} />
       <Route path="/messages" element={<Messages />} />
       <Route path="/settings" element={<Settings />} />
