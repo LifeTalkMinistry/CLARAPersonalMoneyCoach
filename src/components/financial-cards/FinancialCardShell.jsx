@@ -22,12 +22,12 @@ export default function FinancialCardShell({
         background: "var(--clara-card)",
         color: "var(--clara-text)",
         boxShadow:
-          "0 18px 42px rgba(0,0,0,0.34), inset 0 1px 0 rgba(255,255,255,0.05)",
+          "var(--clara-shadow-soft), inset 0 1px 0 rgba(255,255,255,0.04)",
       }}
     >
-      {/* Top highlight line */}
+      {/* Clean top line */}
       <div
-        className="pointer-events-none absolute inset-x-6 top-0 h-px opacity-70"
+        className="pointer-events-none absolute inset-x-6 top-0 h-px opacity-60"
         style={{ background: "linear-gradient(90deg, transparent, var(--clara-border-strong), transparent)" }}
       />
 
@@ -40,7 +40,7 @@ export default function FinancialCardShell({
                 border: "1px solid var(--clara-accent-border)",
                 background: "var(--clara-accent-soft)",
                 color: "var(--clara-accent-text)",
-                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.12)",
+                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.10)",
               }}
             >
               {icon}
@@ -85,13 +85,13 @@ export default function FinancialCardShell({
         <section className="flex min-h-0 flex-1 flex-col gap-3">
           <div
             className="h-2 overflow-hidden rounded-full"
-            style={{ border: "1px solid var(--clara-border)", background: "rgba(255,255,255,0.045)" }}
+            style={{ border: "1px solid var(--clara-border)", background: "rgba(255,255,255,0.035)" }}
           >
             <div
               className={`h-full rounded-full transition-all duration-700 ease-out ${progressClassName}`}
               style={{
                 width: `${safeProgress}%`,
-                background: "linear-gradient(90deg, var(--clara-accent-text), var(--clara-accent))",
+                background: "linear-gradient(90deg, var(--clara-lime), var(--clara-accent))",
               }}
             />
           </div>
