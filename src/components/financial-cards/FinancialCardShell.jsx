@@ -15,50 +15,49 @@ export default function FinancialCardShell({
 
   return (
     <article
-      className="group relative flex h-full w-full flex-col overflow-hidden rounded-[28px] border px-5 pb-5 pt-5 text-white transition-all duration-300 ease-out active:scale-[0.975]"
+      className="group relative flex h-full w-full flex-col overflow-hidden rounded-[24px] border px-4 pb-4 pt-4 text-white transition-all duration-300 ease-out active:scale-[0.975]"
       style={{
         borderColor: "rgba(255,255,255,0.10)",
         background:
           "linear-gradient(180deg, rgba(9,30,35,0.94), rgba(4,16,21,0.98))",
         boxShadow:
-          "0 18px 46px rgba(0,0,0,0.42), inset 0 1px 0 rgba(255,255,255,0.05)",
-        backdropFilter: "blur(18px)",
-        WebkitBackdropFilter: "blur(18px)",
+          "0 14px 34px rgba(0,0,0,0.38), inset 0 1px 0 rgba(255,255,255,0.05)",
+        backdropFilter: "blur(16px)",
+        WebkitBackdropFilter: "blur(16px)",
       }}
     >
       <div
-        className="pointer-events-none absolute inset-0 opacity-80"
+        className="pointer-events-none absolute inset-0 opacity-70"
         style={{
           background:
-            "radial-gradient(circle at 0% 0%, rgba(166,232,18,0.10), transparent 34%), radial-gradient(circle at 100% 45%, rgba(39,93,255,0.08), transparent 38%)",
+            "radial-gradient(circle at 0% 0%, rgba(166,232,18,0.08), transparent 34%), radial-gradient(circle at 100% 45%, rgba(39,93,255,0.06), transparent 38%)",
         }}
       />
 
-      <div className="relative z-10 flex flex-col gap-4">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex items-center gap-3">
+      <div className="relative z-10 flex flex-col gap-3">
+        <div className="flex items-start justify-between gap-3">
+          <div className="flex items-center gap-2.5">
             <div
-              className="flex h-12 w-12 items-center justify-center rounded-[16px] font-semibold text-[#B9F632] transition-transform group-active:scale-95"
+              className="flex h-10 w-10 items-center justify-center rounded-[14px] font-semibold text-[#B9F632] transition-transform group-active:scale-95"
               style={{
                 background: "rgba(166,232,18,0.08)",
-                border: "1px solid rgba(166,232,18,0.28)",
-                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.08)",
+                border: "1px solid rgba(166,232,18,0.25)",
               }}
             >
               {icon}
             </div>
 
             <div>
-              <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-[#B9F632]/90">
+              <p className="text-[9px] font-bold uppercase tracking-[0.26em] text-[#B9F632]/90">
                 {eyebrow}
               </p>
-              <h2 className="mt-1 text-[17px] font-semibold text-white/90">{title}</h2>
+              <h2 className="mt-0.5 text-[15px] font-semibold text-white/85">{title}</h2>
             </div>
           </div>
 
           {badge && (
             <span
-              className={`rounded-full border px-3 py-1 text-[11px] font-semibold ${badgeClassName}`}
+              className={`rounded-full border px-2.5 py-0.5 text-[10px] font-semibold ${badgeClassName}`}
               style={{
                 background: "rgba(255,255,255,0.05)",
                 borderColor: "rgba(255,255,255,0.10)",
@@ -70,14 +69,14 @@ export default function FinancialCardShell({
           )}
         </div>
 
-        <div className="pt-4">
-          <p className="text-[40px] font-black tracking-[-0.05em] text-white">{hero}</p>
+        <div className="pt-2">
+          <p className="text-[34px] font-black tracking-[-0.04em] text-white">{hero}</p>
           {heroSubtext && (
-            <p className="mt-2 text-[16px] font-medium text-white/42">{heroSubtext}</p>
+            <p className="mt-1 text-[13px] font-medium text-white/45">{heroSubtext}</p>
           )}
         </div>
 
-        <div className="mt-2 h-[5px] overflow-hidden rounded-full bg-[rgba(166,232,18,0.14)]">
+        <div className="mt-1 h-[4px] overflow-hidden rounded-full bg-[rgba(166,232,18,0.12)]">
           <div
             className={`h-full rounded-full transition-all duration-700 ${progressClassName}`}
             style={{
@@ -87,10 +86,10 @@ export default function FinancialCardShell({
           />
         </div>
 
-        {insight && <p className="text-[15px] leading-7 text-white/55">{insight}</p>}
+        {insight && <p className="text-[13px] leading-6 text-white/55">{insight}</p>}
 
         {children && (
-          <div className="pt-1 transition-transform group-active:scale-[0.98]">
+          <div className="pt-0.5 transition-transform group-active:scale-[0.98]">
             {children}
           </div>
         )}
