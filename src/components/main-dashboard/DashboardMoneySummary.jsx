@@ -4,6 +4,7 @@ import { formatMoney } from "../../lib/dashboard/financeUtils";
 
 export default function DashboardMoneySummary({
   moneyLeft = 0,
+  totalExpenses = 0,
   moneyVisible = true,
   onToggleMoneyVisible,
   handleQuickExpense,
@@ -76,6 +77,10 @@ export default function DashboardMoneySummary({
 
             <p className="mt-2 text-2xl font-extrabold text-white">
               {moneyVisible ? formatMoney(moneyLeft) : "••••"}
+            </p>
+
+            <p className="mt-1 text-[11px] font-medium text-white/40">
+              This month expenses: {moneyVisible ? formatMoney(totalExpenses) : "••••"}
             </p>
           </div>
 
