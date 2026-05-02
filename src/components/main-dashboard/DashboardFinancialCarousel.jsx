@@ -66,12 +66,12 @@ export default function DashboardFinancialCarousel({
   };
 
   return (
-    <div className="relative w-full shrink-0 overflow-visible">
+    <div className="relative w-full shrink-0 overflow-visible pb-4">
       <section
         ref={carouselRef}
         onScroll={handleScroll}
         aria-label="Financial dashboard cards"
-        className="relative flex snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-visible scroll-smooth pb-1 scrollbar-none"
+        className="relative flex snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-visible scroll-smooth pb-4 scrollbar-none"
       >
         {items.map((item, index) => {
           const distance = index - scrollProgress;
