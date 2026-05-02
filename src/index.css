@@ -2,40 +2,35 @@
 
 :root {
   color-scheme: dark;
-  --clara-bg: #070b10;
-  --clara-panel: rgba(255, 255, 255, 0.055);
-  --clara-panel-strong: rgba(255, 255, 255, 0.095);
-  --clara-card: rgba(255, 255, 255, 0.055);
-  --clara-card-strong: rgba(255, 255, 255, 0.095);
-  --clara-glass: linear-gradient(
-    135deg,
-    rgba(255, 255, 255, 0.095),
-    rgba(255, 255, 255, 0.055)
-  );
+  --clara-bg: #020b08;
+  --clara-panel: rgba(6, 18, 14, 0.85);
+  --clara-panel-strong: rgba(8, 26, 19, 0.92);
+  --clara-card: rgba(10, 30, 22, 0.9);
+  --clara-card-strong: rgba(10, 40, 28, 0.95);
+  --clara-glass: rgba(10, 30, 22, 0.9);
   --clara-border: rgba(255, 255, 255, 0.105);
-  --clara-border-strong: rgba(52, 211, 153, 0.32);
+  --clara-border-strong: rgba(126, 217, 87, 0.34);
   --clara-text: rgba(255, 255, 255, 0.94);
   --clara-text-soft: rgba(255, 255, 255, 0.72);
   --clara-text-muted: rgba(255, 255, 255, 0.48);
   --clara-text-faint: rgba(255, 255, 255, 0.30);
-  --clara-accent: #34d399;
-  --clara-accent-soft: rgba(52, 211, 153, 0.14);
-  --clara-accent-border: rgba(52, 211, 153, 0.32);
-  --clara-accent-text: #86efac;
-  --clara-glow: rgba(16, 185, 129, 0.22);
-  --clara-glow-soft: rgba(16, 185, 129, 0.16);
-  --clara-glow-premium: 0 0 28px rgba(16, 185, 129, 0.22),
-    inset 0 1px 0 rgba(255, 255, 255, 0.10);
-  --clara-surface-glow: radial-gradient(
-    circle at 50% 0%,
-    rgba(16, 185, 129, 0.22),
-    transparent 42%
-  );
+  --clara-accent: #7ed957;
+  --clara-accent-soft: rgba(126, 217, 87, 0.12);
+  --clara-accent-border: rgba(126, 217, 87, 0.30);
+  --clara-accent-text: #d7ff5f;
+  --clara-secondary: #fff22d;
+  --clara-secondary-soft: rgba(255, 242, 45, 0.14);
+  --clara-highlight: #16b8ff;
+  --clara-highlight-soft: rgba(22, 184, 255, 0.12);
+  --clara-glow: rgba(0, 0, 0, 0);
+  --clara-glow-soft: rgba(0, 0, 0, 0);
+  --clara-glow-premium: 0 18px 48px rgba(0, 0, 0, 0.36),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --clara-surface-glow: none;
   --clara-gradient: linear-gradient(
     135deg,
-    rgba(52, 211, 153, 0.14),
-    rgba(15, 23, 42, 0.90),
-    rgba(6, 78, 59, 0.22)
+    rgba(126, 217, 87, 0.18),
+    rgba(255, 242, 45, 0.12)
   );
   --clara-theme-transition: 180ms ease;
 }
@@ -51,9 +46,7 @@ body,
 
 body {
   min-height: 100vh;
-  background:
-    var(--clara-surface-glow),
-    var(--clara-bg);
+  background: var(--clara-bg);
   color: var(--clara-text);
 }
 
@@ -144,21 +137,25 @@ button {
 
 .clara-glass-panel {
   border-color: var(--clara-border);
-  background: var(--clara-glass);
+  background: var(--clara-panel);
   color: var(--clara-text);
   box-shadow: var(--clara-glow-premium);
+  backdrop-filter: blur(10px);
 }
 
 .clara-card-surface {
   border-color: var(--clara-border);
   background: var(--clara-card);
   color: var(--clara-text);
-  box-shadow: 0 0 18px var(--clara-glow-soft);
+  box-shadow: 0 14px 36px rgba(0, 0, 0, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
 }
 
 .clara-accent-surface {
   border-color: var(--clara-accent-border);
-  background: var(--clara-gradient);
+  background: var(--clara-card-strong);
   color: var(--clara-accent-text);
-  box-shadow: var(--clara-glow-premium);
+  box-shadow: 0 16px 42px rgba(0, 0, 0, 0.36),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
 }
