@@ -53,8 +53,8 @@ export default function Dashboard() {
       <div
         className="flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden"
         style={{
-          justifyContent: "space-between",
-          gap: "clamp(0.5rem, 1.25svh, 0.8rem)",
+          justifyContent: "flex-start",
+          gap: "clamp(0.65rem, 1.45svh, 0.9rem)",
           WebkitOverflowScrolling: "touch",
         }}
       >
