@@ -133,9 +133,9 @@ export default function TopNavigationBar({ compact = false }) {
             style={{
               width: "calc((100% - 0.75rem) / 4)",
               transform: `translateX(calc(${activeIndex} * (100% + 0.25rem)))`,
-              background: "rgba(199,226,58,0.18)",
-              boxShadow: "0 4px 12px rgba(199,226,58,0.18), inset 0 1px 0 rgba(255,255,255,0.15)",
-              transition: "all 280ms cubic-bezier(0.2, 0.8, 0.2, 1)",
+              background: "rgba(199,226,58,0.14)",
+              boxShadow: "0 8px 18px rgba(0,0,0,0.16), inset 0 1px 0 rgba(255,255,255,0.14)",
+              transition: "all 300ms cubic-bezier(0.2, 0.8, 0.2, 1)",
             }}
           />
 
@@ -148,14 +148,13 @@ export default function TopNavigationBar({ compact = false }) {
                 key={item.path}
                 type="button"
                 onClick={() => navigate(item.path)}
-                className="group relative z-10 flex flex-col items-center justify-center gap-0.5 rounded-full py-1.5 text-[9px] font-semibold transition-all duration-300 ease-out active:scale-[0.92]"
+                className="group relative z-10 flex flex-col items-center justify-center gap-[1px] rounded-full py-1.5 pt-2 text-[8px] font-medium transition-all duration-300 ease-out active:scale-[0.92]"
               >
                 {isActive && (
                   <span
-                    className="absolute top-1 h-1 w-1 rounded-full opacity-80 transition-all duration-300 ease-out"
+                    className="absolute top-1 h-[3px] w-[3px] rounded-full opacity-55 transition-all duration-300 ease-out"
                     style={{
-                      background: "rgba(199,226,58,0.82)",
-                      boxShadow: "0 2px 6px rgba(199,226,58,0.18)",
+                      background: "var(--clara-accent)",
                     }}
                   />
                 )}
@@ -164,10 +163,10 @@ export default function TopNavigationBar({ compact = false }) {
                   <span className="absolute right-3 top-1.5">
                     {item.badge === "dot" ? (
                       <span
-                        className="block h-1.5 w-1.5 rounded-full opacity-80"
+                        className="block h-1.5 w-1.5 rounded-full opacity-70"
                         style={{
                           background: "var(--clara-accent)",
-                          boxShadow: "0 3px 8px rgba(199,226,58,0.16)",
+                          boxShadow: "0 3px 8px rgba(199,226,58,0.12)",
                         }}
                       />
                     ) : (
@@ -176,7 +175,7 @@ export default function TopNavigationBar({ compact = false }) {
                         style={{
                           background: "var(--clara-accent)",
                           color: "var(--clara-bg)",
-                          boxShadow: "0 3px 8px rgba(199,226,58,0.16)",
+                          boxShadow: "0 3px 8px rgba(199,226,58,0.12)",
                         }}
                       >
                         {item.badge}
@@ -188,21 +187,21 @@ export default function TopNavigationBar({ compact = false }) {
                 <span
                   className="flex h-7 w-7 items-center justify-center rounded-full transition-all duration-300 ease-out group-active:scale-[0.92]"
                   style={{
-                    opacity: isActive ? 1 : 0.6,
+                    opacity: isActive ? 0.95 : 0.62,
                     color: isActive ? "var(--clara-text)" : "var(--clara-text-muted)",
-                    transform: isActive ? "scale(1.05)" : "scale(1)",
-                    filter: isActive ? "brightness(1.08)" : "none",
+                    transform: isActive ? "scale(1.06)" : "scale(1)",
+                    filter: isActive ? "brightness(1.04)" : "none",
                   }}
                 >
-                  <Icon size={14} strokeWidth={1.7} />
+                  <Icon size={16} strokeWidth={1.8} />
                 </span>
 
                 <span
-                  className="transition-all duration-300 ease-out group-active:scale-[0.96]"
+                  className="transition-all duration-300 ease-out group-active:scale-[0.98]"
                   style={{
-                    opacity: isActive ? 1 : 0.6,
+                    opacity: isActive ? 0.85 : 0.45,
                     color: isActive ? "var(--clara-text)" : "var(--clara-text-muted)",
-                    transform: isActive ? "scale(1.05)" : "scale(1)",
+                    transform: isActive ? "scale(1.01)" : "scale(1)",
                   }}
                 >
                   {item.label}
