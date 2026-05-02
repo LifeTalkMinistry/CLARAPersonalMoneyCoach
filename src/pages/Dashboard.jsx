@@ -53,8 +53,7 @@ export default function Dashboard() {
       <div
         className="flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden"
         style={{
-          justifyContent: "flex-start",
-          gap: "clamp(0.65rem, 1.45svh, 0.9rem)",
+          gap: "clamp(0.55rem, 1.15svh, 0.75rem)",
           WebkitOverflowScrolling: "touch",
         }}
       >
@@ -62,7 +61,12 @@ export default function Dashboard() {
           <DashboardBillboard billboard={activeBillboard} />
         </div>
 
-        <div className="shrink-0">
+        <div
+          className="min-h-0 flex flex-[1_1_auto] items-center"
+          style={{
+            minHeight: "clamp(17.5rem, 43svh, 25rem)",
+          }}
+        >
           <DashboardFinancialCarousel
             budgetData={budgetData}
             emergencyFundData={{ current: 0, target: 0 }}
