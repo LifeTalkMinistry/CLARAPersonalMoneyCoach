@@ -1,6 +1,7 @@
 import ClaraPageShell from "../components/shared/layout/ClaraPageShell";
 import DashboardBillboard from "../components/main-dashboard/DashboardBillboard";
 import DashboardWalletDrawer from "../components/main-dashboard/DashboardWalletDrawer";
+import DashboardFinancialCarousel from "../components/main-dashboard/DashboardFinancialCarousel";
 
 export default function Dashboard() {
   return (
@@ -9,6 +10,7 @@ export default function Dashboard() {
         <div className="space-y-4">
           <DashboardBillboard />
           <DashboardWalletDrawer />
+          <DashboardFinancialCarousel />
         </div>
       </div>
     </ClaraPageShell>
