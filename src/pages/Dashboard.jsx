@@ -53,7 +53,7 @@ export default function Dashboard() {
       <div
         className="flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden"
         style={{
-          gap: "clamp(0.55rem, 1.05svh, 0.72rem)",
+          gap: "clamp(0.65rem, 1.25svh, 0.85rem)",
           WebkitOverflowScrolling: "touch",
         }}
       >
@@ -61,12 +61,7 @@ export default function Dashboard() {
           <DashboardBillboard billboard={activeBillboard} />
         </div>
 
-        <div
-          className="min-h-0 flex flex-[1_1_auto] items-center"
-          style={{
-            minHeight: "clamp(17rem, 40svh, 23.5rem)",
-          }}
-        >
+        <div className="shrink-0">
           <DashboardFinancialCarousel
             budgetData={budgetData}
             emergencyFundData={{ current: 0, target: 0 }}
@@ -84,6 +79,8 @@ export default function Dashboard() {
             onToggleMoneyVisible={() => setMoneyVisible((v) => !v)}
           />
         </div>
+
+        <div className="min-h-0 flex-1" aria-hidden="true" />
       </div>
     </ClaraPageShell>
   );
