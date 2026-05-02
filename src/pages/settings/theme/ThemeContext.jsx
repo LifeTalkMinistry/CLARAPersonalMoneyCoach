@@ -8,30 +8,47 @@ export const claraThemes = [
     name: "CLARA Default",
     category: "Default",
     description:
-      "The official CLARA look: deep financial green, bright growth yellow, and a controlled blue trust accent.",
-    bg: "#020b08",
-    panel: "rgba(4, 22, 16, 0.76)",
-    panelStrong: "rgba(8, 45, 31, 0.86)",
-    card: "rgba(7, 35, 25, 0.68)",
-    cardStrong: "rgba(10, 66, 42, 0.76)",
-    accent: "#7ed957",
-    accentSoft: "rgba(126, 217, 87, 0.14)",
-    accentBorder: "rgba(126, 217, 87, 0.34)",
-    accentText: "#d7ff5f",
-    secondary: "#fff22d",
-    secondarySoft: "rgba(255, 242, 45, 0.12)",
-    highlight: "#16b8ff",
-    highlightSoft: "rgba(22, 184, 255, 0.10)",
-    glow: "rgba(126, 217, 87, 0.18)",
-    glowSoft: "rgba(255, 242, 45, 0.10)",
+      "The official CLARA look: deep financial green, growth yellow, and a calm blue intelligence accent.",
+
+    /* Palette reference */
+    ink: "#0D1F14",
+    forest: "#123329",
+    growth: "#1E4D35",
+    lime: "#C7E23A",
+    gold: "#FFD23F",
+    intelligence: "#143B6E",
+
+    /* Base */
+    bg:
+      "radial-gradient(circle at 50% -16%, rgba(255, 210, 63, 0.24), transparent 32%), radial-gradient(circle at 18% 18%, rgba(199, 226, 58, 0.13), transparent 34%), radial-gradient(circle at 88% 78%, rgba(20, 59, 110, 0.22), transparent 42%), linear-gradient(180deg, #0D1F14 0%, #092219 42%, #07151D 100%)",
+    panel: "rgba(13, 31, 20, 0.82)",
+    panelStrong: "rgba(18, 51, 41, 0.90)",
+    card:
+      "linear-gradient(145deg, rgba(18, 51, 41, 0.92), rgba(13, 31, 20, 0.98))",
+    cardStrong:
+      "linear-gradient(145deg, rgba(30, 77, 53, 0.86), rgba(18, 51, 41, 0.96))",
+
+    /* Brand roles */
+    accent: "#1E4D35",
+    accentSoft: "rgba(30, 77, 53, 0.18)",
+    accentBorder: "rgba(199, 226, 58, 0.28)",
+    accentText: "#C7E23A",
+    secondary: "#FFD23F",
+    secondarySoft: "rgba(255, 210, 63, 0.13)",
+    highlight: "#143B6E",
+    highlightSoft: "rgba(20, 59, 110, 0.18)",
+
+    /* Premium depth, not loud glow */
+    glow: "rgba(199, 226, 58, 0.14)",
+    glowSoft: "rgba(255, 210, 63, 0.08)",
     premiumGlow:
-      "0 0 22px rgba(126,217,87,0.16), 0 18px 60px rgba(0,105,70,0.22), inset 0 1px 0 rgba(215,255,95,0.09)",
+      "0 22px 54px rgba(0, 0, 0, 0.42), inset 0 1px 0 rgba(255, 255, 255, 0.055)",
     surfaceGlow:
-      "radial-gradient(circle at 18% 0%, rgba(126,217,87,0.18), transparent 34%), radial-gradient(circle at 88% 18%, rgba(255,242,45,0.10), transparent 35%), radial-gradient(circle at 92% 86%, rgba(22,184,255,0.12), transparent 38%)",
+      "radial-gradient(circle at 50% -14%, rgba(255,210,63,0.14), transparent 34%), radial-gradient(circle at 90% 20%, rgba(20,59,110,0.12), transparent 34%)",
     glass:
-      "linear-gradient(135deg, rgba(11,80,48,0.68), rgba(4,22,16,0.86) 46%, rgba(2,18,25,0.78))",
+      "linear-gradient(145deg, rgba(18, 51, 41, 0.72), rgba(13, 31, 20, 0.92) 58%, rgba(7, 21, 29, 0.90))",
     gradient:
-      "linear-gradient(135deg, rgba(126,217,87,0.18), rgba(255,242,45,0.08) 32%, rgba(4,22,16,0.94) 64%, rgba(2,18,25,0.96))",
+      "linear-gradient(135deg, rgba(30,77,53,0.62), rgba(18,51,41,0.86) 48%, rgba(20,59,110,0.34))",
   },
 ];
 
@@ -56,11 +73,11 @@ function buildThemeSystem(theme) {
 
   return {
     ...theme,
-    text: "rgba(255, 255, 255, 0.94)",
-    textSoft: "rgba(255, 255, 255, 0.72)",
-    textMuted: "rgba(255, 255, 255, 0.48)",
-    textFaint: "rgba(255, 255, 255, 0.30)",
-    border: "rgba(255, 255, 255, 0.105)",
+    text: "rgba(255, 255, 255, 0.95)",
+    textSoft: "rgba(255, 255, 255, 0.68)",
+    textMuted: "rgba(255, 255, 255, 0.46)",
+    textFaint: "rgba(255, 255, 255, 0.28)",
+    border: "rgba(255, 255, 255, 0.095)",
     borderStrong: theme.accentBorder,
     card: theme.card || panel,
     cardStrong: theme.cardStrong || panelStrong,
@@ -100,6 +117,18 @@ function applyTheme(theme) {
   root.style.setProperty("--clara-glow-premium", themeSystem.glowPremium);
   root.style.setProperty("--clara-surface-glow", themeSystem.surfaceGlow);
   root.style.setProperty("--clara-gradient", themeSystem.gradient);
+
+  root.style.setProperty("--clara-ink", themeSystem.ink || "#0D1F14");
+  root.style.setProperty("--clara-forest", themeSystem.forest || "#123329");
+  root.style.setProperty("--clara-growth", themeSystem.growth || "#1E4D35");
+  root.style.setProperty("--clara-lime", themeSystem.lime || "#C7E23A");
+  root.style.setProperty("--clara-gold", themeSystem.gold || "#FFD23F");
+  root.style.setProperty("--clara-blue", themeSystem.intelligence || "#143B6E");
+  root.style.setProperty("--clara-success", themeSystem.growth || "#1E4D35");
+  root.style.setProperty("--clara-warning", themeSystem.gold || "#FFD23F");
+  root.style.setProperty("--clara-shadow-soft", "0 10px 30px rgba(0, 0, 0, 0.35)");
+  root.style.setProperty("--clara-shadow-elevated", "0 20px 50px rgba(0, 0, 0, 0.45)");
+
   root.style.colorScheme = "dark";
 }
 
