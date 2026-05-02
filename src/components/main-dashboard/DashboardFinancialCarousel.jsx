@@ -78,7 +78,7 @@ export default function DashboardFinancialCarousel({
           const absDistance = Math.min(Math.abs(distance), 2);
           const isActive = activeSlide === index;
           const scale = isActive ? 1 : 0.975;
-          const opacity = isActive ? 1 : 0.82;
+          const opacity = isActive ? 1 : 0.78;
           const translateY = isActive ? 0 : absDistance * 5;
           const translateX = distance * -2;
 
@@ -116,10 +116,10 @@ export default function DashboardFinancialCarousel({
               aria-label={`Go to ${item.label}`}
               className="h-2 rounded-full transition-all duration-300 active:scale-90"
               style={{
-                width: isActive ? "1.05rem" : "0.5rem",
-                background: isActive ? "rgba(230,255,72,0.88)" : "rgba(230,255,72,0.22)",
-                opacity: isActive ? 1 : 0.55,
-                boxShadow: isActive ? "0 4px 10px rgba(0,0,0,0.22)" : "none",
+                width: isActive ? "1rem" : "0.42rem",
+                background: isActive ? "rgba(255,255,255,0.84)" : "rgba(255,255,255,0.20)",
+                opacity: isActive ? 1 : 0.42,
+                boxShadow: "none",
               }}
             />
           );
