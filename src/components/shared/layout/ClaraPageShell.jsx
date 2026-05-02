@@ -8,7 +8,7 @@ export default function ClaraPageShell({
 }) {
   return (
     <main
-      className="relative min-h-[100dvh] w-full overflow-x-hidden"
+      className="relative min-h-[100svh] w-full overflow-x-hidden"
       style={{
         backgroundColor: "#02090C",
         backgroundImage: `
@@ -23,7 +23,16 @@ export default function ClaraPageShell({
         color: "#F6FFF1",
       }}
     >
-      <div className="relative z-10 flex min-h-[100dvh] w-full flex-col gap-3 px-3 pb-4 pt-3">
+      <div
+        className="relative z-10 mx-auto flex min-h-[100svh] w-full max-w-[430px] flex-col"
+        style={{
+          gap: "clamp(0.5rem, 1.2svh, 0.75rem)",
+          paddingLeft: "clamp(0.625rem, 3.2vw, 0.875rem)",
+          paddingRight: "clamp(0.625rem, 3.2vw, 0.875rem)",
+          paddingTop: "max(env(safe-area-inset-top), clamp(0.5rem, 1.2svh, 0.75rem))",
+          paddingBottom: "max(env(safe-area-inset-bottom), clamp(0.75rem, 1.8svh, 1rem))",
+        }}
+      >
         {!hideTopNav && <TopNavigationBar compact={compactHeader} />}
         {children}
       </div>
