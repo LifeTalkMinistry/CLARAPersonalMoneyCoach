@@ -15,15 +15,50 @@ export default function DashboardFinancialCarousel({
   savingsData,
   investmentData,
   debtData,
+  onManageBudget,
+  onAddSavings,
+  onSetSavingsGoal,
+  onDeleteSavingsGoal,
+  onAddEmergencyFunds,
+  onSetEmergencyTarget,
 }) {
   const carouselRef = useRef(null);
   const frameRef = useRef(null);
   const [activeSlide, setActiveSlide] = useState(0);
 
   const items = [
-    { label: "Budget", content: <BudgetCard data={budgetData} /> },
-    { label: "Emergency Fund", content: <EmergencyFundCard data={emergencyFundData} /> },
-    { label: "Savings Goal", content: <SavingsGoalCard data={savingsData} /> },
+    {
+      label: "Budget",
+      content: (
+        <BudgetCard
+          data={budgetData}
+          onCreateBudget={onManageBudget}
+          onManageBudget={onManageBudget}
+          onAdjustBudget={onManageBudget}
+        />
+      ),
+    },
+    {
+      label: "Emergency Fund",
+      content: (
+        <EmergencyFundCard
+          data={emergencyFundData}
+          onAddFunds={onAddEmergencyFunds}
+          onSetTarget={onSetEmergencyTarget}
+        />
+      ),
+    },
+    {
+      label: "Savings Goal",
+      content: (
+        <SavingsGoalCard
+          data={savingsData}
+          onAddSavings={onAddSavings}
+          onSetGoal={onSetSavingsGoal}
+          onDeleteGoal={onDeleteSavingsGoal}
+        />
+      ),
+    },
     { label: "Investment Fund", content: <InvestmentFundCard data={investmentData} /> },
     { label: "Debt / Obligation", content: <DebtObligationCard data={debtData} /> },
   ];

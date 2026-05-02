@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { ChevronRight, Plus, Wallet } from "lucide-react";
+import { ChevronRight, Pencil, Plus, Trash2, Wallet } from "lucide-react";
 
 function formatPeso(value = 0) {
   const amount = Number(value) || 0;
@@ -19,10 +19,17 @@ function getWalletBalance(wallet) {
   return Number(wallet?.balance ?? wallet?.current_balance ?? wallet?.amount ?? 0) || 0;
 }
 
-export default function DashboardWalletDrawer({ wallets = [], onAddWallet }) {
+export default function DashboardWalletDrawer({
+  wallets = [],
+  onAddWallet,
+  onEditWallet,
+  onDeleteWallet,
+}) {
   const [walletModalOpen, setWalletModalOpen] = useState(false);
-
-  const safeWallets = Array.isArray(wallets) ? wallets : [];
+  const safeWallets = useMemo(
+    () => (Array.isArray(wallets) ? wallets : []),
+    [wallets]
+  );
 
   const totalBalance = useMemo(
     () => safeWallets.reduce((sum, wallet) => sum + getWalletBalance(wallet), 0),
@@ -114,26 +121,48 @@ export default function DashboardWalletDrawer({ wallets = [], onAddWallet }) {
                 safeWallets.map((wallet, index) => (
                   <div
                     key={wallet?.id || wallet?.wallet_id || `${getWalletName(wallet, index)}-${index}`}
-                    className="flex items-center justify-between gap-4 rounded-[20px] border border-white/10 bg-white/[0.05] p-4"
+                    className="rounded-[20px] border border-white/10 bg-white/[0.05] p-4"
                   >
-                    <div className="flex min-w-0 items-center gap-3">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] border border-white/10 bg-white/[0.09] text-white/70">
-                        <Wallet size={17} strokeWidth={1.8} />
+                    <div className="flex items-center justify-between gap-4">
+                      <div className="flex min-w-0 items-center gap-3">
+                        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] border border-white/10 bg-white/[0.09] text-white/70">
+                          <Wallet size={17} strokeWidth={1.8} />
+                        </div>
+
+                        <div className="min-w-0">
+                          <p className="truncate text-sm font-bold text-white">
+                            {getWalletName(wallet, index)}
+                          </p>
+                          <p className="mt-0.5 text-xs text-white/40">
+                            Available balance
+                          </p>
+                        </div>
                       </div>
 
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-bold text-white">
-                          {getWalletName(wallet, index)}
-                        </p>
-                        <p className="mt-0.5 text-xs text-white/40">
-                          Available balance
-                        </p>
-                      </div>
+                      <p className="shrink-0 text-sm font-extrabold text-white">
+                        {formatPeso(getWalletBalance(wallet))}
+                      </p>
                     </div>
 
-                    <p className="shrink-0 text-sm font-extrabold text-white">
-                      {formatPeso(getWalletBalance(wallet))}
-                    </p>
+                    <div className="mt-3 flex items-center gap-2">
+                      <button
+                        type="button"
+                        onClick={() => onEditWallet?.(wallet)}
+                        className="flex flex-1 items-center justify-center gap-2 rounded-[14px] border border-white/10 bg-white/[0.06] px-3 py-2 text-xs font-bold text-white/80 transition active:scale-[0.98]"
+                      >
+                        <Pencil size={13} strokeWidth={2} />
+                        Edit
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => onDeleteWallet?.(wallet)}
+                        className="flex items-center justify-center gap-2 rounded-[14px] border border-rose-300/20 bg-rose-400/10 px-3 py-2 text-xs font-bold text-rose-200 transition active:scale-[0.98]"
+                      >
+                        <Trash2 size={13} strokeWidth={2} />
+                        Delete
+                      </button>
+                    </div>
                   </div>
                 ))
               ) : (
