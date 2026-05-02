@@ -34,25 +34,54 @@ export default function DashboardWalletDrawer({ wallets = [], onAddWallet }) {
       <button
         type="button"
         onClick={() => setWalletModalOpen(true)}
-        className="group relative w-full overflow-hidden rounded-[24px] border border-white/10 bg-white/[0.035] px-4 py-3 text-left shadow-[0_14px_46px_rgba(0,0,0,0.38),inset_0_1px_0_rgba(255,255,255,0.06)] backdrop-blur-2xl transition duration-300 hover:bg-white/[0.045] hover:shadow-[0_18px_58px_rgba(0,0,0,0.46),inset_0_1px_0_rgba(255,255,255,0.08)] active:scale-[0.98] active:bg-black/10"
+        className="group relative w-full overflow-hidden rounded-[26px] border px-4 py-3 text-left backdrop-blur-2xl transition duration-300 active:scale-[0.98]"
+        style={{
+          borderColor: "var(--clara-border)",
+          background: "var(--clara-glass)",
+          boxShadow: "var(--clara-glow-premium)",
+        }}
       >
-        <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(255,255,255,0.065),rgba(255,255,255,0.018)_42%,rgba(0,0,0,0.10)),radial-gradient(circle_at_18%_0%,rgba(255,255,255,0.08),transparent_32%),radial-gradient(circle_at_88%_12%,rgba(255,255,255,0.055),transparent_34%)] opacity-70 transition duration-300 group-active:opacity-50" />
+        <div
+          className="pointer-events-none absolute inset-0 opacity-70 transition duration-300 group-active:opacity-50"
+          style={{ background: "var(--clara-surface-glow)" }}
+        />
 
-        <div className="pointer-events-none absolute inset-x-5 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent opacity-60" />
+        <div
+          className="pointer-events-none absolute inset-x-6 top-0 h-px opacity-70"
+          style={{
+            background:
+              "linear-gradient(90deg, transparent, var(--clara-accent-border), rgba(255,255,255,0.18), transparent)",
+          }}
+        />
 
-        <div className="relative mx-auto mb-2.5 h-[2px] w-10 rounded-full bg-white/20 shadow-[0_0_10px_rgba(255,255,255,0.12)]" />
+        <div
+          className="relative mx-auto mb-2.5 h-[2px] w-10 rounded-full"
+          style={{
+            background: "var(--clara-accent-soft)",
+            boxShadow: "0 0 10px var(--clara-glow-soft)",
+          }}
+        />
 
         <div className="relative flex items-center justify-between gap-4">
           <div className="flex min-w-0 items-center gap-3">
-            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.055] text-white/60 shadow-[inset_0_1px_0_rgba(255,255,255,0.06)]">
+            <div
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-2xl border text-white/60"
+              style={{
+                borderColor: "var(--clara-border)",
+                background: "var(--clara-panel)",
+              }}
+            >
               <Wallet size={15} strokeWidth={1.8} />
             </div>
 
             <div className="min-w-0">
-              <p className="text-[9px] font-bold uppercase tracking-[0.3em] text-white/55">
+              <p
+                className="text-[9px] font-bold uppercase tracking-[0.3em]"
+                style={{ color: "var(--clara-accent-text)" }}
+              >
                 Wallets
               </p>
-              <p className="mt-0.5 text-[11px] font-medium text-white/35">
+              <p className="mt-0.5 text-[11px] font-medium text-white/40">
                 {safeWallets.length} {safeWallets.length === 1 ? "wallet" : "wallets"}
               </p>
             </div>
@@ -60,7 +89,7 @@ export default function DashboardWalletDrawer({ wallets = [], onAddWallet }) {
 
           <div className="flex shrink-0 items-center gap-2.5 text-right">
             <div>
-              <p className="text-[9px] font-bold uppercase tracking-[0.22em] text-white/30">
+              <p className="text-[9px] font-bold uppercase tracking-[0.22em] text-white/36">
                 Total
               </p>
               <p className="mt-0.5 text-[17px] font-extrabold tracking-tight text-white">
@@ -71,7 +100,7 @@ export default function DashboardWalletDrawer({ wallets = [], onAddWallet }) {
             <ChevronRight
               size={16}
               strokeWidth={1.8}
-              className="text-white/20 transition duration-300 group-hover:translate-x-0.5 group-hover:text-white/30"
+              className="text-white/25 transition duration-300 group-hover:translate-x-0.5 group-hover:text-white/40"
             />
           </div>
         </div>
@@ -85,14 +114,27 @@ export default function DashboardWalletDrawer({ wallets = [], onAddWallet }) {
             aria-hidden="true"
           />
 
-          <section className="relative w-full max-w-[390px] overflow-hidden rounded-[30px] border border-white/10 bg-[#071017]/95 p-5 text-white shadow-[0_26px_90px_rgba(0,0,0,0.68)]">
-            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_12%_0%,rgba(20,184,166,0.20),transparent_34%),radial-gradient(circle_at_90%_14%,rgba(59,130,246,0.16),transparent_30%),radial-gradient(circle_at_50%_100%,rgba(168,85,247,0.13),transparent_38%)]" />
+          <section
+            className="relative w-full max-w-[390px] overflow-hidden rounded-[30px] border p-5 text-white backdrop-blur-2xl"
+            style={{
+              borderColor: "var(--clara-border)",
+              background: "var(--clara-glass)",
+              boxShadow: "0 26px 90px rgba(0,0,0,0.68), var(--clara-glow-premium)",
+            }}
+          >
+            <div
+              className="pointer-events-none absolute inset-0 opacity-80"
+              style={{ background: "var(--clara-surface-glow)" }}
+            />
 
             <div className="relative mx-auto mb-4 h-[4px] w-11 rounded-full bg-white/20" />
 
             <div className="relative flex items-start justify-between gap-4">
               <div>
-                <p className="text-[11px] font-bold uppercase tracking-[0.26em] text-emerald-200/60">
+                <p
+                  className="text-[11px] font-bold uppercase tracking-[0.26em]"
+                  style={{ color: "var(--clara-accent-text)" }}
+                >
                   Wallets
                 </p>
                 <h2 className="mt-2 text-2xl font-bold tracking-tight text-white">
@@ -103,13 +145,23 @@ export default function DashboardWalletDrawer({ wallets = [], onAddWallet }) {
               <button
                 type="button"
                 onClick={() => setWalletModalOpen(false)}
-                className="rounded-full border border-white/10 bg-white/[0.07] px-3 py-2 text-xs font-bold text-white/85 transition hover:bg-white/[0.1]"
+                className="rounded-full border px-3 py-2 text-xs font-bold text-white/85 transition active:scale-95"
+                style={{
+                  borderColor: "var(--clara-border)",
+                  background: "var(--clara-panel)",
+                }}
               >
                 Close
               </button>
             </div>
 
-            <div className="relative mt-8 rounded-[24px] border border-white/10 bg-white/[0.055] p-4">
+            <div
+              className="relative mt-8 rounded-[24px] border p-4"
+              style={{
+                borderColor: "var(--clara-border)",
+                background: "var(--clara-panel)",
+              }}
+            >
               <p className="text-[11px] font-medium text-white/45">Total Balance</p>
 
               <div className="mt-2 flex items-end justify-between gap-3">
@@ -128,10 +180,20 @@ export default function DashboardWalletDrawer({ wallets = [], onAddWallet }) {
                 safeWallets.map((wallet, index) => (
                   <div
                     key={wallet?.id || wallet?.wallet_id || `${getWalletName(wallet, index)}-${index}`}
-                    className="flex items-center justify-between gap-4 rounded-[22px] border border-white/10 bg-white/[0.045] p-4"
+                    className="flex items-center justify-between gap-4 rounded-[22px] border p-4"
+                    style={{
+                      borderColor: "var(--clara-border)",
+                      background: "var(--clara-panel)",
+                    }}
                   >
                     <div className="flex min-w-0 items-center gap-3">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.07] text-white/70">
+                      <div
+                        className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border text-white/70"
+                        style={{
+                          borderColor: "var(--clara-border)",
+                          background: "var(--clara-glass)",
+                        }}
+                      >
                         <Wallet size={17} strokeWidth={1.8} />
                       </div>
 
@@ -151,7 +213,13 @@ export default function DashboardWalletDrawer({ wallets = [], onAddWallet }) {
                   </div>
                 ))
               ) : (
-                <div className="rounded-[24px] border border-dashed border-white/10 bg-black/15 px-4 py-8 text-center">
+                <div
+                  className="rounded-[24px] border border-dashed px-4 py-8 text-center"
+                  style={{
+                    borderColor: "var(--clara-border)",
+                    background: "rgba(0,0,0,0.14)",
+                  }}
+                >
                   <p className="text-sm font-bold text-white/75">No wallets yet</p>
                   <p className="mx-auto mt-2 max-w-[230px] text-xs leading-relaxed text-white/40">
                     Your wallets will appear here once added.
@@ -163,7 +231,13 @@ export default function DashboardWalletDrawer({ wallets = [], onAddWallet }) {
             <button
               type="button"
               onClick={onAddWallet}
-              className="relative mt-5 flex w-full items-center justify-center gap-2 rounded-[22px] border border-emerald-300/20 bg-emerald-300/[0.10] px-4 py-4 text-sm font-bold text-white shadow-[0_18px_45px_rgba(16,185,129,0.12)] transition hover:bg-emerald-300/[0.14] active:scale-[0.99]"
+              className="relative mt-5 flex w-full items-center justify-center gap-2 rounded-[22px] border px-4 py-4 text-sm font-bold transition active:scale-[0.99]"
+              style={{
+                borderColor: "var(--clara-accent-border)",
+                background: "var(--clara-accent-soft)",
+                color: "var(--clara-accent-text)",
+                boxShadow: "0 0 24px var(--clara-glow-soft)",
+              }}
             >
               <Plus size={17} strokeWidth={2.2} />
               Add Wallet
