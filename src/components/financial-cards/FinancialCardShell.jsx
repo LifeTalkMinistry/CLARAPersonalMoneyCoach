@@ -34,8 +34,8 @@ export default function FinancialCardShell({
         }}
       />
 
-      <div className="relative z-10 flex flex-col gap-3">
-        <div className="flex items-start justify-between gap-3">
+      <div className="relative z-10 flex h-full min-h-0 flex-col gap-3">
+        <div className="flex shrink-0 items-start justify-between gap-3">
           <div className="flex items-center gap-2.5">
             <div
               className="flex h-10 w-10 items-center justify-center rounded-[14px] font-semibold text-[#B9F632] transition-transform group-active:scale-95"
@@ -69,14 +69,14 @@ export default function FinancialCardShell({
           )}
         </div>
 
-        <div className="pt-2">
+        <div className="shrink-0 pt-2">
           <p className="text-[34px] font-black tracking-[-0.04em] text-white">{hero}</p>
           {heroSubtext && (
             <p className="mt-1 text-[13px] font-medium text-white/45">{heroSubtext}</p>
           )}
         </div>
 
-        <div className="mt-1 h-[4px] overflow-hidden rounded-full bg-[rgba(166,232,18,0.12)]">
+        <div className="mt-1 h-[4px] shrink-0 overflow-hidden rounded-full bg-[rgba(166,232,18,0.12)]">
           <div
             className={`h-full rounded-full transition-all duration-700 ${progressClassName}`}
             style={{
@@ -86,10 +86,10 @@ export default function FinancialCardShell({
           />
         </div>
 
-        {insight && <p className="text-[13px] leading-6 text-white/55">{insight}</p>}
+        {insight && <p className="shrink-0 text-[13px] leading-6 text-white/55">{insight}</p>}
 
         {children && (
-          <div className="pt-0.5 transition-transform group-active:scale-[0.98]">
+          <div className="mt-auto shrink-0 pt-3 transition-transform group-active:scale-[0.98]">
             {children}
           </div>
         )}
