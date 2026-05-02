@@ -20,32 +20,29 @@ export default function FinancialCardShell({
     normalizedBadge.includes("priority");
 
   const badgeStyle = {
-    borderColor: "var(--clara-accent-border)",
-    background: isWarningBadge ? "var(--clara-accent-soft)" : "var(--clara-panel)",
+    borderColor: "rgba(236,255,91,0.18)",
+    background: isWarningBadge ? "rgba(236,255,91,0.10)" : "rgba(255,255,255,0.045)",
     color: "var(--clara-accent-text)",
-    boxShadow: isWarningBadge ? "0 0 16px var(--clara-glow-soft)" : "none",
+    boxShadow: "none",
   };
 
   return (
     <article
-      className="group relative flex h-full max-h-full min-h-0 w-full flex-col overflow-hidden rounded-[32px] border px-5 pb-5 pt-5 backdrop-blur-2xl transition-all duration-300 active:scale-[0.985]"
+      className="group relative flex h-full max-h-full min-h-0 w-full flex-col overflow-hidden rounded-[32px] border px-5 pb-5 pt-5 transition-all duration-300 active:scale-[0.985]"
       style={{
-        borderColor: "var(--clara-border)",
-        background: "var(--clara-glass)",
+        borderColor: "rgba(255,255,255,0.085)",
+        background:
+          "linear-gradient(180deg, rgba(9,22,17,0.96) 0%, rgba(5,14,13,0.98) 58%, rgba(4,10,15,0.98) 100%)",
         color: "var(--clara-text)",
-        boxShadow: "var(--clara-glow-premium)",
+        boxShadow:
+          "0 18px 42px rgba(0,0,0,0.46), inset 0 1px 0 rgba(255,255,255,0.07)",
       }}
     >
       <div
-        className="pointer-events-none absolute inset-0 rounded-[32px] opacity-70"
-        style={{ background: "var(--clara-surface-glow)" }}
-      />
-
-      <div
-        className="pointer-events-none absolute inset-x-6 top-0 h-px opacity-70"
+        className="pointer-events-none absolute inset-x-7 top-0 h-px opacity-50"
         style={{
           background:
-            "linear-gradient(90deg, transparent, var(--clara-accent-border), rgba(255,255,255,0.18), transparent)",
+            "linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent)",
         }}
       />
 
@@ -55,20 +52,17 @@ export default function FinancialCardShell({
             <div
               className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[22px] border text-sm font-bold transition-all duration-300 group-active:scale-95"
               style={{
-                borderColor: "var(--clara-accent-border)",
-                background: "var(--clara-accent-soft)",
+                borderColor: "rgba(236,255,91,0.16)",
+                background: "rgba(255,255,255,0.045)",
                 color: "var(--clara-accent-text)",
-                boxShadow: "var(--clara-glow-premium)",
+                boxShadow: "inset 0 1px 0 rgba(255,255,255,0.08)",
               }}
             >
               {icon}
             </div>
 
             <div className="flex min-w-0 flex-col gap-2 pt-1">
-              <p
-                className="truncate text-[10px] font-bold uppercase leading-none tracking-[0.28em]"
-                style={{ color: "var(--clara-accent-text)" }}
-              >
+              <p className="truncate text-[10px] font-bold uppercase leading-none tracking-[0.28em] text-white/48">
                 {eyebrow}
               </p>
               <h2 className="truncate text-[17px] font-semibold leading-none tracking-[-0.02em] text-white/88">
@@ -93,29 +87,25 @@ export default function FinancialCardShell({
           </p>
 
           {heroSubtext && (
-            <p className="truncate text-[13px] font-semibold leading-none text-white/62">
+            <p className="truncate text-[13px] font-semibold leading-none text-white/52">
               {heroSubtext}
             </p>
           )}
         </section>
 
         <section className="flex min-h-0 flex-1 flex-col gap-3.5">
-          <div
-            className="h-[3px] overflow-hidden rounded-full"
-            style={{ background: "var(--clara-accent-soft)" }}
-          >
+          <div className="h-[3px] overflow-hidden rounded-full bg-white/10">
             <div
               className={`h-full rounded-full transition-all duration-700 ease-out ${progressClassName}`}
               style={{
                 width: `${safeProgress}%`,
-                background:
-                  "linear-gradient(90deg, var(--clara-accent), var(--clara-accent-text))",
+                background: "rgba(236,255,91,0.88)",
               }}
             />
           </div>
 
           {insight && (
-            <p className="line-clamp-2 min-h-[42px] text-[13px] font-medium leading-[1.6] text-white/64">
+            <p className="line-clamp-2 min-h-[42px] text-[13px] font-medium leading-[1.6] text-white/56">
               {insight}
             </p>
           )}
