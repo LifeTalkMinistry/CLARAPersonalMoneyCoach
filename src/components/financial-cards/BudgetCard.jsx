@@ -37,7 +37,7 @@ export default function BudgetCard({ data, onAdjustBudget, onCreateBudget, onMan
 
   const status = progress < 50 ? "On Track" : progress < 80 ? "Caution" : "Critical";
   const badgeClassName =
-    progress < 50 ? "text-emerald-400" : progress < 80 ? "text-amber-400" : "text-rose-400";
+    progress < 50 ? "text-[var(--clara-status-good)]" : progress < 80 ? "text-[var(--clara-status-caution)]" : "text-[var(--clara-status-risk)]";
 
   const insight =
     total === 0
@@ -86,7 +86,7 @@ export default function BudgetCard({ data, onAdjustBudget, onCreateBudget, onMan
           hero={money(total)}
           heroSubtext={total ? `${money(remaining)} left` : "No plan"}
           progress={progress}
-          progressClassName="bg-emerald-400"
+          progressClassName="bg-[var(--clara-status-good)]"
           insight={insight}
         >
           <button
@@ -95,7 +95,7 @@ export default function BudgetCard({ data, onAdjustBudget, onCreateBudget, onMan
               event.stopPropagation();
               setPanelOpen(true);
             }}
-            className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-left text-sm text-white/70 transition duration-300 hover:bg-white/[0.06] hover:text-white"
+            className="clara-button-secondary flex w-full items-center justify-between rounded-2xl px-4 py-3 text-left text-sm transition duration-300"
           >
             <span className="font-medium">Show details</span>
             <span className="text-lg leading-none text-white/60" aria-hidden>
@@ -115,7 +115,7 @@ export default function BudgetCard({ data, onAdjustBudget, onCreateBudget, onMan
         badge={total ? status : "No Plan"}
         badgeClassName={badgeClassName}
         progress={progress}
-        progressClassName={progress < 50 ? "bg-emerald-400" : progress < 80 ? "bg-amber-400" : "bg-rose-400"}
+        progressClassName={progress < 50 ? "bg-[var(--clara-status-good)]" : progress < 80 ? "bg-[var(--clara-status-caution)]" : "bg-[var(--clara-status-risk)]"}
         insight={insight}
         actions={[]}
         details={[

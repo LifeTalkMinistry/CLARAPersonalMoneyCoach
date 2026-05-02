@@ -29,11 +29,11 @@ export default function FinancialFocusPanel({
         type="button"
         aria-label={`Close ${title} panel`}
         onClick={onClose}
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm transition-opacity duration-300"
+        className="clara-modal-backdrop absolute inset-0 transition-opacity duration-300"
       />
 
       <div
-        className={`relative flex h-[86vh] w-full max-w-md flex-col overflow-hidden rounded-[30px] border border-[var(--clara-border)] bg-[var(--clara-panel)] text-[var(--clara-text)] shadow-[var(--clara-glow-premium)] backdrop-blur-2xl transition-transform duration-300 ${
+        className={`clara-modal-surface relative flex h-[86vh] w-full max-w-md flex-col overflow-hidden rounded-[30px] text-[var(--clara-text)] transition-transform duration-300 ${
           open ? "translate-y-0 scale-100" : "translate-y-10 scale-95"
         }`}
         style={{ transitionTimingFunction: "var(--clara-theme-transition)" }}
@@ -54,7 +54,7 @@ export default function FinancialFocusPanel({
             <button
               type="button"
               onClick={onClose}
-              className="rounded-full border border-[var(--clara-border)] bg-[var(--clara-glass)] px-3 py-1.5 text-xs font-semibold text-[var(--clara-text-soft)] transition hover:bg-[var(--clara-card-strong)] hover:text-[var(--clara-text)]"
+              className="clara-button-secondary rounded-full px-3 py-1.5 text-xs font-semibold transition"
             >
               Close
             </button>
@@ -97,7 +97,7 @@ export default function FinancialFocusPanel({
                   key={action.label}
                   type="button"
                   onClick={action.onClick}
-                  className="rounded-[22px] border border-[var(--clara-border)] bg-[var(--clara-card)] p-4 text-left transition hover:bg-[var(--clara-card-strong)]"
+                  className="clara-button-secondary rounded-[22px] p-4 text-left transition"
                 >
                   <p className="text-sm font-semibold text-[var(--clara-text)]">{action.label}</p>
                   {action.description && (
@@ -135,9 +135,9 @@ export default function FinancialFocusPanel({
             <button
               type="button"
               onClick={footerAction.onClick}
-              className="mt-4 w-full rounded-[22px] border border-[var(--clara-accent-border)] bg-[var(--clara-accent-soft)] px-4 py-4 text-left transition hover:bg-[var(--clara-card-strong)]"
+              className="clara-button-primary mt-4 w-full rounded-[22px] px-4 py-4 text-left transition"
             >
-              <p className="text-sm font-semibold text-[var(--clara-accent-text)]">
+              <p className="text-sm font-semibold text-[#10230f]">
                 {footerAction.label}
               </p>
               {footerAction.description && (

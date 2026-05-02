@@ -24,23 +24,16 @@ export default function EmergencyFundCard({
 
   const badgeClassName =
     progress < 40
-      ? "text-rose-300 bg-rose-400/10 border-rose-300/20"
+      ? "text-[var(--clara-status-risk)] bg-[rgba(215,138,108,0.12)] border-[rgba(215,138,108,0.22)]"
       : progress < 75
-      ? "text-amber-300 bg-amber-400/10 border-amber-300/20"
-      : "text-emerald-300 bg-emerald-400/10 border-emerald-300/20";
+      ? "text-[var(--clara-status-caution)] bg-[rgba(230,197,72,0.12)] border-[rgba(230,197,72,0.22)]"
+      : "text-[var(--clara-status-good)] bg-[rgba(215,239,89,0.12)] border-[rgba(215,239,89,0.22)]";
 
   const panelBadgeClassName =
-    progress < 40 ? "text-rose-400" : progress < 75 ? "text-amber-400" : "text-emerald-400";
-
-  const progressClassName =
-    progress < 40
-      ? "from-rose-300 to-rose-500"
-      : progress < 75
-      ? "from-amber-300 to-amber-500"
-      : "from-emerald-300 to-emerald-500";
+    progress < 40 ? "text-[var(--clara-status-risk)]" : progress < 75 ? "text-[var(--clara-status-caution)]" : "text-[var(--clara-status-good)]";
 
   const panelProgressClassName =
-    progress < 40 ? "bg-rose-400" : progress < 75 ? "bg-amber-400" : "bg-emerald-400";
+    progress < 40 ? "bg-[var(--clara-status-risk)]" : progress < 75 ? "bg-[var(--clara-status-caution)]" : "bg-[var(--clara-status-good)]";
 
   const insight =
     progress < 40
@@ -66,13 +59,13 @@ export default function EmergencyFundCard({
           hero={`₱${current.toLocaleString()}`}
           heroSubtext={`Target: ₱${target.toLocaleString()}`}
           progress={progress}
-          progressClassName={progressClassName}
+          progressClassName={panelProgressClassName}
           insight={insight}
         >
           <button
             type="button"
             onClick={() => setPanelOpen(true)}
-            className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-left text-sm text-white/70 transition duration-300 hover:bg-white/[0.06] hover:text-white"
+            className="clara-button-secondary flex w-full items-center justify-between rounded-2xl px-4 py-3 text-left text-sm transition duration-300"
           >
             <span className="font-medium">Show more</span>
             <span className="text-lg leading-none text-white/60" aria-hidden="true">⌄</span>

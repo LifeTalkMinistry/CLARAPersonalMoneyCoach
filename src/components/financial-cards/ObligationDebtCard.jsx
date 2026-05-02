@@ -20,31 +20,24 @@ export default function ObligationDebtCard({
 
   const badgeClassName =
     total < 5000
-      ? "text-amber-300 bg-amber-400/10 border-amber-300/20"
+      ? "text-[var(--clara-status-caution)] bg-[rgba(230,197,72,0.12)] border-[rgba(230,197,72,0.22)]"
       : total < 20000
-      ? "text-rose-300 bg-rose-400/10 border-rose-300/20"
-      : "text-red-300 bg-red-400/10 border-red-300/20";
+      ? "text-[var(--clara-status-risk)] bg-[rgba(215,138,108,0.12)] border-[rgba(215,138,108,0.22)]"
+      : "text-[var(--clara-status-risk)] bg-[rgba(215,138,108,0.16)] border-[rgba(215,138,108,0.26)]";
 
   const panelBadgeClassName =
     total < 5000
-      ? "text-amber-400"
+      ? "text-[var(--clara-status-caution)]"
       : total < 20000
-      ? "text-rose-400"
-      : "text-red-400";
-
-  const progressClassName =
-    total < 5000
-      ? "from-amber-300 to-amber-500"
-      : total < 20000
-      ? "from-rose-300 to-rose-500"
-      : "from-red-300 to-red-500";
+      ? "text-[var(--clara-status-risk)]"
+      : "text-[var(--clara-status-risk)]";
 
   const panelProgressClassName =
     total < 5000
-      ? "bg-amber-400"
+      ? "bg-[var(--clara-status-caution)]"
       : total < 20000
-      ? "bg-rose-400"
-      : "bg-red-400";
+      ? "bg-[var(--clara-status-risk)]"
+      : "bg-[var(--clara-status-risk)]";
 
   const insight =
     total < 5000
@@ -72,13 +65,13 @@ export default function ObligationDebtCard({
           hero={formatMoney(total)}
           heroSubtext="Total Outstanding Debt"
           progress={progress}
-          progressClassName={progressClassName}
+          progressClassName={panelProgressClassName}
           insight={insight}
         >
           <button
             type="button"
             onClick={() => setPanelOpen(true)}
-            className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-left text-sm text-white/70 transition duration-300 hover:bg-white/[0.06] hover:text-white"
+            className="clara-button-secondary flex w-full items-center justify-between rounded-2xl px-4 py-3 text-left text-sm transition duration-300"
           >
             <span className="font-medium">Show more</span>
             <span className="text-lg leading-none text-white/60">⌄</span>

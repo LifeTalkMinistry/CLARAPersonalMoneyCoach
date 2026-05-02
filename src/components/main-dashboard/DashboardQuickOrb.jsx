@@ -217,7 +217,7 @@ export default function DashboardQuickOrb({
   return (
     <>
       {showExpense && (
-        <div className="fixed inset-0 z-40 flex items-end justify-center bg-black/55 backdrop-blur-md">
+        <div className="clara-modal-backdrop fixed inset-0 z-40 flex items-end justify-center">
           <button
             type="button"
             aria-label="Close quick expense"
@@ -225,14 +225,14 @@ export default function DashboardQuickOrb({
             className="absolute inset-0"
           />
 
-          <section className="relative w-full max-w-sm overflow-hidden rounded-t-[32px] border border-white/[0.10] bg-[#080d12]/95 px-5 pb-5 pt-4 text-white shadow-[0_-30px_90px_rgba(0,0,0,0.72)] backdrop-blur-2xl">
+          <section className="clara-modal-surface relative w-full max-w-sm overflow-hidden rounded-t-[32px] px-5 pb-5 pt-4 text-white">
             <div className="pointer-events-none absolute inset-x-8 top-0 h-px bg-gradient-to-r from-transparent via-white/28 to-transparent" />
-            <div className="pointer-events-none absolute -right-20 -top-20 h-44 w-44 rounded-full bg-lime-300/[0.07] blur-3xl" />
-            <div className="pointer-events-none absolute -left-20 bottom-0 h-44 w-44 rounded-full bg-sky-300/[0.055] blur-3xl" />
+            <div className="pointer-events-none absolute -right-20 -top-20 h-44 w-44 rounded-full blur-3xl" style={{ background: "var(--clara-secondary-soft)" }} />
+            <div className="pointer-events-none absolute -left-20 bottom-0 h-44 w-44 rounded-full blur-3xl" style={{ background: "var(--clara-highlight-soft)" }} />
 
             <div className="relative flex items-center justify-between gap-3">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.26em] text-white/38">
+                <p className="text-[10px] font-black uppercase tracking-[0.26em]" style={{ color: "var(--clara-accent-text)" }}>
                   Quick Expense
                 </p>
                 <h3 className="mt-1 text-lg font-black tracking-[-0.03em] text-white">
@@ -243,15 +243,15 @@ export default function DashboardQuickOrb({
               <button
                 type="button"
                 onClick={closeExpenseModal}
-                className="flex h-10 w-10 items-center justify-center rounded-2xl border border-white/[0.10] bg-white/[0.055] text-white/65 transition active:scale-95"
+                className="clara-button-secondary flex h-10 w-10 items-center justify-center rounded-2xl transition active:scale-95"
                 aria-label="Close quick expense"
               >
                 <X size={17} strokeWidth={2} />
               </button>
             </div>
 
-            <div className="relative mt-5 rounded-[26px] border border-white/[0.09] bg-white/[0.045] px-4 py-4 shadow-inner shadow-white/[0.015]">
-              <p className="text-[10px] font-bold uppercase tracking-[0.20em] text-white/35">
+            <div className="relative mt-5 rounded-[26px] border px-4 py-4 shadow-inner shadow-white/[0.015]" style={{ borderColor: "var(--clara-input-border)", background: "var(--clara-input-surface)" }}>
+              <p className="text-[10px] font-bold uppercase tracking-[0.20em]" style={{ color: "var(--clara-text-faint)" }}>
                 Amount
               </p>
 
@@ -265,7 +265,8 @@ export default function DashboardQuickOrb({
                   onChange={(event) => setAmount(event.target.value)}
                   inputMode="decimal"
                   placeholder="0.00"
-                  className="min-w-0 flex-1 bg-transparent text-4xl font-black tracking-[-0.05em] text-white outline-none placeholder:text-white/18"
+                  className="min-w-0 flex-1 bg-transparent text-4xl font-black tracking-[-0.05em] text-white outline-none"
+                  style={{ border: "none", boxShadow: "none" }}
                 />
               </div>
             </div>
@@ -293,7 +294,7 @@ export default function DashboardQuickOrb({
               </button>
 
               {categoryOpen && (
-                <div className="mt-2 overflow-hidden rounded-2xl border border-white/[0.08] bg-[#0b1117]/95 shadow-[0_18px_40px_rgba(0,0,0,0.34)]">
+                <div className="mt-2 overflow-hidden rounded-2xl border shadow-[0_18px_40px_rgba(0,0,0,0.34)]" style={{ borderColor: "var(--clara-border)", background: "var(--clara-panel-strong)" }}>
                   {categoryOptions.slice(0, 2).map((item) => {
                     const active =
                       selectedCategory?.type === item.type &&
@@ -321,7 +322,7 @@ export default function DashboardQuickOrb({
 
                   {safeBudgetCategories.length > 0 && (
                     <>
-                      <div className="mx-4 h-px bg-white/[0.08]" />
+                      <div className="mx-4 h-px" style={{ background: "var(--clara-border-soft)" }} />
 
                       {safeBudgetCategories.map((item) => {
                         const active =
@@ -356,7 +357,7 @@ export default function DashboardQuickOrb({
             <button
               type="button"
               onClick={handleSaveExpense}
-              className="relative mt-4 flex w-full items-center justify-center gap-2 rounded-[22px] border border-lime-200/[0.14] bg-lime-300/[0.12] py-3.5 text-sm font-bold text-lime-50 shadow-[0_14px_34px_rgba(132,204,22,0.10)] transition active:scale-[0.98]"
+              className="clara-button-primary relative mt-4 flex w-full items-center justify-center gap-2 rounded-[22px] py-3.5 text-sm font-bold transition active:scale-[0.98]"
             >
               <Check size={17} strokeWidth={2.2} />
               Save expense
@@ -380,16 +381,21 @@ export default function DashboardQuickOrb({
           onPointerMove={handleMove}
           onPointerUp={handleEnd}
           onPointerCancel={handleEnd}
-          className={`touch-none select-none group relative flex h-[60px] w-[60px] items-center justify-center rounded-full border border-white/[0.13] bg-[#080d12]/82 text-white shadow-[0_14px_34px_rgba(0,0,0,0.48),inset_0_1px_0_rgba(255,255,255,0.13),inset_0_-18px_32px_rgba(0,0,0,0.22)] backdrop-blur-2xl transition-all duration-300 ease-out ${stateClass} ${
+          className={`touch-none select-none group relative flex h-[60px] w-[60px] items-center justify-center rounded-full border text-white backdrop-blur-2xl transition-all duration-300 ease-out ${stateClass} ${
             isDragging
               ? "scale-95 cursor-grabbing"
               : isPressing
               ? "scale-[0.97] cursor-grab"
               : "cursor-grab active:scale-95"
           }`}
+          style={{
+            borderColor: "var(--clara-border)",
+            background: "var(--clara-panel-strong)",
+            boxShadow: "0 14px 34px rgba(0,0,0,0.40), inset 0 1px 0 rgba(255,255,255,0.13), inset 0 -18px 32px rgba(0,0,0,0.18)",
+          }}
           aria-label="CLARA quick expense"
         >
-          <span className="pointer-events-none absolute -inset-[10px] rounded-full bg-lime-200/[0.055] blur-2xl transition duration-500 group-hover:bg-lime-200/[0.075]" />
+          <span className="pointer-events-none absolute -inset-[10px] rounded-full blur-2xl transition duration-500" style={{ background: "var(--clara-glow-soft)" }} />
           <span className="pointer-events-none absolute -inset-[3px] rounded-full border border-white/[0.055]" />
           <span className="pointer-events-none absolute inset-0 rounded-full bg-[radial-gradient(circle_at_32%_24%,rgba(255,255,255,0.22),rgba(255,255,255,0.055)_34%,rgba(132,204,22,0.055)_58%,rgba(0,0,0,0.16)_100%)]" />
           <span className="pointer-events-none absolute inset-[5px] rounded-full border border-white/[0.085] bg-[#071008]/72 shadow-inner shadow-black/40" />
