@@ -1,14 +1,9 @@
 import { useLocation, useNavigate } from "react-router-dom";
-import Avatar from "../Avatar";
-import { useAvatar } from "../../../context/AvatarContext";
 import { topNavItems } from "./navConfig";
-
-const PROFILE_PLAN = "Free";
 
 export default function TopNavigationBar({ compact = false }) {
   const location = useLocation();
   const navigate = useNavigate();
-  const { avatar } = useAvatar();
 
   const activeIndex = Math.max(
     0,
@@ -23,8 +18,9 @@ export default function TopNavigationBar({ compact = false }) {
         }`}
         style={{
           background:
-            "linear-gradient(180deg, rgba(19,48,88,0.86), rgba(8,25,51,0.92))",
-          borderColor: "rgba(77,203,255,0.42)",
+            "linear-gradient(180deg, rgba(10,40,34,0.95), rgba(4,18,22,0.96))",
+          borderColor: "rgba(166,232,18,0.35)",
+          boxShadow: "0 0 0 1px rgba(166,232,18,0.15) inset",
         }}
       >
         <nav className="relative grid grid-cols-4 gap-1.5">
@@ -34,8 +30,8 @@ export default function TopNavigationBar({ compact = false }) {
               width: "calc((100% - 1.125rem) / 4)",
               transform: `translateX(calc(${activeIndex} * (100% + 0.375rem)))`,
               background:
-                "linear-gradient(180deg, rgba(86,214,255,0.24), rgba(255,255,255,0.06))",
-              border: "1px solid rgba(154,235,255,0.24)",
+                "linear-gradient(180deg, rgba(166,232,18,0.28), rgba(255,255,255,0.05))",
+              border: "1px solid rgba(166,232,18,0.35)",
             }}
           />
 
@@ -52,8 +48,9 @@ export default function TopNavigationBar({ compact = false }) {
                 <span
                   className="flex h-9 w-9 items-center justify-center rounded-full border"
                   style={{
-                    color: isActive ? "#E6FAFF" : "rgba(255,255,255,0.6)",
-                    borderColor: isActive ? "rgba(154,235,255,0.26)" : "rgba(255,255,255,0.08)",
+                    color: isActive ? "#DFFF7A" : "rgba(255,255,255,0.55)",
+                    borderColor: isActive ? "rgba(166,232,18,0.35)" : "rgba(255,255,255,0.08)",
+                    background: isActive ? "rgba(166,232,18,0.12)" : "transparent",
                   }}
                 >
                   <Icon size={18} />
@@ -62,8 +59,8 @@ export default function TopNavigationBar({ compact = false }) {
                 <span
                   style={{
                     fontSize: "9px",
-                    opacity: isActive ? 0.9 : 0.55,
-                    color: isActive ? "#ffffff" : "rgba(255,255,255,0.6)",
+                    opacity: isActive ? 0.95 : 0.5,
+                    color: isActive ? "#EFFF9F" : "rgba(255,255,255,0.55)",
                   }}
                 >
                   {item.label}
