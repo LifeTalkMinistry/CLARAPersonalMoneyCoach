@@ -53,7 +53,7 @@ export default function Dashboard() {
       <div
         className="flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden"
         style={{
-          gap: "clamp(0.55rem, 1.15svh, 0.75rem)",
+          gap: "clamp(0.55rem, 1.05svh, 0.72rem)",
           WebkitOverflowScrolling: "touch",
         }}
       >
@@ -64,7 +64,7 @@ export default function Dashboard() {
         <div
           className="min-h-0 flex flex-[1_1_auto] items-center"
           style={{
-            minHeight: "clamp(17.5rem, 43svh, 25rem)",
+            minHeight: "clamp(17rem, 40svh, 23.5rem)",
           }}
         >
           <DashboardFinancialCarousel
@@ -76,7 +76,7 @@ export default function Dashboard() {
           />
         </div>
 
-        <div className="shrink-0">
+        <div className="shrink-0 pb-[max(env(safe-area-inset-bottom),0px)]">
           <DashboardMoneySummary
             moneyLeft={safeNumber(moneyLeft)}
             totalExpenses={safeNumber(currentMonthExpenses)}
