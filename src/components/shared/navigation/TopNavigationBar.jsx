@@ -19,8 +19,8 @@ export default function TopNavigationBar({ compact = false }) {
         style={{
           background:
             "linear-gradient(180deg, rgba(10,40,34,0.95), rgba(4,18,22,0.96))",
-          borderColor: "rgba(166,232,18,0.35)",
-          boxShadow: "0 0 0 1px rgba(166,232,18,0.15) inset",
+          borderColor: "rgba(166,232,18,0.45)",
+          boxShadow: "0 0 0 1px rgba(166,232,18,0.18) inset",
         }}
       >
         <nav className="relative grid grid-cols-4 gap-1.5">
@@ -30,8 +30,9 @@ export default function TopNavigationBar({ compact = false }) {
               width: "calc((100% - 1.125rem) / 4)",
               transform: `translateX(calc(${activeIndex} * (100% + 0.375rem)))`,
               background:
-                "linear-gradient(180deg, rgba(166,232,18,0.28), rgba(255,255,255,0.05))",
-              border: "1px solid rgba(166,232,18,0.35)",
+                "linear-gradient(180deg, rgba(166,232,18,0.45), rgba(255,255,255,0.06))",
+              border: "1px solid rgba(166,232,18,0.55)",
+              boxShadow: "0 8px 18px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.14)",
             }}
           />
 
@@ -48,19 +49,22 @@ export default function TopNavigationBar({ compact = false }) {
                 <span
                   className="flex h-9 w-9 items-center justify-center rounded-full border"
                   style={{
-                    color: isActive ? "#DFFF7A" : "rgba(255,255,255,0.55)",
-                    borderColor: isActive ? "rgba(166,232,18,0.35)" : "rgba(255,255,255,0.08)",
-                    background: isActive ? "rgba(166,232,18,0.12)" : "transparent",
+                    color: isActive ? "#F5FF9C" : "rgba(255,255,255,0.55)",
+                    borderColor: isActive ? "rgba(166,232,18,0.6)" : "rgba(255,255,255,0.08)",
+                    background: isActive ? "rgba(166,232,18,0.22)" : "transparent",
+                    boxShadow: isActive
+                      ? "0 0 14px rgba(166,232,18,0.45), inset 0 1px 0 rgba(255,255,255,0.18)"
+                      : "none",
                   }}
                 >
-                  <Icon size={18} />
+                  <Icon size={18} strokeWidth={2} />
                 </span>
 
                 <span
                   style={{
                     fontSize: "9px",
-                    opacity: isActive ? 0.95 : 0.5,
-                    color: isActive ? "#EFFF9F" : "rgba(255,255,255,0.55)",
+                    opacity: isActive ? 1 : 0.5,
+                    color: isActive ? "#F0FFAA" : "rgba(255,255,255,0.55)",
                   }}
                 >
                   {item.label}
