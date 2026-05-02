@@ -127,7 +127,7 @@ export default function DashboardFinancialCarousel({
         })}
       </section>
 
-      <div className="mt-3 flex h-3 shrink-0 items-center justify-center gap-2">
+      <div className="mt-2 flex h-2 shrink-0 items-center justify-center gap-2">
         {items.map((item, index) => {
           const isActive = activeSlide === index;
 
