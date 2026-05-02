@@ -19,7 +19,7 @@ export default function TopNavigationBar({ compact = false }) {
   );
 
   return (
-    <header className={compact ? "px-0 pt-2" : "px-4 pt-4"}>
+    <header className={compact ? "px-0 pt-1" : "px-4 pt-3"}>
       {!compact && (
         <div className="mb-3 flex items-center justify-between gap-3">
           <button
@@ -112,17 +112,17 @@ export default function TopNavigationBar({ compact = false }) {
 
       <div
         className={`clara-pill-panel relative overflow-hidden rounded-[28px] backdrop-blur-2xl transition-all duration-300 ${
-          compact ? "p-1" : "p-1.5"
+          compact ? "p-0.5" : "p-1"
         }`}
       >
-        <nav className="relative grid grid-cols-4 gap-1.5">
+        <nav className="relative grid grid-cols-4 gap-1">
           <div
             className="absolute bottom-0 top-0 overflow-hidden rounded-[22px] transition-all duration-500 ease-out"
             style={{
-              width: "calc((100% - 1.125rem) / 4)",
-              transform: `translateX(calc(${activeIndex} * (100% + 0.375rem)))`,
+              width: "calc((100% - 1rem) / 4)",
+              transform: `translateX(calc(${activeIndex} * (100% + 0.25rem)))`,
               background: "linear-gradient(145deg, rgba(98,146,49,0.48), rgba(34,82,45,0.44) 56%, rgba(13,48,76,0.36))",
-              boxShadow: "0 14px 28px rgba(0,0,0,0.18), 0 0 18px var(--clara-glow-soft), inset 0 1px 0 rgba(255,255,255,0.12)",
+              boxShadow: "0 10px 20px rgba(0,0,0,0.16), 0 0 12px var(--clara-glow-soft), inset 0 1px 0 rgba(255,255,255,0.10)",
             }}
           >
             <span
@@ -154,25 +154,25 @@ export default function TopNavigationBar({ compact = false }) {
                 key={item.path}
                 type="button"
                 onClick={() => navigate(item.path)}
-                className="group relative z-10 flex flex-col items-center justify-center gap-1 py-2.5 text-[10px] font-semibold transition-all duration-200 active:scale-95"
+                className="group relative z-10 flex flex-col items-center justify-center gap-0.5 py-1.5 text-[9px] font-semibold transition-all duration-200 active:scale-95"
               >
                 {item.badge && (
-                  <span className="absolute right-4 top-2">
+                  <span className="absolute right-3 top-1.5">
                     {item.badge === "dot" ? (
                       <span
-                        className="block h-2 w-2 rounded-full"
+                        className="block h-1.5 w-1.5 rounded-full"
                         style={{
                           background: "var(--clara-accent)",
-                          boxShadow: "0 0 10px var(--clara-glow)",
+                          boxShadow: "0 0 8px var(--clara-glow)",
                         }}
                       />
                     ) : (
                       <span
-                        className="flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[9px] font-bold"
+                        className="flex h-3.5 min-w-3.5 items-center justify-center rounded-full px-1 text-[8px] font-bold"
                         style={{
                           background: "var(--clara-accent)",
                           color: "var(--clara-bg)",
-                          boxShadow: "0 0 10px var(--clara-glow)",
+                          boxShadow: "0 0 8px var(--clara-glow)",
                         }}
                       >
                         {item.badge}
@@ -182,7 +182,7 @@ export default function TopNavigationBar({ compact = false }) {
                 )}
 
                 <span
-                  className="flex h-8 w-8 items-center justify-center rounded-full border transition-all duration-300"
+                  className="flex h-7 w-7 items-center justify-center rounded-full border transition-all duration-300"
                   style={{
                     borderColor: isActive
                       ? "var(--clara-accent-border)"
@@ -193,10 +193,10 @@ export default function TopNavigationBar({ compact = false }) {
                     color: isActive
                       ? "var(--clara-accent-text)"
                       : "var(--clara-text-soft)",
-                    boxShadow: isActive ? "0 0 18px var(--clara-glow-soft), inset 0 1px 0 rgba(255,255,255,0.10)" : "inset 0 1px 0 rgba(255,255,255,0.05)",
+                    boxShadow: isActive ? "0 0 12px var(--clara-glow-soft), inset 0 1px 0 rgba(255,255,255,0.08)" : "inset 0 1px 0 rgba(255,255,255,0.05)",
                   }}
                 >
-                  <Icon size={16} strokeWidth={1.8} />
+                  <Icon size={14} strokeWidth={1.6} />
                 </span>
 
                 <span
