@@ -6,8 +6,8 @@ import SavingsGoalCard from "../financial-cards/SavingsCard";
 import InvestmentFundCard from "../financial-cards/InvestmentCard";
 import DebtObligationCard from "../financial-cards/ObligationDebtCard";
 
-const SLIDE_WIDTH_RATIO = 1;
-const SLIDE_GAP = 12;
+const SLIDE_WIDTH_RATIO = 0.85;
+const SLIDE_GAP = 16;
 
 export default function DashboardFinancialCarousel({
   budgetData,
@@ -68,21 +68,21 @@ export default function DashboardFinancialCarousel({
   };
 
   return (
-    <div className="relative flex h-[clamp(292px,40svh,322px)] shrink-0 flex-col overflow-hidden rounded-[34px] px-1 py-1">
+    <div className="w-full px-4">
       <section
         ref={carouselRef}
         onScroll={handleScroll}
         aria-label="Financial dashboard cards"
-        className="relative flex h-[clamp(266px,36svh,292px)] snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-hidden scroll-smooth px-1 py-1 scrollbar-none"
+        className="flex snap-x snap-mandatory gap-4 overflow-x-auto overflow-y-hidden scroll-smooth pb-2 scrollbar-none"
       >
         {items.map((item, index) => {
           const distance = index - scrollProgress;
           const absDistance = Math.min(Math.abs(distance), 2);
           const isActive = activeSlide === index;
-          const scale = isActive ? 1 : 0.965;
-          const opacity = isActive ? 1 : 0.78;
-          const translateY = isActive ? -2 : absDistance * 7;
-          const translateX = distance * -3;
+
+          const scale = isActive ? 1.02 : 0.96;
+          const opacity = isActive ? 1 : 0.75;
+          const translateY = isActive ? -4 : absDistance * 8;
 
           return (
             <div
@@ -90,18 +90,21 @@ export default function DashboardFinancialCarousel({
               aria-label={item.label}
               style={{
                 opacity,
-                transform: `translate3d(${translateX}px, ${translateY}px, 0) scale(${scale})`,
-                zIndex: isActive ? 10 : Math.max(1, 8 - Math.round(absDistance * 3)),
-                boxShadow: isActive
-                  ? "0 26px 58px rgba(0,0,0,0.34), 14px 22px 42px rgba(6,48,84,0.20)"
-                  : "0 16px 34px rgba(0,0,0,0.24), 10px 16px 28px rgba(6,48,84,0.12)",
-                transition: "opacity 280ms ease, transform 280ms ease, box-shadow 280ms ease",
+                transform: `translateY(${translateY}px) scale(${scale})`,
+                zIndex: isActive ? 10 : 1,
+                transition: "all 280ms ease",
               }}
-              className={`flex h-full w-full min-w-full flex-shrink-0 snap-center rounded-[32px] transition-[opacity,transform,box-shadow] duration-300 ease-out will-change-transform ${
-                index === items.length - 1 ? "mr-1" : ""
-              }`}
+              className="snap-center shrink-0 w-[85%]"
             >
-              <div className="flex h-full w-full transition-transform duration-300 ease-out active:scale-[0.985]">
+              <div
+                className="
+                  rounded-[32px]
+                  border border-white/5
+                  bg-[rgba(10,15,12,0.96)]
+                  shadow-[0_12px_30px_rgba(0,0,0,0.35),0_24px_60px_rgba(0,0,0,0.25)]
+                  transition-transform duration-300 ease-out active:scale-[0.98]
+                "
+              >
                 {item.content}
               </div>
             </div>
@@ -109,7 +112,7 @@ export default function DashboardFinancialCarousel({
         })}
       </section>
 
-      <div className="flex h-5 shrink-0 items-center justify-center gap-2 pt-1">
+      <div className="flex h-5 items-center justify-center gap-2 pt-2">
         {items.map((item, index) => {
           const isActive = activeSlide === index;
 
@@ -122,9 +125,10 @@ export default function DashboardFinancialCarousel({
               className="h-2 rounded-full transition-all duration-300 active:scale-90"
               style={{
                 width: isActive ? "1.05rem" : "0.5rem",
-                background: isActive ? "rgba(230,255,72,0.88)" : "rgba(230,255,72,0.22)",
-                opacity: isActive ? 1 : 0.55,
-                boxShadow: isActive ? "0 4px 10px rgba(0,0,0,0.22)" : "none",
+                background: isActive
+                  ? "rgba(230,255,72,0.9)"
+                  : "rgba(230,255,72,0.25)",
+                opacity: isActive ? 1 : 0.5,
               }}
             />
           );
