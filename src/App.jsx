@@ -50,6 +50,7 @@ export default function App() {
   return (
     <Routes>
       <Route path="/" element={<Dashboard />} />
+      <Route path="/home-v2" element={<Dashboard />} />
       <Route path="/feed" element={<Feed />} />
       <Route path="/messages" element={<Messages />} />
       <Route path="/settings" element={<Settings />} />
