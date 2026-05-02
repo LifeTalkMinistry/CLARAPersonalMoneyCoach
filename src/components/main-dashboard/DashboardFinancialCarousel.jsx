@@ -19,7 +19,6 @@ export default function DashboardFinancialCarousel({
   const carouselRef = useRef(null);
   const frameRef = useRef(null);
   const [activeSlide, setActiveSlide] = useState(0);
-  const [scrollProgress, setScrollProgress] = useState(0);
 
   const items = [
     { label: "Budget", content: <BudgetCard data={budgetData} /> },
@@ -41,7 +40,6 @@ export default function DashboardFinancialCarousel({
 
     const nextIndex = Math.min(Math.max(index, 0), items.length - 1);
     setActiveSlide(nextIndex);
-    setScrollProgress(nextIndex);
 
     el.scrollTo({
       left: nextIndex * getSlideStep(),
@@ -60,7 +58,6 @@ export default function DashboardFinancialCarousel({
       const progress = step ? el.scrollLeft / step : 0;
       const index = Math.round(progress);
 
-      setScrollProgress(Math.min(Math.max(progress, 0), items.length - 1));
       setActiveSlide(Math.min(Math.max(index, 0), items.length - 1));
     });
   };
@@ -74,29 +71,22 @@ export default function DashboardFinancialCarousel({
         className="relative flex snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-visible scroll-smooth pb-4 scrollbar-none"
       >
         {items.map((item, index) => {
-          const distance = index - scrollProgress;
-          const absDistance = Math.min(Math.abs(distance), 2);
           const isActive = activeSlide === index;
-          const scale = isActive ? 1 : 0.975;
-          const opacity = isActive ? 1 : 0.78;
-          const translateY = isActive ? 0 : absDistance * 5;
-          const translateX = distance * -2;
 
           return (
             <div
               key={item.label}
               aria-label={item.label}
               style={{
-                opacity,
-                transform: `translate3d(${translateX}px, ${translateY}px, 0) scale(${scale})`,
-                zIndex: isActive ? 10 : Math.max(1, 8 - Math.round(absDistance * 3)),
-                transition: "opacity 280ms ease, transform 280ms ease",
+                opacity: isActive ? 1 : 0.86,
+                zIndex: isActive ? 10 : 1,
+                transition: "opacity 240ms ease",
               }}
-              className={`flex w-full min-w-full flex-shrink-0 snap-center transition-[opacity,transform] duration-300 ease-out will-change-transform ${
+              className={`flex w-full min-w-full flex-shrink-0 snap-center transition-opacity duration-300 ease-out ${
                 index === items.length - 1 ? "mr-1" : ""
               }`}
             >
-              <div className="flex w-full transition-transform duration-300 ease-out active:scale-[0.985]">
+              <div className="flex w-full">
                 {item.content}
               </div>
             </div>
