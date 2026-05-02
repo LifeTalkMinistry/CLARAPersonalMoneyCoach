@@ -235,14 +235,15 @@ export default function DashboardMoneySummary({
           />
 
           <section
-            className="relative w-full max-w-sm animate-[slideUp_0.22s_ease-out] rounded-t-[32px] border px-5 pb-5 pt-4 text-white shadow-[0_-30px_90px_rgba(0,0,0,0.72)] backdrop-blur-2xl"
+            className="relative w-full max-w-sm animate-[slideUp_0.22s_ease-out] overflow-hidden rounded-t-[32px] border px-5 pb-5 pt-4 text-white backdrop-blur-2xl"
             style={{
               borderColor: "var(--clara-border)",
               background: "var(--clara-glass)",
+              boxShadow: "0 -26px 80px rgba(0,0,0,0.58), var(--clara-glow-premium)",
             }}
           >
             <div
-              className="pointer-events-none absolute inset-0 rounded-t-[32px]"
+              className="pointer-events-none absolute inset-0 rounded-t-[32px] opacity-70"
               style={{ background: "var(--clara-surface-glow)" }}
             />
 
@@ -313,23 +314,27 @@ export default function DashboardMoneySummary({
       )}
 
       <section
-        className="relative overflow-hidden rounded-[26px] border backdrop-blur-2xl"
+        className="relative overflow-visible rounded-[26px] border backdrop-blur-2xl transition duration-300"
         style={{
           borderColor: "var(--clara-border)",
           background: "var(--clara-glass)",
-          boxShadow: "0 18px 45px rgba(0,0,0,0.32), var(--clara-glow-premium)",
+          boxShadow: "var(--clara-glow-premium)",
         }}
       >
         <div
-          className="pointer-events-none absolute inset-0 opacity-80"
+          className="pointer-events-none absolute inset-0 rounded-[26px] opacity-65"
           style={{ background: "var(--clara-surface-glow)" }}
         />
+
         <div
-          className="pointer-events-none absolute -right-14 -top-16 h-36 w-36 rounded-full opacity-55 blur-3xl"
-          style={{ background: "var(--clara-glow-soft)" }}
+          className="pointer-events-none absolute inset-x-6 top-0 h-px opacity-70"
+          style={{
+            background:
+              "linear-gradient(90deg, transparent, var(--clara-accent-border), rgba(255,255,255,0.18), transparent)",
+          }}
         />
 
-        <div className="relative flex min-h-[92px] items-center justify-between gap-4 px-4 py-4">
+        <div className="relative flex min-h-[88px] items-center justify-between gap-4 px-4 py-4">
           <div className="min-w-0 flex-1">
             <div className="flex items-center gap-2">
               <p className="text-[10px] font-bold uppercase tracking-[0.22em] text-white/45">
@@ -396,24 +401,24 @@ export default function DashboardMoneySummary({
                   : `transform 360ms ${PREMIUM_EASE}, opacity 220ms ${PREMIUM_EASE}, filter 220ms ${PREMIUM_EASE}, box-shadow 220ms ${PREMIUM_EASE}`,
                 boxShadow:
                   isDragging || isSliding
-                    ? "0 18px 42px rgba(0,0,0,0.52), 0 0 26px var(--clara-glow), inset 0 1px 0 rgba(255,255,255,0.15), inset 0 -18px 32px rgba(0,0,0,0.24)"
-                    : "0 14px 34px rgba(0,0,0,0.48), 0 0 22px var(--clara-glow-soft), inset 0 1px 0 rgba(255,255,255,0.13), inset 0 -18px 32px rgba(0,0,0,0.22)",
+                    ? "0 18px 42px rgba(0,0,0,0.52), 0 0 24px var(--clara-glow), inset 0 1px 0 rgba(255,255,255,0.13), inset 0 -18px 32px rgba(0,0,0,0.24)"
+                    : "0 14px 34px rgba(0,0,0,0.42), 0 0 18px var(--clara-glow-soft), inset 0 1px 0 rgba(255,255,255,0.12), inset 0 -18px 32px rgba(0,0,0,0.20)",
               }}
               aria-label="CLARA quick action"
             >
               <span
-                className="pointer-events-none absolute -inset-[10px] rounded-full blur-2xl"
+                className="pointer-events-none absolute -inset-[8px] rounded-full blur-2xl"
                 style={{
                   background: "var(--clara-accent-soft)",
-                  opacity: 0.65 + swipeProgress * 0.35,
+                  opacity: 0.44 + swipeProgress * 0.26,
                 }}
               />
               <span
-                className="pointer-events-none absolute inset-0 rounded-full"
+                className="pointer-events-none absolute inset-0 rounded-full opacity-80"
                 style={{ background: "var(--clara-surface-glow)" }}
               />
               <span
-                className="pointer-events-none absolute inset-[5px] rounded-full border shadow-inner shadow-black/40"
+                className="pointer-events-none absolute inset-[5px] rounded-full border shadow-inner shadow-black/35"
                 style={{
                   borderColor: "var(--clara-border)",
                   background: "var(--clara-glass)",
@@ -423,7 +428,7 @@ export default function DashboardMoneySummary({
                 className="pointer-events-none absolute inset-[13px] rounded-full"
                 style={{
                   background:
-                    "radial-gradient(circle at 35% 28%, rgba(255,255,255,0.18), var(--clara-accent-soft) 42%, rgba(4,9,8,0.88) 100%)",
+                    "radial-gradient(circle at 35% 28%, rgba(255,255,255,0.16), var(--clara-accent-soft) 42%, rgba(4,9,8,0.86) 100%)",
                 }}
               />
 
