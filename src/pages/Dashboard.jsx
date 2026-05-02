@@ -62,9 +62,10 @@ export default function Dashboard() {
         </div>
 
         <div
-          className="min-h-0 flex flex-[1_1_auto]"
+          className="shrink-0"
           style={{
-            minHeight: "clamp(18.5rem, 42svh, 26rem)",
+            height:
+              "clamp(20rem, calc(100svh - 25rem), 29rem)",
           }}
         >
           <DashboardFinancialCarousel
