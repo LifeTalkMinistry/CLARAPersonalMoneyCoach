@@ -20,29 +20,38 @@ export default function FinancialCardShell({
     normalizedBadge.includes("priority");
 
   const badgeStyle = {
-    borderColor: isWarningBadge ? "rgba(236,255,91,0.24)" : "rgba(255,255,255,0.10)",
-    background: isWarningBadge ? "rgba(236,255,91,0.10)" : "rgba(255,255,255,0.08)",
-    color: "var(--clara-accent-text)",
-    boxShadow: "none",
+    borderColor: isWarningBadge ? "rgba(199,226,58,0.28)" : "rgba(255,255,255,0.09)",
+    background: isWarningBadge ? "rgba(199,226,58,0.105)" : "rgba(255,255,255,0.045)",
+    color: isWarningBadge ? "var(--clara-accent-text)" : "rgba(255,255,255,0.64)",
+    boxShadow: "inset 0 1px 0 rgba(255,255,255,0.055)",
+  };
+
+  const cardStyle = {
+    color: "var(--clara-text)",
+    borderColor: "rgba(255,255,255,0.105)",
+    background: "var(--clara-card)",
+    boxShadow: "var(--clara-shadow-elevated), inset 0 1px 0 rgba(255,255,255,0.055)",
+    backdropFilter: "blur(18px)",
+    WebkitBackdropFilter: "blur(18px)",
   };
 
   return (
     <article
-      className="group relative flex h-full max-h-full min-h-0 w-full flex-col overflow-hidden rounded-[28px] border border-white/10 bg-white/[0.055] px-5 pb-5 pt-5 shadow-[0_18px_60px_rgba(0,0,0,0.28)] backdrop-blur-2xl transition-all duration-300 active:scale-[0.985]"
-      style={{ color: "var(--clara-text)" }}
+      className="group relative flex h-full max-h-full min-h-0 w-full flex-col overflow-hidden rounded-[28px] border px-5 pb-5 pt-5 transition-all duration-300 active:scale-[0.985]"
+      style={cardStyle}
     >
       <div className="relative z-10 flex h-full min-h-0 flex-1 flex-col gap-3.5">
         <header className="flex h-[54px] shrink-0 items-start justify-between gap-3">
           <div className="flex min-w-0 items-center gap-3.5">
-            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[16px] border border-white/10 bg-white/[0.09] text-sm font-bold shadow-[inset_0_1px_0_rgba(255,255,255,0.08)] transition-all duration-300 group-active:scale-95" style={{ color: "var(--clara-accent-text)" }}>
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[16px] border border-white/10 bg-white/[0.055] text-sm font-bold shadow-[inset_0_1px_0_rgba(255,255,255,0.075),0_12px_24px_rgba(0,0,0,0.22)] transition-all duration-300 group-active:scale-95" style={{ color: "var(--clara-accent-text)" }}>
               {icon}
             </div>
 
             <div className="flex min-w-0 flex-col gap-2 pt-1">
-              <p className="truncate text-[10px] font-black uppercase leading-none tracking-[0.24em] text-white/30">
+              <p className="truncate text-[10px] font-black uppercase leading-none tracking-[0.24em] text-white/34">
                 {eyebrow}
               </p>
-              <h2 className="truncate text-[17px] font-semibold leading-none tracking-[-0.02em] text-white">
+              <h2 className="truncate text-[17px] font-semibold leading-none tracking-[-0.02em] text-white/92">
                 {title}
               </h2>
             </div>
@@ -71,18 +80,18 @@ export default function FinancialCardShell({
         </section>
 
         <section className="flex min-h-0 flex-1 flex-col gap-3.5">
-          <div className="h-[3px] overflow-hidden rounded-full bg-white/10">
+          <div className="h-[3px] overflow-hidden rounded-full bg-white/[0.09]">
             <div
               className={`h-full rounded-full transition-all duration-700 ease-out ${progressClassName}`}
               style={{
                 width: `${safeProgress}%`,
-                background: "rgba(236,255,91,0.82)",
+                background: "linear-gradient(90deg, rgba(199,226,58,0.72), rgba(214,184,79,0.82))",
               }}
             />
           </div>
 
           {insight && (
-            <p className="line-clamp-2 min-h-[42px] text-[13px] font-medium leading-[1.6] text-white/42">
+            <p className="line-clamp-2 min-h-[42px] text-[13px] font-medium leading-[1.6] text-white/46">
               {insight}
             </p>
           )}
