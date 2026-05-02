@@ -14,18 +14,20 @@ function BudgetWalletArt() {
   return (
     <div
       aria-hidden="true"
-      className="budget-wallet-art pointer-events-none absolute right-[18px] top-[30%] z-[4] h-[118px] w-[132px] -translate-y-1/2 overflow-visible opacity-90"
+      className="budget-wallet-art pointer-events-none absolute right-[16px] top-[42%] z-[4] h-[128px] w-[142px] -translate-y-1/2 overflow-visible opacity-95"
     >
-      <div className="absolute left-1/2 top-1/2 h-[136px] w-[136px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#B9F632]/10 bg-[#00FF88]/[0.025]" />
-      <div className="absolute left-4 top-2 h-[74px] w-[84px] rotate-[9deg] rounded-[18px] border border-[#B9F632]/20 bg-gradient-to-br from-[#39F16F] via-[#13A65B] to-[#06613E] shadow-[0_16px_34px_rgba(31,255,110,0.14),inset_0_1px_0_rgba(255,255,255,0.22)]" />
-      <div className="absolute left-[58px] top-5 h-[72px] w-[58px] rotate-[13deg] rounded-[18px] border border-white/10 bg-gradient-to-br from-[#0B7350] to-[#05241F] shadow-[0_14px_30px_rgba(0,0,0,0.25)]" />
-      <div className="absolute left-2 top-[34px] h-[78px] w-[116px] rotate-[7deg] rounded-[24px] border border-white/10 bg-gradient-to-br from-[#17392E] via-[#0B211F] to-[#061318] shadow-[0_18px_38px_rgba(0,0,0,0.34),inset_0_1px_0_rgba(255,255,255,0.12)]" />
-      <div className="absolute left-8 top-[54px] h-[1px] w-[70px] rotate-[7deg] border-t border-dashed border-[#B9F632]/35" />
-      <div className="absolute right-[-4px] top-[62px] flex h-[42px] w-[50px] rotate-[7deg] items-center justify-center rounded-l-[22px] rounded-r-[16px] border border-white/10 bg-gradient-to-br from-[#173F32] to-[#071A1F] shadow-[0_10px_24px_rgba(0,0,0,0.28),inset_0_1px_0_rgba(255,255,255,0.10)]">
-        <div className="h-[17px] w-[17px] rounded-full bg-[#B9F632] shadow-[0_0_18px_rgba(185,246,50,0.55)]" />
+      <div className="absolute left-1/2 top-1/2 h-[150px] w-[150px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#B9F632]/10 bg-[#00FF88]/[0.03]" />
+      <div className="absolute left-[18px] top-[2px] h-[82px] w-[92px] rotate-[8deg] rounded-[18px] border border-[#B9F632]/25 bg-gradient-to-br from-[#44F878] via-[#18B965] to-[#087348] shadow-[0_18px_34px_rgba(31,255,110,0.18),inset_0_1px_0_rgba(255,255,255,0.28)]">
+        <div className="absolute right-3 top-3 text-[20px] font-black text-[#093D27]/45">₱</div>
       </div>
-      <div className="absolute left-7 top-[51px] rotate-[7deg] text-[18px] font-black text-[#B9F632]/80 drop-shadow-[0_0_10px_rgba(185,246,50,0.25)]">
+      <div className="absolute left-[62px] top-[16px] h-[82px] w-[66px] rotate-[13deg] rounded-[18px] border border-[#B9F632]/14 bg-gradient-to-br from-[#0FA565] via-[#096245] to-[#05241F] shadow-[0_14px_30px_rgba(0,0,0,0.28)]" />
+      <div className="absolute left-[8px] top-[42px] h-[78px] w-[122px] rotate-[5deg] rounded-[24px] border border-white/12 bg-gradient-to-br from-[#183D31] via-[#0B2420] to-[#061318] shadow-[0_20px_40px_rgba(0,0,0,0.38),inset_0_1px_0_rgba(255,255,255,0.13)]" />
+      <div className="absolute left-[28px] top-[61px] h-[1px] w-[74px] rotate-[5deg] border-t border-dashed border-[#B9F632]/40" />
+      <div className="absolute left-[32px] top-[72px] rotate-[5deg] text-[19px] font-black text-[#B9F632]/85 drop-shadow-[0_0_10px_rgba(185,246,50,0.28)]">
         ₱
+      </div>
+      <div className="absolute right-[-1px] top-[70px] flex h-[42px] w-[52px] rotate-[5deg] items-center justify-center rounded-l-[22px] rounded-r-[16px] border border-white/10 bg-gradient-to-br from-[#173F32] to-[#071A1F] shadow-[0_12px_26px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.10)]">
+        <div className="h-[18px] w-[18px] rounded-full bg-[#B9F632] shadow-[0_0_18px_rgba(185,246,50,0.58)]" />
       </div>
     </div>
   );
@@ -110,21 +112,18 @@ export default function BudgetCard({ data, onAdjustBudget, onCreateBudget, onMan
             --bc-pad: 14px;
             --bc-gap: 8px;
           }
-          .budget-card-fixed .budget-extra {
-            display: none;
-          }
           .budget-card-fixed .budget-wallet-art {
-            right: 10px;
-            top: 34%;
-            transform: translateY(-50%) scale(0.78);
-            opacity: 0.72;
+            right: 8px;
+            top: 43%;
+            transform: translateY(-50%) scale(0.82);
+            opacity: 0.78;
           }
         }
 
         @media (max-width: 330px) {
           .budget-card-fixed .budget-wallet-art {
-            opacity: 0.42;
-            transform: translateY(-50%) scale(0.66);
+            opacity: 0.52;
+            transform: translateY(-50%) scale(0.7);
           }
         }
       `}</style>
@@ -150,13 +149,13 @@ export default function BudgetCard({ data, onAdjustBudget, onCreateBudget, onMan
             gap: "var(--bc-gap)",
             borderColor: "rgba(185,246,50,0.18)",
             background:
-              "radial-gradient(circle at 88% 30%, rgba(28,185,125,0.18), transparent 38%), radial-gradient(circle at 20% 0%, rgba(185,246,50,0.10), transparent 28%), linear-gradient(180deg, rgba(6,42,38,0.96), rgba(3,17,26,0.98))",
+              "radial-gradient(circle at 88% 34%, rgba(28,185,125,0.18), transparent 38%), radial-gradient(circle at 20% 0%, rgba(185,246,50,0.10), transparent 28%), linear-gradient(180deg, rgba(6,42,38,0.96), rgba(3,17,26,0.98))",
             boxShadow:
               "0 18px 42px rgba(0,0,0,0.42), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -10px 30px rgba(0,0,0,0.25)",
           }}
         >
           <div className="pointer-events-none absolute inset-0 rounded-[24px]" style={{ boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.04)" }} />
-          <div className="pointer-events-none absolute -right-10 top-20 h-44 w-44 rounded-full border border-[#B9F632]/10 bg-[#00FF88]/[0.025] blur-[1px]" />
+          <div className="pointer-events-none absolute -right-8 top-[34%] h-44 w-44 rounded-full border border-[#B9F632]/10 bg-[#00FF88]/[0.025] blur-[1px]" />
           <BudgetWalletArt />
 
           <div className="relative z-10 flex shrink-0 items-start justify-between gap-3">
@@ -178,17 +177,16 @@ export default function BudgetCard({ data, onAdjustBudget, onCreateBudget, onMan
             </span>
           </div>
 
-          <div className="relative z-10 flex min-h-0 flex-1 flex-col justify-center overflow-hidden pr-[116px] max-[360px]:pr-[92px]">
+          <div className="relative z-10 shrink-0 overflow-hidden pt-3 pr-[128px] max-[360px]:pr-[100px]">
             <p className="truncate font-black leading-none tracking-[-0.055em] text-white" style={{ fontSize: "var(--bc-hero)", textShadow: "0 10px 26px rgba(0,0,0,0.45)" }}>
               {money(total)}
             </p>
             <p className="mt-2 truncate font-bold text-white/55" style={{ fontSize: "var(--bc-small)" }}>
               {total ? `${money(remaining)} left` : "No plan"}
             </p>
-            <p className="budget-extra mt-2 truncate font-semibold text-white/40" style={{ fontSize: "var(--bc-small)" }}>
-              {insight}
-            </p>
           </div>
+
+          <div className="relative z-0 min-h-0 flex-1" />
 
           <div className="relative z-10 shrink-0">
             <div className="h-[9px] overflow-hidden rounded-full bg-white/[0.14] p-[2px] shadow-[inset_0_1px_6px_rgba(0,0,0,0.45)]">
