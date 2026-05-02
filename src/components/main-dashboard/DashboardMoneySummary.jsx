@@ -1,5 +1,6 @@
 import { Eye, EyeOff, Plus } from "lucide-react";
 import { useState } from "react";
+
 import { formatMoney } from "../../lib/dashboard/financeUtils";
 
 export default function DashboardMoneySummary({
@@ -33,11 +34,14 @@ export default function DashboardMoneySummary({
   return (
     <>
       {showExpense && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/50 backdrop-blur-md">
+        <div className="clara-modal-backdrop fixed inset-0 z-50 flex items-end justify-center">
           <div className="absolute inset-0" onClick={() => setShowExpense(false)} />
 
-          <div className="relative w-full max-w-sm rounded-t-[28px] border border-white/10 bg-white/[0.06] p-5 text-white shadow-[0_-20px_60px_rgba(0,0,0,0.5)] backdrop-blur-2xl">
-            <p className="text-[10px] font-black uppercase tracking-[0.24em] text-white/35">
+          <div className="clara-modal-surface relative w-full max-w-sm rounded-t-[28px] p-5">
+            <p
+              className="text-[10px] font-black uppercase tracking-[0.24em]"
+              style={{ color: "var(--clara-text-faint)" }}
+            >
               Quick Expense
             </p>
 
@@ -46,12 +50,17 @@ export default function DashboardMoneySummary({
               value={amount}
               onChange={(e) => setAmount(e.target.value)}
               placeholder="0"
-              className="mt-4 w-full bg-transparent text-3xl font-black text-white outline-none"
+              className="mt-4 w-full rounded-[18px] bg-transparent text-3xl font-black outline-none"
+              style={{
+                border: "none",
+                boxShadow: "none",
+                color: "var(--clara-text)",
+              }}
             />
 
             <button
               onClick={handleSaveExpense}
-              className="mt-4 w-full rounded-[18px] border border-white/10 bg-white/[0.08] py-3 text-sm font-bold"
+              className="clara-button-primary mt-4 w-full rounded-[18px] py-3 text-sm font-bold"
             >
               Save
             </button>
@@ -59,17 +68,35 @@ export default function DashboardMoneySummary({
         </div>
       )}
 
-      <section className="rounded-[24px] border border-white/10 bg-white/[0.055] px-4 py-4 shadow-[0_18px_60px_rgba(0,0,0,0.28)] backdrop-blur-2xl">
-        <div className="flex items-center justify-between gap-4">
+      <section
+        className="relative overflow-hidden rounded-[24px] border px-4 py-4 backdrop-blur-2xl"
+        style={{
+          borderColor: "var(--clara-border)",
+          background:
+            "linear-gradient(135deg, rgba(101,148,54,0.32) 0%, rgba(15,52,35,0.88) 44%, rgba(15,54,84,0.90) 100%)",
+          boxShadow:
+            "var(--clara-shadow-soft), inset 0 1px 0 rgba(255,255,255,0.07)",
+        }}
+      >
+        <div
+          className="pointer-events-none absolute inset-0"
+          style={{ background: "var(--clara-surface-glow)" }}
+        />
+
+        <div className="relative z-10 flex items-center justify-between gap-4">
           <div>
             <div className="flex items-center gap-2">
-              <p className="text-[10px] font-black uppercase tracking-[0.22em] text-white/35">
+              <p
+                className="text-[10px] font-black uppercase tracking-[0.22em]"
+                style={{ color: "var(--clara-accent-text)" }}
+              >
                 Money Left
               </p>
 
               <button
                 onClick={onToggleMoneyVisible}
-                className="rounded-full border border-white/10 bg-white/[0.08] p-1 text-white/45"
+                className="clara-button-secondary rounded-full p-1"
+                style={{ color: "var(--clara-text-soft)" }}
               >
                 {moneyVisible ? <Eye size={12} /> : <EyeOff size={12} />}
               </button>
@@ -79,14 +106,24 @@ export default function DashboardMoneySummary({
               {moneyVisible ? formatMoney(moneyLeft) : "••••"}
             </p>
 
-            <p className="mt-1 text-[11px] font-medium text-white/40">
+            <p
+              className="mt-1 text-[11px] font-medium"
+              style={{ color: "var(--clara-text-soft)" }}
+            >
               This month expenses: {moneyVisible ? formatMoney(totalExpenses) : "••••"}
             </p>
           </div>
 
           <button
             onClick={() => setShowExpense(true)}
-            className="flex h-[56px] w-[56px] items-center justify-center rounded-full border border-white/10 bg-white/[0.08] text-white shadow-[0_10px_30px_rgba(0,0,0,0.35)]"
+            className="relative flex h-[56px] w-[56px] items-center justify-center rounded-full border text-white"
+            style={{
+              borderColor: "rgba(214,197,72,0.22)",
+              background:
+                "radial-gradient(circle at 32% 24%, rgba(230,197,72,0.22), rgba(19,47,45,0.26) 48%, rgba(13,47,89,0.58) 100%)",
+              boxShadow:
+                "0 10px 30px rgba(0,0,0,0.26), inset 0 1px 0 rgba(255,255,255,0.10)",
+            }}
           >
             <Plus size={20} />
           </button>

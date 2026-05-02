@@ -8,7 +8,7 @@ export default function ClaraPageShell({
 }) {
   return (
     <main
-      className="relative min-h-screen w-full overflow-x-hidden text-white"
+      className="relative min-h-screen w-full overflow-x-hidden"
       style={{
         background: "var(--clara-bg)",
         backgroundColor: "var(--clara-bg-base)",
@@ -18,12 +18,11 @@ export default function ClaraPageShell({
         color: "var(--clara-text)",
       }}
     >
-      {/* ✅ REMOVE HEAVY OVERLAY (this was killing your gradient) */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "linear-gradient(180deg, rgba(255,255,255,0.02), transparent 20%)",
+            "radial-gradient(circle at 52% -4%, rgba(239,203,71,0.18), transparent 18%), radial-gradient(circle at 100% 100%, rgba(39,92,177,0.14), transparent 26%), linear-gradient(180deg, rgba(255,255,255,0.035), transparent 16%, rgba(3,7,11,0.10) 100%)",
         }}
       />
 

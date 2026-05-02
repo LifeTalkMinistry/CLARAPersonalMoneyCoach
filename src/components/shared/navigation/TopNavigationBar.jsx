@@ -111,14 +111,9 @@ export default function TopNavigationBar({ compact = false }) {
       )}
 
       <div
-        className={`relative overflow-hidden rounded-[28px] border backdrop-blur-2xl transition-all duration-300 ${
+        className={`clara-pill-panel relative overflow-hidden rounded-[28px] backdrop-blur-2xl transition-all duration-300 ${
           compact ? "p-1" : "p-1.5"
         }`}
-        style={{
-          borderColor: "var(--clara-border)",
-          background: "var(--clara-glass)",
-          boxShadow: "var(--clara-glow-premium)",
-        }}
       >
         <nav className="relative grid grid-cols-4 gap-1.5">
           <div
@@ -126,8 +121,8 @@ export default function TopNavigationBar({ compact = false }) {
             style={{
               width: "calc((100% - 1.125rem) / 4)",
               transform: `translateX(calc(${activeIndex} * (100% + 0.375rem)))`,
-              background: "var(--clara-accent-soft)",
-              boxShadow: "var(--clara-glow-premium)",
+              background: "linear-gradient(145deg, rgba(98,146,49,0.48), rgba(34,82,45,0.44) 56%, rgba(13,48,76,0.36))",
+              boxShadow: "0 14px 28px rgba(0,0,0,0.18), 0 0 18px var(--clara-glow-soft), inset 0 1px 0 rgba(255,255,255,0.12)",
             }}
           >
             <span
@@ -193,12 +188,12 @@ export default function TopNavigationBar({ compact = false }) {
                       ? "var(--clara-accent-border)"
                       : "var(--clara-border)",
                     background: isActive
-                      ? "var(--clara-accent-soft)"
+                      ? "linear-gradient(145deg, rgba(191,215,74,0.16), rgba(16,39,28,0.22))"
                       : "var(--clara-panel)",
                     color: isActive
                       ? "var(--clara-accent-text)"
                       : "var(--clara-text-soft)",
-                    boxShadow: isActive ? "0 0 12px var(--clara-glow)" : "none",
+                    boxShadow: isActive ? "0 0 18px var(--clara-glow-soft), inset 0 1px 0 rgba(255,255,255,0.10)" : "inset 0 1px 0 rgba(255,255,255,0.05)",
                   }}
                 >
                   <Icon size={16} strokeWidth={1.8} />

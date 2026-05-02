@@ -20,31 +20,24 @@ export default function InvestmentCard({
 
   const badgeClassName =
     value < 10000
-      ? "text-amber-300 bg-amber-400/10 border-amber-300/20"
+      ? "text-[var(--clara-status-caution)] bg-[rgba(230,197,72,0.12)] border-[rgba(230,197,72,0.22)]"
       : value < 50000
-      ? "text-emerald-300 bg-emerald-400/10 border-emerald-300/20"
-      : "text-cyan-300 bg-cyan-400/10 border-cyan-300/20";
+      ? "text-[var(--clara-status-good)] bg-[rgba(215,239,89,0.12)] border-[rgba(215,239,89,0.22)]"
+      : "text-[var(--clara-text)] bg-[rgba(31,79,138,0.18)] border-[rgba(31,79,138,0.22)]";
 
   const panelBadgeClassName =
     value < 10000
-      ? "text-amber-400"
+      ? "text-[var(--clara-status-caution)]"
       : value < 50000
-      ? "text-emerald-400"
-      : "text-cyan-400";
-
-  const progressClassName =
-    value < 10000
-      ? "from-amber-300 to-amber-500"
-      : value < 50000
-      ? "from-emerald-300 to-emerald-500"
-      : "from-cyan-300 to-cyan-500";
+      ? "text-[var(--clara-status-good)]"
+      : "text-[var(--clara-text)]";
 
   const panelProgressClassName =
     value < 10000
-      ? "bg-amber-400"
+      ? "bg-[var(--clara-status-caution)]"
       : value < 50000
-      ? "bg-emerald-400"
-      : "bg-cyan-400";
+      ? "bg-[var(--clara-status-good)]"
+      : "bg-[var(--clara-highlight)]";
 
   const insight =
     value < 10000
@@ -72,13 +65,13 @@ export default function InvestmentCard({
           hero={`₱${value.toLocaleString()}`}
           heroSubtext="Total Portfolio Value"
           progress={progress}
-          progressClassName={progressClassName}
+          progressClassName={panelProgressClassName}
           insight={insight}
         >
           <button
             type="button"
             onClick={() => setPanelOpen(true)}
-            className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-left text-sm text-white/70 transition duration-300 hover:bg-white/[0.06] hover:text-white"
+            className="clara-button-secondary flex w-full items-center justify-between rounded-2xl px-4 py-3 text-left text-sm transition duration-300"
           >
             <span className="font-medium">Show more</span>
             <span className="text-lg leading-none text-white/60">⌄</span>

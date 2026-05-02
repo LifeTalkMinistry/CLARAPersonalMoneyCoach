@@ -41,12 +41,12 @@ export default function SavingsCard({
         <FinancialCardShell
           eyebrow="Savings"
           title="Growth Fund"
-          icon="PHP"
+          icon="₱"
           badge={status}
-          hero={`PHP ${saved.toLocaleString()}`}
+          hero={`₱${saved.toLocaleString()}`}
           heroSubtext={
             hasGoal
-              ? `PHP ${saved.toLocaleString()} / PHP ${target.toLocaleString()}`
+              ? `₱${saved.toLocaleString()} / ₱${target.toLocaleString()}`
               : "No goal yet"
           }
           progress={progress}
@@ -55,7 +55,7 @@ export default function SavingsCard({
           <button
             type="button"
             onClick={() => setPanelOpen(true)}
-            className="flex w-full items-center justify-between rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-left text-sm text-white/70 hover:text-white"
+            className="clara-button-secondary flex w-full items-center justify-between rounded-2xl px-4 py-3 text-left text-sm"
           >
             <span className="font-medium">Show more</span>
             <span className="text-lg text-white/60">v</span>
@@ -69,7 +69,7 @@ export default function SavingsCard({
         eyebrow="Savings"
         title="Growth Fund"
         primaryLabel="Saved amount"
-        primaryValue={`PHP ${saved.toLocaleString()}`}
+        primaryValue={`₱${saved.toLocaleString()}`}
         badge={status}
         progress={progress}
         insight={insight}
@@ -95,8 +95,8 @@ export default function SavingsCard({
             : []),
         ]}
         details={[
-          { label: "Saved", value: `PHP ${saved.toLocaleString()}` },
-          { label: "Target", value: `PHP ${target.toLocaleString()}` },
+          { label: "Saved", value: `₱${saved.toLocaleString()}` },
+          { label: "Target", value: `₱${target.toLocaleString()}` },
           { label: "Goals", value: String(goalCount) },
           { label: "Goal", value: goalName || "Not set" },
         ]}
