@@ -16,22 +16,6 @@ export default function ClaraPageShell({
         transition: "background var(--clara-theme-transition)",
       }}
     >
-      <div
-        className="pointer-events-none fixed inset-0 z-0"
-        style={{
-          background:
-            "linear-gradient(90deg, rgba(236,255,91,0.045), transparent 18%, transparent 82%, rgba(16,95,164,0.08)), linear-gradient(180deg, rgba(236,255,91,0.05), transparent 24%, rgba(0,0,0,0.18) 100%)",
-        }}
-      />
-
-      <div
-        className="pointer-events-none fixed inset-x-0 bottom-0 z-0 h-48"
-        style={{
-          background:
-            "linear-gradient(to top, rgba(4,12,22,0.92), rgba(4,12,22,0.42), transparent)",
-        }}
-      />
-
       <div className="relative z-10 mx-auto flex min-h-screen w-full max-w-[430px] flex-col gap-4 px-3 pb-6 pt-2 sm:px-4">
         {!hideTopNav && <TopNavigationBar compact={compactHeader} />}
         {children}
