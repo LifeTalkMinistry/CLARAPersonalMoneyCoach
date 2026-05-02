@@ -51,10 +51,9 @@ export default function Dashboard() {
   return (
     <ClaraPageShell compactHeader>
       <div
-        className="flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden"
+        className="flex h-full flex-col overflow-hidden"
         style={{
           gap: "clamp(0.65rem, 1.15svh, 0.8rem)",
-          WebkitOverflowScrolling: "touch",
         }}
       >
         <div className="shrink-0">
