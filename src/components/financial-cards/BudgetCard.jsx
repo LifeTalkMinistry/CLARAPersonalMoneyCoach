@@ -89,8 +89,8 @@ export default function BudgetCard({ data, onAdjustBudget, onCreateBudget, onMan
         .budget-card-text {
           --bc-pad: clamp(16px, 4vw, 22px);
           --bc-gap: clamp(10px, 2.5vw, 15px);
-          --bc-hero: clamp(30px, 7vw, 40px);
-          --bc-title: clamp(15px, 3.4vw, 18px);
+          --bc-hero: clamp(34px, 8vw, 46px);
+          --bc-title: clamp(18px, 4.5vw, 22px);
           --bc-small: clamp(11px, 2.5vw, 13px);
         }
 
@@ -133,12 +133,12 @@ export default function BudgetCard({ data, onAdjustBudget, onCreateBudget, onMan
         >
           <div className="pointer-events-none absolute inset-0 rounded-[24px]" style={{ boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.04)" }} />
 
-          <div className="relative z-10 flex shrink-0 items-start justify-between gap-3">
+          <div className="relative z-10 mb-2 flex shrink-0 items-start justify-between gap-3">
             <div className="min-w-0">
-              <h2 className="truncate font-extrabold leading-tight text-white" style={{ fontSize: "var(--bc-title)", textShadow: "0 6px 16px rgba(0,0,0,0.35)" }}>
+              <h2 className="truncate font-black tracking-tight text-white" style={{ fontSize: "var(--bc-title)", textShadow: "0 6px 16px rgba(0,0,0,0.35)" }}>
                 Budget
               </h2>
-              <p className="mt-1 truncate text-[11px] font-bold leading-tight text-white/80">
+              <p className="mt-2 truncate text-[11px] font-medium leading-tight text-white/60">
                 Monthly spending plan • {monthLabel}
               </p>
             </div>
