@@ -68,7 +68,7 @@ export default function DashboardFinancialCarousel({
         ref={carouselRef}
         onScroll={handleScroll}
         aria-label="Financial dashboard cards"
-        className="relative flex snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-visible scroll-smooth scrollbar-none"
+        className="relative flex snap-x snap-mandatory gap-3 overflow-x-auto overflow-y-hidden scroll-smooth scrollbar-none"
       >
         {items.map((item, index) => {
           const isActive = activeSlide === index;
@@ -84,7 +84,7 @@ export default function DashboardFinancialCarousel({
               }}
               className="flex w-full min-w-full flex-shrink-0 snap-center transition-opacity duration-300 ease-out"
             >
-              <div className="flex w-full">
+              <div className="flex w-full overflow-hidden rounded-[28px]">
                 {item.content}
               </div>
             </div>
