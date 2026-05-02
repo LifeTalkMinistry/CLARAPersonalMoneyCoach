@@ -1,10 +1,16 @@
-import { Home, Rss, MessageCircle, Settings } from "lucide-react";
+import { Home, LayoutDashboard, Rss, MessageCircle, Settings } from "lucide-react";
 
 export const topNavItems = [
   {
     label: "Home",
     path: "/",
     icon: Home,
+    badge: null,
+  },
+  {
+    label: "Home 2",
+    path: "/home-v2",
+    icon: LayoutDashboard,
     badge: null,
   },
   {
