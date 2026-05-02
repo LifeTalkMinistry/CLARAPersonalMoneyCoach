@@ -14,20 +14,21 @@ function BudgetWalletArt() {
   return (
     <div
       aria-hidden="true"
-      className="budget-wallet-art pointer-events-none absolute right-[16px] top-[42%] z-[4] h-[128px] w-[142px] -translate-y-1/2 overflow-visible opacity-95"
+      className="budget-wallet-art pointer-events-none absolute left-1/2 top-[48%] z-[4] h-[168px] w-[186px] -translate-x-1/2 -translate-y-1/2 overflow-visible opacity-95"
     >
-      <div className="absolute left-1/2 top-1/2 h-[150px] w-[150px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#B9F632]/10 bg-[#00FF88]/[0.03]" />
-      <div className="absolute left-[18px] top-[2px] h-[82px] w-[92px] rotate-[8deg] rounded-[18px] border border-[#B9F632]/25 bg-gradient-to-br from-[#44F878] via-[#18B965] to-[#087348] shadow-[0_18px_34px_rgba(31,255,110,0.18),inset_0_1px_0_rgba(255,255,255,0.28)]">
-        <div className="absolute right-3 top-3 text-[20px] font-black text-[#093D27]/45">₱</div>
+      <div className="absolute left-1/2 top-1/2 h-[190px] w-[190px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#B9F632]/10 bg-[#00FF88]/[0.035] shadow-[inset_0_0_46px_rgba(0,255,136,0.045)]" />
+      <div className="absolute left-[48px] top-[4px] h-[108px] w-[100px] rotate-[8deg] rounded-[22px] border border-[#B9F632]/25 bg-gradient-to-br from-[#4BFF83] via-[#18B965] to-[#087348] shadow-[0_20px_38px_rgba(31,255,110,0.20),inset_0_1px_0_rgba(255,255,255,0.30)]">
+        <div className="absolute right-4 top-4 text-[24px] font-black text-[#073A25]/45">₱</div>
+        <div className="absolute left-4 top-5 h-2 w-12 rounded-full bg-white/15" />
       </div>
-      <div className="absolute left-[62px] top-[16px] h-[82px] w-[66px] rotate-[13deg] rounded-[18px] border border-[#B9F632]/14 bg-gradient-to-br from-[#0FA565] via-[#096245] to-[#05241F] shadow-[0_14px_30px_rgba(0,0,0,0.28)]" />
-      <div className="absolute left-[8px] top-[42px] h-[78px] w-[122px] rotate-[5deg] rounded-[24px] border border-white/12 bg-gradient-to-br from-[#183D31] via-[#0B2420] to-[#061318] shadow-[0_20px_40px_rgba(0,0,0,0.38),inset_0_1px_0_rgba(255,255,255,0.13)]" />
-      <div className="absolute left-[28px] top-[61px] h-[1px] w-[74px] rotate-[5deg] border-t border-dashed border-[#B9F632]/40" />
-      <div className="absolute left-[32px] top-[72px] rotate-[5deg] text-[19px] font-black text-[#B9F632]/85 drop-shadow-[0_0_10px_rgba(185,246,50,0.28)]">
+      <div className="absolute left-[94px] top-[22px] h-[104px] w-[72px] rotate-[14deg] rounded-[22px] border border-[#B9F632]/14 bg-gradient-to-br from-[#13B76D] via-[#096245] to-[#05241F] shadow-[0_16px_34px_rgba(0,0,0,0.30)]" />
+      <div className="absolute left-[20px] top-[58px] h-[92px] w-[144px] rotate-[5deg] rounded-[28px] border border-white/12 bg-gradient-to-br from-[#183D31] via-[#0B2420] to-[#061318] shadow-[0_24px_46px_rgba(0,0,0,0.42),inset_0_1px_0_rgba(255,255,255,0.14)]" />
+      <div className="absolute left-[43px] top-[81px] h-[1px] w-[86px] rotate-[5deg] border-t border-dashed border-[#B9F632]/45" />
+      <div className="absolute left-[48px] top-[96px] rotate-[5deg] text-[23px] font-black text-[#B9F632]/90 drop-shadow-[0_0_12px_rgba(185,246,50,0.30)]">
         ₱
       </div>
-      <div className="absolute right-[-1px] top-[70px] flex h-[42px] w-[52px] rotate-[5deg] items-center justify-center rounded-l-[22px] rounded-r-[16px] border border-white/10 bg-gradient-to-br from-[#173F32] to-[#071A1F] shadow-[0_12px_26px_rgba(0,0,0,0.32),inset_0_1px_0_rgba(255,255,255,0.10)]">
-        <div className="h-[18px] w-[18px] rounded-full bg-[#B9F632] shadow-[0_0_18px_rgba(185,246,50,0.58)]" />
+      <div className="absolute right-[4px] top-[88px] flex h-[50px] w-[62px] rotate-[5deg] items-center justify-center rounded-l-[26px] rounded-r-[18px] border border-white/10 bg-gradient-to-br from-[#173F32] to-[#071A1F] shadow-[0_14px_28px_rgba(0,0,0,0.34),inset_0_1px_0_rgba(255,255,255,0.10)]">
+        <div className="h-[21px] w-[21px] rounded-full bg-[#B9F632] shadow-[0_0_20px_rgba(185,246,50,0.62)]" />
       </div>
     </div>
   );
@@ -113,17 +114,16 @@ export default function BudgetCard({ data, onAdjustBudget, onCreateBudget, onMan
             --bc-gap: 8px;
           }
           .budget-card-fixed .budget-wallet-art {
-            right: 8px;
-            top: 43%;
-            transform: translateY(-50%) scale(0.82);
-            opacity: 0.78;
+            top: 50%;
+            transform: translate(-50%, -50%) scale(0.84);
+            opacity: 0.82;
           }
         }
 
         @media (max-width: 330px) {
           .budget-card-fixed .budget-wallet-art {
-            opacity: 0.52;
-            transform: translateY(-50%) scale(0.7);
+            opacity: 0.62;
+            transform: translate(-50%, -50%) scale(0.72);
           }
         }
       `}</style>
@@ -149,13 +149,13 @@ export default function BudgetCard({ data, onAdjustBudget, onCreateBudget, onMan
             gap: "var(--bc-gap)",
             borderColor: "rgba(185,246,50,0.18)",
             background:
-              "radial-gradient(circle at 88% 34%, rgba(28,185,125,0.18), transparent 38%), radial-gradient(circle at 20% 0%, rgba(185,246,50,0.10), transparent 28%), linear-gradient(180deg, rgba(6,42,38,0.96), rgba(3,17,26,0.98))",
+              "radial-gradient(circle at 58% 44%, rgba(28,185,125,0.18), transparent 40%), radial-gradient(circle at 20% 0%, rgba(185,246,50,0.10), transparent 28%), linear-gradient(180deg, rgba(6,42,38,0.96), rgba(3,17,26,0.98))",
             boxShadow:
               "0 18px 42px rgba(0,0,0,0.42), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -10px 30px rgba(0,0,0,0.25)",
           }}
         >
           <div className="pointer-events-none absolute inset-0 rounded-[24px]" style={{ boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.04)" }} />
-          <div className="pointer-events-none absolute -right-8 top-[34%] h-44 w-44 rounded-full border border-[#B9F632]/10 bg-[#00FF88]/[0.025] blur-[1px]" />
+          <div className="pointer-events-none absolute left-1/2 top-[48%] h-56 w-56 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#B9F632]/10 bg-[#00FF88]/[0.025] blur-[1px]" />
           <BudgetWalletArt />
 
           <div className="relative z-10 flex shrink-0 items-start justify-between gap-3">
@@ -177,7 +177,7 @@ export default function BudgetCard({ data, onAdjustBudget, onCreateBudget, onMan
             </span>
           </div>
 
-          <div className="relative z-10 shrink-0 overflow-hidden pt-3 pr-[128px] max-[360px]:pr-[100px]">
+          <div className="relative z-10 shrink-0 overflow-hidden pt-3 pr-[120px] max-[360px]:pr-[96px]">
             <p className="truncate font-black leading-none tracking-[-0.055em] text-white" style={{ fontSize: "var(--bc-hero)", textShadow: "0 10px 26px rgba(0,0,0,0.45)" }}>
               {money(total)}
             </p>
