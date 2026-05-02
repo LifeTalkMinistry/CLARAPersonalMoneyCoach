@@ -5,12 +5,13 @@ function isVideoUrl(url = "") {
 }
 
 export default function DashboardBillboard({ billboard, onClick }) {
-  const mediaUrl = billboard?.media_url || billboard?.video_url || billboard?.thumbnail_url || "";
-  const thumbnail = billboard?.thumbnail_url || billboard?.media_url || "";
-  const title = billboard?.title || "TRY YOUR ADS";
-  const subtitle = billboard?.subtitle || "Now!";
-  const caption = billboard?.caption || billboard?.description || billboard?.cta_text || "Feature your message inside CLARA.";
-  const ctaUrl = billboard?.cta_url || "";
+  if (!billboard) return null;
+
+  const mediaUrl = billboard.media_url || "";
+  const title = billboard.title || "";
+  const subtitle = billboard.subtitle || "";
+  const caption = billboard.cta_text || "";
+  const ctaUrl = billboard.cta_url || "";
   const hasCta = Boolean(ctaUrl);
   const isVideo = isVideoUrl(mediaUrl);
 
@@ -23,11 +24,10 @@ export default function DashboardBillboard({ billboard, onClick }) {
       }}
     >
       <div className="relative h-[clamp(90px,14svh,120px)] w-full">
-        {mediaUrl ? (
+        {mediaUrl && (
           isVideo ? (
             <video
               src={mediaUrl}
-              poster={thumbnail !== mediaUrl ? thumbnail : undefined}
               className="h-full w-full object-cover opacity-90 transition duration-500 group-hover:scale-[1.02]"
               muted
               playsInline
@@ -38,33 +38,31 @@ export default function DashboardBillboard({ billboard, onClick }) {
             <img
               src={mediaUrl}
               className="h-full w-full object-cover opacity-90 transition duration-500 group-hover:scale-[1.02]"
-              alt={title || "Dashboard billboard"}
+              alt="billboard"
             />
           )
-        ) : (
-          <div
-            className="h-full w-full"
-            style={{
-              background:
-                "linear-gradient(135deg, rgba(166,232,18,0.16), rgba(4,155,104,0.26) 42%, rgba(2,16,20,0.96) 100%)",
-            }}
-          />
         )}
 
         <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/35 to-transparent" />
 
         <div className="absolute left-4 top-4 max-w-[74%]">
-          <p className="text-[10px] font-black uppercase tracking-[0.32em]" style={{ color: "#B9F632" }}>
-            {title}
-          </p>
+          {title && (
+            <p className="text-[10px] font-black uppercase tracking-[0.32em]" style={{ color: "#B9F632" }}>
+              {title}
+            </p>
+          )}
 
-          <h2 className="mt-1 truncate text-[clamp(1rem,3.2svh,1.25rem)] font-black leading-none tracking-tight text-white">
-            {subtitle}
-          </h2>
+          {subtitle && (
+            <h2 className="mt-1 truncate text-[clamp(1rem,3.2svh,1.25rem)] font-black leading-none tracking-tight text-white">
+              {subtitle}
+            </h2>
+          )}
 
-          <p className="mt-1 line-clamp-1 text-[clamp(0.68rem,1.7svh,0.75rem)] font-medium leading-tight text-white/75">
-            {caption}
-          </p>
+          {caption && (
+            <p className="mt-1 line-clamp-1 text-[clamp(0.68rem,1.7svh,0.75rem)] font-medium leading-tight text-white/75">
+              {caption}
+            </p>
+          )}
         </div>
 
         {hasCta && (
