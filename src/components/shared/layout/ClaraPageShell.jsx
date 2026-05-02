@@ -16,14 +16,14 @@ export default function ClaraPageShell({
         backgroundRepeat: "no-repeat",
         backgroundSize: "cover",
         color: "var(--clara-text)",
-        transition: "background var(--clara-theme-transition)",
       }}
     >
+      {/* ✅ REMOVE HEAVY OVERLAY (this was killing your gradient) */}
       <div
         className="pointer-events-none absolute inset-0"
         style={{
           background:
-            "linear-gradient(180deg, rgba(255,255,255,0.035), transparent 18%), radial-gradient(circle at 50% 118%, rgba(28,78,138,0.18), transparent 42%)",
+            "linear-gradient(180deg, rgba(255,255,255,0.02), transparent 20%)",
         }}
       />
 
