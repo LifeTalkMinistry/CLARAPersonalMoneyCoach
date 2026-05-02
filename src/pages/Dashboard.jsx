@@ -3,7 +3,6 @@ import DashboardBillboard from "../components/main-dashboard/DashboardBillboard"
 import DashboardWalletDrawer from "../components/main-dashboard/DashboardWalletDrawer";
 import DashboardFinancialCarousel from "../components/main-dashboard/DashboardFinancialCarousel";
 import DashboardMoneySummary from "../components/main-dashboard/DashboardMoneySummary";
-import DashboardQuickOrb from "../components/main-dashboard/DashboardQuickOrb";
 
 export default function Dashboard() {
   return (
@@ -16,8 +15,6 @@ export default function Dashboard() {
           <DashboardFinancialCarousel />
         </div>
       </div>
-
-      <DashboardQuickOrb />
     </ClaraPageShell>
   );
 }
