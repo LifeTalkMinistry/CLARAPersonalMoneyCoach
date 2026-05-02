@@ -10,8 +10,13 @@ export default function ClaraPageShell({
     <main
       className="relative min-h-[100dvh] w-full overflow-x-hidden overscroll-y-none"
       style={{
-        backgroundImage: "var(--clara-bg)",
-        backgroundColor: "var(--clara-bg-base)",
+        backgroundColor: "#020617",
+        backgroundImage: `
+          radial-gradient(circle at 70% 40%, rgba(168, 85, 247, 0.18), transparent 40%),
+          radial-gradient(circle at 30% 20%, rgba(250, 204, 21, 0.25), transparent 45%),
+          radial-gradient(circle at 50% 80%, rgba(34, 197, 94, 0.18), transparent 50%),
+          linear-gradient(180deg, #0b1220 0%, #052e2b 40%, #021018 100%)
+        `,
         backgroundAttachment: "fixed",
         backgroundRepeat: "no-repeat",
         backgroundSize: "cover",
