@@ -10,16 +10,17 @@ export default function ClaraPageShell({
     <main
       className="relative min-h-[100dvh] w-full overflow-x-hidden"
       style={{
-        backgroundColor: "#020617",
+        backgroundColor: "#02090C",
         backgroundImage: `
-          radial-gradient(circle at 80% 20%, rgba(56,189,248,0.18), transparent 40%),
-          radial-gradient(circle at 20% 60%, rgba(34,211,238,0.12), transparent 45%),
-          linear-gradient(180deg, #071426 0%, #06182e 40%, #020617 100%)
+          radial-gradient(circle at 12% 5%, rgba(166,232,18,0.16), transparent 30%),
+          radial-gradient(circle at 92% 42%, rgba(54,128,255,0.14), transparent 38%),
+          radial-gradient(circle at 30% 86%, rgba(4,155,104,0.16), transparent 42%),
+          linear-gradient(180deg, #061116 0%, #031014 44%, #02070A 100%)
         `,
         backgroundAttachment: "fixed",
         backgroundRepeat: "no-repeat",
         backgroundSize: "cover",
-        color: "#E6FAFF",
+        color: "#F6FFF1",
       }}
     >
       <div className="relative z-10 flex min-h-[100dvh] w-full flex-col gap-3 px-3 pb-4 pt-3">
