@@ -79,10 +79,9 @@ export default function DashboardFinancialCarousel({
           const distance = index - scrollProgress;
           const absDistance = Math.min(Math.abs(distance), 2);
           const isActive = activeSlide === index;
-          const scale = isActive ? 1 : 1 - absDistance * 0.035;
-          const opacity = isActive ? 1 : Math.max(1 - absDistance * 0.18, 0.68);
-          const translateY = isActive ? 0 : absDistance * 7;
-          const rotate = Math.max(Math.min(distance * 0.45, 0.65), -0.65);
+          const scale = isActive ? 1.01 : 0.97;
+          const opacity = isActive ? 1 : 0.85;
+          const translateY = isActive ? -4 : absDistance * 6;
           const translateX = distance * -2;
 
           return (
@@ -91,11 +90,11 @@ export default function DashboardFinancialCarousel({
               aria-label={item.label}
               style={{
                 opacity,
-                transform: `translate3d(${translateX}px, ${translateY}px, 0) scale(${scale}) rotate(${rotate}deg)`,
+                transform: `translate3d(${translateX}px, ${translateY}px, 0) scale(${scale})`,
                 zIndex: isActive ? 10 : Math.max(1, 8 - Math.round(absDistance * 3)),
                 boxShadow: isActive
-                  ? "0 22px 46px rgba(0,0,0,0.38)"
-                  : "0 10px 24px rgba(0,0,0,0.22)",
+                  ? "0 18px 50px rgba(0,0,0,0.55)"
+                  : "0 10px 30px rgba(0,0,0,0.4)",
                 transition: "var(--clara-theme-transition)",
               }}
               className={`flex h-full w-full min-w-full flex-shrink-0 snap-center rounded-[26px] transition-[opacity,transform,box-shadow] duration-300 ease-out will-change-transform ${
@@ -122,10 +121,9 @@ export default function DashboardFinancialCarousel({
               aria-label={`Go to ${item.label}`}
               className="h-2 rounded-full transition-all duration-300 active:scale-90"
               style={{
-                width: isActive ? "1.75rem" : "0.5rem",
-                background: isActive ? "var(--clara-accent)" : "var(--clara-border-strong)",
-                boxShadow: "none",
-                opacity: isActive ? 1 : 0.62,
+                width: isActive ? "1rem" : "0.5rem",
+                background: "rgba(255,255,255,0.4)",
+                opacity: isActive ? 0.8 : 0.25,
               }}
             />
           );
