@@ -3,7 +3,6 @@ import { useEffect, useMemo, useState } from "react";
 import DashboardBillboard from "../components/main-dashboard/DashboardBillboard";
 import DashboardFinancialCarousel from "../components/main-dashboard/DashboardFinancialCarousel";
 import DashboardMoneySummary from "../components/main-dashboard/DashboardMoneySummary";
-import DashboardWalletDrawer from "../components/main-dashboard/DashboardWalletDrawer";
 import ClaraPageShell from "../components/shared/layout/ClaraPageShell";
 import useFinancialData from "../hooks/useFinancialData";
 import { supabase } from "../lib/supabaseClient";
@@ -13,23 +12,11 @@ function safeNumber(value) {
   return Number.isFinite(numeric) ? numeric : 0;
 }
 
-function getCurrentMonthKey() {
-  const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-}
-
 export default function Dashboard() {
   const {
-    wallets,
     budgets,
-    savingsGoals,
-    emergencyFund,
     currentMonthExpenses,
     moneyLeft,
-    totalSavingsSaved,
-    totalSavingsTarget,
-    primarySavingsGoal,
-    addExpense,
   } = useFinancialData();
 
   const [moneyVisible, setMoneyVisible] = useState(true);
@@ -64,23 +51,32 @@ export default function Dashboard() {
 
   return (
     <ClaraPageShell compactHeader>
-      <div className="space-y-3">
-        <DashboardBillboard billboard={activeBillboard} />
+      <div
+        className="flex min-h-0 flex-1 flex-col"
+        style={{ gap: "clamp(0.5rem, 1.25svh, 0.8rem)" }}
+      >
+        <div className="shrink-0">
+          <DashboardBillboard billboard={activeBillboard} />
+        </div>
 
-        <DashboardFinancialCarousel
-          budgetData={budgetData}
-          emergencyFundData={{ current: 0, target: 0 }}
-          savingsData={{ saved: 0, target: 0, goals: [] }}
-          investmentData={{ value: 0 }}
-          debtData={{ total: 0 }}
-        />
+        <div className="min-h-0 flex-[1_1_auto]">
+          <DashboardFinancialCarousel
+            budgetData={budgetData}
+            emergencyFundData={{ current: 0, target: 0 }}
+            savingsData={{ saved: 0, target: 0, goals: [] }}
+            investmentData={{ value: 0 }}
+            debtData={{ total: 0 }}
+          />
+        </div>
 
-        <DashboardMoneySummary
-          moneyLeft={safeNumber(moneyLeft)}
-          totalExpenses={safeNumber(currentMonthExpenses)}
-          moneyVisible={moneyVisible}
-          onToggleMoneyVisible={() => setMoneyVisible((v) => !v)}
-        />
+        <div className="shrink-0">
+          <DashboardMoneySummary
+            moneyLeft={safeNumber(moneyLeft)}
+            totalExpenses={safeNumber(currentMonthExpenses)}
+            moneyVisible={moneyVisible}
+            onToggleMoneyVisible={() => setMoneyVisible((v) => !v)}
+          />
+        </div>
       </div>
     </ClaraPageShell>
   );
