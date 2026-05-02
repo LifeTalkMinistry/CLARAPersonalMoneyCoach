@@ -8,22 +8,18 @@ export default function ClaraPageShell({
 }) {
   return (
     <main
-      className="relative min-h-[100dvh] w-full overflow-x-hidden overscroll-y-none"
+      className="relative min-h-[100dvh] w-full overflow-x-hidden"
       style={{
         backgroundColor: "#020617",
         backgroundImage: `
-          radial-gradient(circle at 70% 40%, rgba(168, 85, 247, 0.18), transparent 40%),
-          radial-gradient(circle at 30% 20%, rgba(250, 204, 21, 0.25), transparent 45%),
-          radial-gradient(circle at 50% 80%, rgba(34, 197, 94, 0.18), transparent 50%),
-          linear-gradient(180deg, #0b1220 0%, #052e2b 40%, #021018 100%)
+          radial-gradient(circle at 80% 20%, rgba(56,189,248,0.18), transparent 40%),
+          radial-gradient(circle at 20% 60%, rgba(34,211,238,0.12), transparent 45%),
+          linear-gradient(180deg, #071426 0%, #06182e 40%, #020617 100%)
         `,
         backgroundAttachment: "fixed",
         backgroundRepeat: "no-repeat",
         backgroundSize: "cover",
-        backgroundPosition: "center top",
-        color: "var(--clara-text)",
-        WebkitOverflowScrolling: "touch",
-        overscrollBehaviorY: "none",
+        color: "#E6FAFF",
       }}
     >
       <div className="relative z-10 flex min-h-[100dvh] w-full flex-col gap-3 px-3 pb-4 pt-3">
