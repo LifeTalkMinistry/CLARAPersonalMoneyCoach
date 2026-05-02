@@ -68,7 +68,7 @@ export default function DashboardFinancialCarousel({
   };
 
   return (
-    <div className="relative flex h-[clamp(292px,40svh,322px)] shrink-0 flex-col overflow-hidden rounded-[34px] px-1 py-1">
+    <div className="w-full">
       <section
         ref={carouselRef}
         onScroll={handleScroll}
