@@ -12,17 +12,6 @@ import { supabase } from "../lib/supabaseClient";
 
 const BILLBOARD_ROTATION_MS = 7000;
 
-function getAdaptiveDashboardScale() {
-  if (typeof window === "undefined") return 1;
-
-  const height = window.innerHeight || 0;
-
-  if (height > 0 && height <= 640) return 0.92;
-  if (height > 0 && height <= 700) return 0.95;
-
-  return 1;
-}
-
 function normalizeBillboard(billboard) {
   if (!billboard) return null;
 
@@ -41,7 +30,6 @@ export default function Dashboard() {
   const { wallets, expenses, budgets, savingsGoals, loading, saveBudget, addExpense } =
     useFinancialData();
 
-  const [dashboardScale, setDashboardScale] = useState(getAdaptiveDashboardScale);
   const [activeBillboards, setActiveBillboards] = useState([]);
   const [activeBillboardIndex, setActiveBillboardIndex] = useState(0);
 
@@ -109,21 +97,6 @@ export default function Dashboard() {
     return () => window.clearInterval(rotationTimer);
   }, [activeBillboards.length]);
 
-  useEffect(() => {
-    const updateDashboardScale = () => {
-      setDashboardScale(getAdaptiveDashboardScale());
-    };
-
-    updateDashboardScale();
-    window.addEventListener("resize", updateDashboardScale);
-    window.addEventListener("orientationchange", updateDashboardScale);
-
-    return () => {
-      window.removeEventListener("resize", updateDashboardScale);
-      window.removeEventListener("orientationchange", updateDashboardScale);
-    };
-  }, []);
-
   const handleBillboardClick = () => {
     if (activeBillboard?.cta_url) {
       window.location.href = activeBillboard.cta_url;
@@ -167,7 +140,7 @@ export default function Dashboard() {
 
   if (loading) {
     return (
-      <main className="min-h-screen bg-[#070b10] text-white flex items-center justify-center">
+      <main className="flex min-h-screen items-center justify-center bg-[#070b10] text-white">
         <div className="rounded-full border border-white/10 bg-white/[0.04] px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-white/55 backdrop-blur-xl">
           Loading CLARA
         </div>
@@ -177,19 +150,9 @@ export default function Dashboard() {
 
   return (
     <ClaraPageShell compactHeader>
-      <div className="flex min-h-[100dvh] flex-col gap-4 overflow-x-hidden overflow-y-auto pb-[calc(70px+env(safe-area-inset-bottom))] sm:h-auto sm:overflow-y-auto sm:pb-[calc(88px+env(safe-area-inset-bottom))]">
-        <div
-          className="flex min-h-0 origin-top flex-col gap-4"
-          style={{
-            transform: `scale(${dashboardScale})`,
-            transformOrigin: "top center",
-            willChange: dashboardScale === 1 ? "auto" : "transform",
-          }}
-        >
-          <DashboardBillboard
-            billboard={activeBillboard}
-            onClick={handleBillboardClick}
-          />
+      <div className="min-h-[100dvh] overflow-x-hidden overflow-y-auto pb-[calc(70px+env(safe-area-inset-bottom))] sm:pb-[calc(88px+env(safe-area-inset-bottom))]">
+        <div className="flex min-h-0 flex-col gap-4">
+          <DashboardBillboard billboard={activeBillboard} onClick={handleBillboardClick} />
 
           <DashboardWalletDrawer wallets={wallets} />
 
