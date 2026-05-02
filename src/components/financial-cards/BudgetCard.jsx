@@ -10,28 +10,11 @@ function toNumber(value) {
   return Number.isFinite(number) ? number : 0;
 }
 
-function BudgetWalletArt() {
-  return (
-    <div
-      aria-hidden="true"
-      className="budget-wallet-art pointer-events-none absolute left-1/2 top-[48%] z-[4] h-[168px] w-[186px] -translate-x-1/2 -translate-y-1/2 overflow-visible opacity-95"
-    >
-      <div className="absolute left-1/2 top-1/2 h-[190px] w-[190px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#B9F632]/10 bg-[#00FF88]/[0.035] shadow-[inset_0_0_46px_rgba(0,255,136,0.045)]" />
-      <div className="absolute left-[48px] top-[4px] h-[108px] w-[100px] rotate-[8deg] rounded-[22px] border border-[#B9F632]/25 bg-gradient-to-br from-[#4BFF83] via-[#18B965] to-[#087348] shadow-[0_20px_38px_rgba(31,255,110,0.20),inset_0_1px_0_rgba(255,255,255,0.30)]">
-        <div className="absolute right-4 top-4 text-[24px] font-black text-[#073A25]/45">₱</div>
-        <div className="absolute left-4 top-5 h-2 w-12 rounded-full bg-white/15" />
-      </div>
-      <div className="absolute left-[94px] top-[22px] h-[104px] w-[72px] rotate-[14deg] rounded-[22px] border border-[#B9F632]/14 bg-gradient-to-br from-[#13B76D] via-[#096245] to-[#05241F] shadow-[0_16px_34px_rgba(0,0,0,0.30)]" />
-      <div className="absolute left-[20px] top-[58px] h-[92px] w-[144px] rotate-[5deg] rounded-[28px] border border-white/12 bg-gradient-to-br from-[#183D31] via-[#0B2420] to-[#061318] shadow-[0_24px_46px_rgba(0,0,0,0.42),inset_0_1px_0_rgba(255,255,255,0.14)]" />
-      <div className="absolute left-[43px] top-[81px] h-[1px] w-[86px] rotate-[5deg] border-t border-dashed border-[#B9F632]/45" />
-      <div className="absolute left-[48px] top-[96px] rotate-[5deg] text-[23px] font-black text-[#B9F632]/90 drop-shadow-[0_0_12px_rgba(185,246,50,0.30)]">
-        ₱
-      </div>
-      <div className="absolute right-[4px] top-[88px] flex h-[50px] w-[62px] rotate-[5deg] items-center justify-center rounded-l-[26px] rounded-r-[18px] border border-white/10 bg-gradient-to-br from-[#173F32] to-[#071A1F] shadow-[0_14px_28px_rgba(0,0,0,0.34),inset_0_1px_0_rgba(255,255,255,0.10)]">
-        <div className="h-[21px] w-[21px] rounded-full bg-[#B9F632] shadow-[0_0_20px_rgba(185,246,50,0.62)]" />
-      </div>
-    </div>
-  );
+function getMonthLabel(source) {
+  const raw = source?.monthKey || source?.month || source?.period;
+  if (typeof raw === "string" && raw.trim()) return raw;
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 }
 
 export default function BudgetCard({ data, onAdjustBudget, onCreateBudget, onManageBudget }) {
@@ -43,6 +26,7 @@ export default function BudgetCard({ data, onAdjustBudget, onCreateBudget, onMan
   const totalExpenses = toNumber(source.totalExpenses ?? spent);
   const unplanned = toNumber(source.unplannedSpent);
   const categories = Array.isArray(source.categories) ? source.categories : [];
+  const monthLabel = getMonthLabel(source);
 
   const allocated = categories.reduce(
     (sum, item) => sum + toNumber(item?.allocated ?? item?.allocated_amount ?? item?.amount),
@@ -58,7 +42,7 @@ export default function BudgetCard({ data, onAdjustBudget, onCreateBudget, onMan
     return Math.min((spent / total) * 100, 100);
   }, [spent, total]);
 
-  const status = progress < 50 ? "On Track" : progress < 80 ? "Caution" : "Critical";
+  const status = !total ? "No Plan" : progress < 50 ? "Active" : progress < 80 ? "Caution" : "Critical";
   const badgeClassName =
     progress < 50
       ? "text-[var(--clara-status-good)]"
@@ -66,16 +50,19 @@ export default function BudgetCard({ data, onAdjustBudget, onCreateBudget, onMan
       ? "text-[var(--clara-status-caution)]"
       : "text-[var(--clara-status-risk)]";
 
-  const insight =
+  const summary =
     total === 0
-      ? "No plan yet."
+      ? "Create your monthly spending plan to start tracking your budget."
+      : remaining > 0
+      ? "You still have strong room left this month."
+      : "Your monthly budget is fully used for this month.";
+
+  const helperText =
+    total === 0
+      ? "Set a target amount and assign categories for planned expense logging."
       : unplanned > 0
-      ? `${money(unplanned)} unplanned`
-      : progress < 50
-      ? "Healthy range."
-      : progress < 80
-      ? "Approaching limit."
-      : "Budget is tight.";
+      ? `${money(unplanned)} is currently marked as unplanned spending.`
+      : "Your monthly budget is assigned and ready for planned expense logging.";
 
   const openBudget = () => {
     if (!total && onCreateBudget) {
@@ -89,7 +76,6 @@ export default function BudgetCard({ data, onAdjustBudget, onCreateBudget, onMan
     onAdjustBudget?.();
   };
 
-  const usedLabel = total ? `${Math.round(progress)}% used` : "0% used";
   const progressColor =
     progress < 50
       ? "var(--clara-status-good)"
@@ -100,30 +86,21 @@ export default function BudgetCard({ data, onAdjustBudget, onCreateBudget, onMan
   return (
     <>
       <style>{`
-        .budget-card-fixed {
+        .budget-card-text {
           --bc-pad: clamp(16px, 4vw, 22px);
-          --bc-gap: clamp(10px, 2.5vw, 16px);
-          --bc-hero: clamp(28px, 6vw, 40px);
-          --bc-title: clamp(14px, 3vw, 18px);
+          --bc-gap: clamp(10px, 2.5vw, 15px);
+          --bc-hero: clamp(30px, 7vw, 40px);
+          --bc-title: clamp(15px, 3.4vw, 18px);
           --bc-small: clamp(11px, 2.5vw, 13px);
         }
 
         @media (max-height: 700px), (max-width: 360px) {
-          .budget-card-fixed {
+          .budget-card-text {
             --bc-pad: 14px;
             --bc-gap: 8px;
           }
-          .budget-card-fixed .budget-wallet-art {
-            top: 50%;
-            transform: translate(-50%, -50%) scale(0.84);
-            opacity: 0.82;
-          }
-        }
-
-        @media (max-width: 330px) {
-          .budget-card-fixed .budget-wallet-art {
-            opacity: 0.62;
-            transform: translate(-50%, -50%) scale(0.72);
+          .budget-card-text .budget-helper {
+            display: none;
           }
         }
       `}</style>
@@ -143,67 +120,70 @@ export default function BudgetCard({ data, onAdjustBudget, onCreateBudget, onMan
         }`}
       >
         <article
-          className="budget-card-fixed relative flex h-full min-h-0 w-full flex-col overflow-hidden rounded-[24px] border text-white transition-all duration-300 ease-out active:scale-[0.975]"
+          className="budget-card-text relative flex h-full min-h-0 w-full flex-col overflow-hidden rounded-[24px] border text-white transition-all duration-300 ease-out active:scale-[0.975]"
           style={{
             padding: "var(--bc-pad)",
             gap: "var(--bc-gap)",
             borderColor: "rgba(185,246,50,0.18)",
             background:
-              "radial-gradient(circle at 58% 44%, rgba(28,185,125,0.18), transparent 40%), radial-gradient(circle at 20% 0%, rgba(185,246,50,0.10), transparent 28%), linear-gradient(180deg, rgba(6,42,38,0.96), rgba(3,17,26,0.98))",
+              "radial-gradient(circle at 88% 18%, rgba(28,185,125,0.16), transparent 36%), radial-gradient(circle at 14% 4%, rgba(185,246,50,0.10), transparent 30%), linear-gradient(180deg, rgba(6,42,38,0.96), rgba(3,17,26,0.98))",
             boxShadow:
               "0 18px 42px rgba(0,0,0,0.42), inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -10px 30px rgba(0,0,0,0.25)",
           }}
         >
           <div className="pointer-events-none absolute inset-0 rounded-[24px]" style={{ boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.04)" }} />
-          <div className="pointer-events-none absolute left-1/2 top-[48%] h-56 w-56 -translate-x-1/2 -translate-y-1/2 rounded-full border border-[#B9F632]/10 bg-[#00FF88]/[0.025] blur-[1px]" />
-          <BudgetWalletArt />
 
           <div className="relative z-10 flex shrink-0 items-start justify-between gap-3">
-            <div className="flex min-w-0 items-center gap-3">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[15px] border border-[#B9F632]/30 bg-[#B9F632]/10 text-lg font-black text-[#B9F632] shadow-[inset_0_1px_0_rgba(255,255,255,0.15),0_4px_10px_rgba(185,246,50,0.08)]">
-                ₱
-              </div>
-              <div className="min-w-0">
-                <p className="truncate text-[9px] font-black uppercase tracking-[0.32em] text-[#B9F632]">Budget</p>
-                <h2 className="mt-1 truncate font-extrabold leading-none text-white" style={{ fontSize: "var(--bc-title)", textShadow: "0 6px 16px rgba(0,0,0,0.35)" }}>
-                  Monthly Plan
-                </h2>
-              </div>
+            <div className="min-w-0">
+              <h2 className="truncate font-extrabold leading-tight text-white" style={{ fontSize: "var(--bc-title)", textShadow: "0 6px 16px rgba(0,0,0,0.35)" }}>
+                Budget
+              </h2>
+              <p className="mt-1 truncate text-[11px] font-bold leading-tight text-white/80">
+                Monthly spending plan • {monthLabel}
+              </p>
             </div>
 
-            <span className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.05] px-2.5 py-1 text-[10px] font-bold text-[#DFFF5F] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
-              <span className="h-1.5 w-1.5 rounded-full bg-[#B9F632] shadow-[0_0_6px_rgba(185,246,50,0.6)]" />
-              {total ? status : "No Plan"}
+            <span className="inline-flex shrink-0 items-center rounded-full border border-[#B9F632]/20 bg-[#B9F632]/10 px-3 py-1.5 text-[11px] font-bold text-[#B9F632] shadow-[inset_0_1px_0_rgba(255,255,255,0.08)]">
+              {status}
             </span>
           </div>
 
-          <div className="relative z-10 shrink-0 overflow-hidden pt-3 pr-[120px] max-[360px]:pr-[96px]">
-            <p className="truncate font-black leading-none tracking-[-0.055em] text-white" style={{ fontSize: "var(--bc-hero)", textShadow: "0 10px 26px rgba(0,0,0,0.45)" }}>
+          <div className="relative z-10 shrink-0">
+            <p className="font-black leading-none tracking-[-0.055em] text-[#62F7A1]" style={{ fontSize: "var(--bc-hero)", textShadow: "0 10px 26px rgba(0,0,0,0.45)" }}>
               {money(total)}
             </p>
-            <p className="mt-2 truncate font-bold text-white/55" style={{ fontSize: "var(--bc-small)" }}>
-              {total ? `${money(remaining)} left` : "No plan"}
+            <p className="mt-2 font-extrabold text-[#B9F632]" style={{ fontSize: "var(--bc-small)" }}>
+              {money(remaining)} left
             </p>
           </div>
 
-          <div className="relative z-0 min-h-0 flex-1" />
+          <div className="relative z-10 min-h-0 flex-1 overflow-hidden">
+            <p className="text-[13px] font-extrabold leading-snug text-white/95">
+              {summary}
+            </p>
+            <p className="budget-helper mt-2 line-clamp-2 text-[12px] font-semibold leading-snug text-white/55">
+              {helperText}
+            </p>
+          </div>
 
           <div className="relative z-10 shrink-0">
-            <div className="h-[9px] overflow-hidden rounded-full bg-white/[0.14] p-[2px] shadow-[inset_0_1px_6px_rgba(0,0,0,0.45)]">
+            <div className="mb-2 flex items-center justify-between gap-3 text-[12px] font-extrabold text-white/75">
+              <span>Monthly progress</span>
+              <span>{Math.round(progress)}%</span>
+            </div>
+            <div className="h-[8px] overflow-hidden rounded-full border border-white/5 bg-white/[0.10] shadow-[inset_0_1px_6px_rgba(0,0,0,0.45)]">
               <div
                 className="h-full rounded-full transition-all duration-700"
                 style={{
                   width: `${progress}%`,
                   background: progressColor,
-                  boxShadow: "0 0 12px rgba(185,246,50,0.45), 0 0 24px rgba(185,246,50,0.25)",
+                  boxShadow: "0 0 12px rgba(185,246,50,0.35), 0 0 24px rgba(185,246,50,0.18)",
                 }}
               />
             </div>
-            <div className="mt-2 flex items-center justify-between gap-3 text-[11px] font-bold text-white/50">
-              <span className="truncate">
-                <span className="text-[#B9F632]">{usedLabel.split(" ")[0]}</span> used
-              </span>
-              <span className="truncate text-right text-white/45">{money(unplanned)} unplanned</span>
+            <div className="mt-2 flex items-center justify-between gap-3 text-[11px] font-bold text-white/55">
+              <span>{money(0)}</span>
+              <span>{money(total)}</span>
             </div>
           </div>
 
@@ -213,17 +193,12 @@ export default function BudgetCard({ data, onAdjustBudget, onCreateBudget, onMan
               event.stopPropagation();
               setPanelOpen(true);
             }}
-            className="relative z-10 mt-auto flex shrink-0 items-center justify-between rounded-[20px] border border-[#B9F632]/15 bg-white/[0.045] px-4 py-3 text-left transition duration-300 active:scale-[0.97]"
+            className="relative z-10 mt-auto flex shrink-0 items-center justify-between rounded-[18px] border border-white/10 bg-white/[0.04] px-4 py-3 text-left transition duration-300 active:scale-[0.97]"
             style={{ boxShadow: "inset 0 1px 0 rgba(255,255,255,0.06), 0 6px 18px rgba(0,0,0,0.25)" }}
           >
-            <span className="flex min-w-0 items-center gap-3">
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-[13px] border border-[#B9F632]/15 bg-[#B9F632]/[0.07] text-xs text-[#B9F632] shadow-[inset_0_1px_0_rgba(255,255,255,0.1)]">
-                ▥
-              </span>
-              <span className="truncate text-sm font-extrabold text-white">Show details</span>
-            </span>
-            <span className="shrink-0 text-xl leading-none text-[#B9F632]" aria-hidden>
-              ›
+            <span className="truncate text-sm font-extrabold text-white">Show details</span>
+            <span className="shrink-0 text-lg leading-none text-white/70" aria-hidden>
+              ⌄
             </span>
           </button>
         </article>
@@ -236,7 +211,7 @@ export default function BudgetCard({ data, onAdjustBudget, onCreateBudget, onMan
         title="Monthly Plan"
         primaryLabel={total ? "Remaining" : "No Plan"}
         primaryValue={money(remaining)}
-        badge={total ? status : "No Plan"}
+        badge={status}
         badgeClassName={badgeClassName}
         progress={progress}
         progressClassName={
@@ -246,7 +221,7 @@ export default function BudgetCard({ data, onAdjustBudget, onCreateBudget, onMan
             ? "bg-[var(--clara-status-caution)]"
             : "bg-[var(--clara-status-risk)]"
         }
-        insight={insight}
+        insight={helperText}
         actions={[]}
         details={[
           { label: "Declared", value: money(total) },
