@@ -68,7 +68,7 @@ export default function DashboardFinancialCarousel({
   };
 
   return (
-    <div className="relative flex h-[clamp(292px,40svh,322px)] shrink-0 flex-col overflow-hidden rounded-[30px] px-1 py-1">
+    <div className="relative flex h-[clamp(292px,40svh,322px)] shrink-0 flex-col overflow-hidden rounded-[34px] px-1 py-1">
       <section
         ref={carouselRef}
         onScroll={handleScroll}
@@ -79,10 +79,10 @@ export default function DashboardFinancialCarousel({
           const distance = index - scrollProgress;
           const absDistance = Math.min(Math.abs(distance), 2);
           const isActive = activeSlide === index;
-          const scale = isActive ? 1.01 : 0.97;
-          const opacity = isActive ? 1 : 0.85;
-          const translateY = isActive ? -4 : absDistance * 6;
-          const translateX = distance * -2;
+          const scale = isActive ? 1 : 0.965;
+          const opacity = isActive ? 1 : 0.78;
+          const translateY = isActive ? -2 : absDistance * 7;
+          const translateX = distance * -3;
 
           return (
             <div
@@ -93,11 +93,11 @@ export default function DashboardFinancialCarousel({
                 transform: `translate3d(${translateX}px, ${translateY}px, 0) scale(${scale})`,
                 zIndex: isActive ? 10 : Math.max(1, 8 - Math.round(absDistance * 3)),
                 boxShadow: isActive
-                  ? "0 18px 50px rgba(0,0,0,0.55)"
-                  : "0 10px 30px rgba(0,0,0,0.4)",
-                transition: "var(--clara-theme-transition)",
+                  ? "0 26px 58px rgba(0,0,0,0.34), 14px 22px 42px rgba(6,48,84,0.20)"
+                  : "0 16px 34px rgba(0,0,0,0.24), 10px 16px 28px rgba(6,48,84,0.12)",
+                transition: "opacity 280ms ease, transform 280ms ease, box-shadow 280ms ease",
               }}
-              className={`flex h-full w-full min-w-full flex-shrink-0 snap-center rounded-[26px] transition-[opacity,transform,box-shadow] duration-300 ease-out will-change-transform ${
+              className={`flex h-full w-full min-w-full flex-shrink-0 snap-center rounded-[32px] transition-[opacity,transform,box-shadow] duration-300 ease-out will-change-transform ${
                 index === items.length - 1 ? "mr-1" : ""
               }`}
             >
@@ -121,9 +121,10 @@ export default function DashboardFinancialCarousel({
               aria-label={`Go to ${item.label}`}
               className="h-2 rounded-full transition-all duration-300 active:scale-90"
               style={{
-                width: isActive ? "1rem" : "0.5rem",
-                background: "rgba(255,255,255,0.4)",
-                opacity: isActive ? 0.8 : 0.25,
+                width: isActive ? "1.05rem" : "0.5rem",
+                background: isActive ? "rgba(230,255,72,0.88)" : "rgba(230,255,72,0.22)",
+                opacity: isActive ? 1 : 0.55,
+                boxShadow: isActive ? "0 4px 10px rgba(0,0,0,0.22)" : "none",
               }}
             />
           );
