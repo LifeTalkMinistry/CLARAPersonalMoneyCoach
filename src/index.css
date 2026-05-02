@@ -2,47 +2,50 @@
 
 :root {
   color-scheme: dark;
-  --clara-ink: #0D1F14;
+  --clara-ink: #061221;
   --clara-forest: #123329;
-  --clara-growth: #1E4D35;
+  --clara-growth: #2F7A4F;
   --clara-lime: #C7E23A;
-  --clara-gold: #FFD23F;
-  --clara-blue: #143B6E;
+  --clara-gold: #D6B84F;
+  --clara-blue: #1C4E8A;
 
-  --clara-bg: radial-gradient(circle at 50% -16%, rgba(255, 210, 63, 0.12), transparent 28%),
-    radial-gradient(circle at 18% 18%, rgba(199, 226, 58, 0.08), transparent 30%),
-    radial-gradient(circle at 88% 78%, rgba(20, 59, 110, 0.18), transparent 40%),
-    linear-gradient(180deg, #0D1F14 0%, #092219 42%, #07151D 100%);
-  --clara-panel: rgba(13, 31, 20, 0.86);
-  --clara-panel-strong: rgba(18, 51, 41, 0.92);
-  --clara-card: linear-gradient(145deg, rgba(18, 51, 41, 0.92), rgba(13, 31, 20, 0.98));
-  --clara-card-strong: linear-gradient(145deg, rgba(30, 77, 53, 0.86), rgba(18, 51, 41, 0.96));
-  --clara-glass: linear-gradient(145deg, rgba(18, 51, 41, 0.72), rgba(13, 31, 20, 0.92) 58%, rgba(7, 21, 29, 0.90));
-  --clara-border: rgba(255, 255, 255, 0.095);
+  /* CLARA default ambient background inspired by the green/yellow/blue reference */
+  --clara-bg-base: #071422;
+  --clara-bg: radial-gradient(circle at 12% 6%, rgba(214, 184, 79, 0.42), transparent 31%),
+    radial-gradient(circle at 82% 14%, rgba(47, 122, 79, 0.34), transparent 38%),
+    radial-gradient(circle at 8% 50%, rgba(47, 122, 79, 0.22), transparent 35%),
+    radial-gradient(circle at 86% 78%, rgba(28, 78, 138, 0.42), transparent 44%),
+    linear-gradient(160deg, #0d2a27 0%, #071422 58%, #021023 100%);
+  --clara-panel: rgba(7, 20, 34, 0.78);
+  --clara-panel-strong: rgba(12, 38, 35, 0.86);
+  --clara-card: linear-gradient(145deg, rgba(47, 122, 79, 0.20), rgba(7, 20, 34, 0.82) 58%, rgba(2, 16, 35, 0.82));
+  --clara-card-strong: linear-gradient(145deg, rgba(47, 122, 79, 0.30), rgba(10, 43, 37, 0.82) 48%, rgba(7, 20, 34, 0.88));
+  --clara-glass: linear-gradient(145deg, rgba(47, 122, 79, 0.18), rgba(7, 20, 34, 0.74) 54%, rgba(2, 16, 35, 0.78));
+  --clara-border: rgba(255, 255, 255, 0.105);
   --clara-border-strong: rgba(199, 226, 58, 0.28);
   --clara-text: rgba(255, 255, 255, 0.95);
   --clara-text-soft: rgba(255, 255, 255, 0.68);
   --clara-text-muted: rgba(255, 255, 255, 0.46);
   --clara-text-faint: rgba(255, 255, 255, 0.28);
-  --clara-accent: #1E4D35;
-  --clara-accent-soft: rgba(30, 77, 53, 0.18);
+  --clara-accent: #2F7A4F;
+  --clara-accent-soft: rgba(47, 122, 79, 0.18);
   --clara-accent-border: rgba(199, 226, 58, 0.28);
   --clara-accent-text: #C7E23A;
-  --clara-secondary: #FFD23F;
-  --clara-secondary-soft: rgba(255, 210, 63, 0.13);
-  --clara-highlight: #143B6E;
-  --clara-highlight-soft: rgba(20, 59, 110, 0.18);
+  --clara-secondary: #D6B84F;
+  --clara-secondary-soft: rgba(214, 184, 79, 0.16);
+  --clara-highlight: #1C4E8A;
+  --clara-highlight-soft: rgba(28, 78, 138, 0.20);
   --clara-glow: rgba(199, 226, 58, 0.10);
-  --clara-glow-soft: rgba(255, 210, 63, 0.06);
-  --clara-glow-premium: 0 20px 50px rgba(0, 0, 0, 0.45),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  --clara-surface-glow: radial-gradient(circle at 50% -14%, rgba(255,210,63,0.08), transparent 30%),
-    radial-gradient(circle at 90% 20%, rgba(20,59,110,0.10), transparent 32%);
-  --clara-gradient: linear-gradient(135deg, rgba(30,77,53,0.62), rgba(18,51,41,0.86) 48%, rgba(20,59,110,0.34));
-  --clara-success: #1E4D35;
-  --clara-warning: #FFD23F;
-  --clara-shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.35);
-  --clara-shadow-elevated: 0 20px 50px rgba(0, 0, 0, 0.45);
+  --clara-glow-soft: rgba(214, 184, 79, 0.06);
+  --clara-glow-premium: 0 20px 54px rgba(0, 0, 0, 0.46),
+    inset 0 1px 0 rgba(255, 255, 255, 0.055);
+  --clara-surface-glow: radial-gradient(circle at 20% -10%, rgba(214,184,79,0.10), transparent 34%),
+    radial-gradient(circle at 92% 28%, rgba(28,78,138,0.12), transparent 36%);
+  --clara-gradient: linear-gradient(135deg, rgba(47,122,79,0.42), rgba(7,20,34,0.78) 50%, rgba(28,78,138,0.30));
+  --clara-success: #2F7A4F;
+  --clara-warning: #D6B84F;
+  --clara-shadow-soft: 0 12px 34px rgba(0, 0, 0, 0.38);
+  --clara-shadow-elevated: 0 24px 58px rgba(0, 0, 0, 0.48);
   --clara-theme-transition: 180ms ease;
 }
 
@@ -51,16 +54,41 @@ body,
 #root {
   margin: 0;
   min-height: 100%;
-  background: #07151D;
+  background: var(--clara-bg-base);
   color: var(--clara-text);
+}
+
+html {
+  background: var(--clara-bg-base);
 }
 
 body {
   min-height: 100vh;
-  background: #07151D;
+  background: var(--clara-bg);
+  background-color: var(--clara-bg-base);
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
   color: var(--clara-text);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  min-height: 100vh;
+  background: transparent;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), transparent 18%),
+    radial-gradient(circle at 50% 120%, rgba(28, 78, 138, 0.22), transparent 42%);
+  opacity: 0.9;
 }
 
 :where(
