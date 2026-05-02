@@ -9,43 +9,42 @@
   --clara-gold: #D6B84F;
   --clara-blue: #1C4E8A;
 
-  /* CLARA default ambient background inspired by the green/yellow/blue reference */
   --clara-bg-base: #071422;
   --clara-bg: radial-gradient(circle at 12% 6%, rgba(214, 184, 79, 0.42), transparent 31%),
     radial-gradient(circle at 82% 14%, rgba(47, 122, 79, 0.34), transparent 38%),
     radial-gradient(circle at 8% 50%, rgba(47, 122, 79, 0.22), transparent 35%),
     radial-gradient(circle at 86% 78%, rgba(28, 78, 138, 0.42), transparent 44%),
     linear-gradient(160deg, #0d2a27 0%, #071422 58%, #021023 100%);
-  --clara-panel: rgba(7, 20, 34, 0.78);
-  --clara-panel-strong: rgba(12, 38, 35, 0.86);
-  --clara-card: linear-gradient(145deg, rgba(47, 122, 79, 0.20), rgba(7, 20, 34, 0.82) 58%, rgba(2, 16, 35, 0.82));
-  --clara-card-strong: linear-gradient(145deg, rgba(47, 122, 79, 0.30), rgba(10, 43, 37, 0.82) 48%, rgba(7, 20, 34, 0.88));
-  --clara-glass: linear-gradient(145deg, rgba(47, 122, 79, 0.18), rgba(7, 20, 34, 0.74) 54%, rgba(2, 16, 35, 0.78));
-  --clara-border: rgba(255, 255, 255, 0.105);
-  --clara-border-strong: rgba(199, 226, 58, 0.28);
+
+  --clara-panel: rgba(8, 15, 20, 0.86);
+  --clara-panel-strong: rgba(10, 18, 24, 0.92);
+  --clara-card: linear-gradient(145deg, rgba(16, 26, 31, 0.94), rgba(7, 16, 22, 0.94) 54%, rgba(4, 12, 18, 0.96));
+  --clara-card-strong: linear-gradient(145deg, rgba(18, 30, 35, 0.96), rgba(8, 19, 24, 0.96) 55%, rgba(4, 12, 18, 0.98));
+  --clara-glass: linear-gradient(145deg, rgba(14, 24, 29, 0.88), rgba(6, 16, 21, 0.9) 56%, rgba(3, 11, 17, 0.94));
+
+  --clara-border: rgba(255, 255, 255, 0.11);
+  --clara-border-strong: rgba(199, 226, 58, 0.24);
   --clara-text: rgba(255, 255, 255, 0.95);
   --clara-text-soft: rgba(255, 255, 255, 0.68);
   --clara-text-muted: rgba(255, 255, 255, 0.46);
   --clara-text-faint: rgba(255, 255, 255, 0.28);
   --clara-accent: #2F7A4F;
-  --clara-accent-soft: rgba(47, 122, 79, 0.18);
-  --clara-accent-border: rgba(199, 226, 58, 0.28);
+  --clara-accent-soft: rgba(199, 226, 58, 0.11);
+  --clara-accent-border: rgba(199, 226, 58, 0.25);
   --clara-accent-text: #C7E23A;
   --clara-secondary: #D6B84F;
-  --clara-secondary-soft: rgba(214, 184, 79, 0.16);
+  --clara-secondary-soft: rgba(214, 184, 79, 0.14);
   --clara-highlight: #1C4E8A;
-  --clara-highlight-soft: rgba(28, 78, 138, 0.20);
-  --clara-glow: rgba(199, 226, 58, 0.10);
-  --clara-glow-soft: rgba(214, 184, 79, 0.06);
-  --clara-glow-premium: 0 20px 54px rgba(0, 0, 0, 0.46),
-    inset 0 1px 0 rgba(255, 255, 255, 0.055);
-  --clara-surface-glow: radial-gradient(circle at 20% -10%, rgba(214,184,79,0.10), transparent 34%),
-    radial-gradient(circle at 92% 28%, rgba(28,78,138,0.12), transparent 36%);
-  --clara-gradient: linear-gradient(135deg, rgba(47,122,79,0.42), rgba(7,20,34,0.78) 50%, rgba(28,78,138,0.30));
+  --clara-highlight-soft: rgba(28, 78, 138, 0.18);
+  --clara-glow: rgba(199, 226, 58, 0.08);
+  --clara-glow-soft: rgba(214, 184, 79, 0.045);
+  --clara-glow-premium: 0 26px 64px rgba(0, 0, 0, 0.56), inset 0 1px 0 rgba(255, 255, 255, 0.055);
+  --clara-surface-glow: none;
+  --clara-gradient: linear-gradient(135deg, rgba(18, 30, 35, 0.94), rgba(7, 16, 22, 0.95) 52%, rgba(4, 12, 18, 0.97));
   --clara-success: #2F7A4F;
   --clara-warning: #D6B84F;
-  --clara-shadow-soft: 0 12px 34px rgba(0, 0, 0, 0.38);
-  --clara-shadow-elevated: 0 24px 58px rgba(0, 0, 0, 0.48);
+  --clara-shadow-soft: 0 18px 46px rgba(0, 0, 0, 0.46);
+  --clara-shadow-elevated: 0 28px 70px rgba(0, 0, 0, 0.58);
   --clara-theme-transition: 180ms ease;
 }
 
@@ -181,7 +180,7 @@ button {
   background: var(--clara-glass);
   color: var(--clara-text);
   box-shadow: var(--clara-shadow-soft), inset 0 1px 0 rgba(255, 255, 255, 0.045);
-  backdrop-filter: none;
+  backdrop-filter: blur(14px);
 }
 
 .clara-card-surface {
@@ -189,7 +188,7 @@ button {
   background: var(--clara-card);
   color: var(--clara-text);
   box-shadow: var(--clara-shadow-soft), inset 0 1px 0 rgba(255, 255, 255, 0.04);
-  backdrop-filter: none;
+  backdrop-filter: blur(14px);
 }
 
 .clara-accent-surface {
