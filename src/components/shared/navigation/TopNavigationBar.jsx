@@ -6,17 +6,28 @@ export default function TopNavigationBar({ compact = false }) {
   const navigate = useNavigate();
 
   return (
-    <header style={{ marginBottom: "clamp(0.25rem, 1svh, 0.5rem)" }}>
+    <header
+      className="w-full px-2 pt-3"
+      style={{ marginBottom: "clamp(0.25rem, 1svh, 0.5rem)" }}
+    >
       <div
-        className="rounded-[28px] px-3 py-3 backdrop-blur-[28px]"
+        className="relative mx-auto max-w-[360px] overflow-hidden rounded-[30px] border px-3 py-3 backdrop-blur-[24px]"
         style={{
-          background: "rgba(255, 255, 255, 0.06)",
-          border: "1px solid rgba(255, 255, 255, 0.08)",
+          background: "rgba(255,255,255,0.065)",
+          borderColor: "rgba(255,255,255,0.09)",
           boxShadow:
-            "0 14px 40px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06)",
+            "0 10px 30px rgba(0,0,0,0.34), inset 0 1px 0 rgba(255,255,255,0.08)",
         }}
       >
-        <nav className="flex min-h-[66px] items-center justify-between gap-2">
+        <div
+          className="pointer-events-none absolute inset-0 rounded-[30px]"
+          style={{
+            background:
+              "radial-gradient(circle at 18% 18%, rgba(255,255,255,0.09), transparent 32%), radial-gradient(circle at 82% 0%, rgba(120,165,255,0.055), transparent 38%)",
+          }}
+        />
+
+        <nav className="relative z-10 flex min-h-[58px] items-center justify-between gap-1.5">
           {topNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
@@ -26,33 +37,41 @@ export default function TopNavigationBar({ compact = false }) {
                 key={item.path}
                 type="button"
                 onClick={() => navigate(item.path)}
-                className="flex flex-1 items-center justify-center bg-transparent p-0 transition-transform duration-200 active:scale-[0.96]"
+                className="m-0 flex min-w-0 flex-1 appearance-none items-center justify-center rounded-[22px] border-0 bg-transparent p-0 outline-none ring-0 transition-transform duration-200 ease-out active:scale-[0.96] focus:outline-none focus:ring-0"
+                style={{
+                  WebkitTapHighlightColor: "transparent",
+                  boxShadow: "none",
+                }}
                 aria-current={isActive ? "page" : undefined}
               >
                 <span
-                  className="flex flex-col items-center justify-center gap-1.5 rounded-2xl transition-all duration-200"
+                  className="flex w-full flex-col items-center justify-center gap-1.5 rounded-[22px] transition-all duration-200 ease-out"
                   style={{
-                    minHeight: compact ? "56px" : "60px",
-                    padding: compact ? "0.6rem 0.8rem" : "0.7rem 0.95rem",
+                    minHeight: compact ? "52px" : "56px",
+                    padding: compact ? "0.55rem 0.45rem" : "0.62rem 0.5rem",
                     color: isActive
-                      ? "#8FE388"
-                      : "rgba(255,255,255,0.5)",
+                      ? "rgba(152,235,146,0.95)"
+                      : "rgba(255,255,255,0.50)",
                     background: isActive
-                      ? "rgba(255,255,255,0.12)"
+                      ? "rgba(255,255,255,0.09)"
                       : "transparent",
+                    border: isActive
+                      ? "1px solid rgba(255,255,255,0.075)"
+                      : "1px solid transparent",
                     boxShadow: isActive
-                      ? "inset 0 0 12px rgba(143,227,136,0.18), inset 0 1px 2px rgba(255,255,255,0.08)"
+                      ? "inset 0 1px 0 rgba(255,255,255,0.08), 0 8px 18px rgba(0,0,0,0.16), 0 0 14px rgba(74,222,128,0.08)"
                       : "none",
+                    transform: isActive ? "scale(1.03)" : "scale(1)",
                   }}
                 >
-                  <Icon size={20} strokeWidth={2} />
+                  <Icon size={19} strokeWidth={2} />
 
                   <span
-                    className="text-[11px] font-medium leading-none tracking-[-0.01em]"
+                    className="text-[10.5px] font-medium leading-none tracking-[-0.01em] transition-colors duration-200 ease-out"
                     style={{
                       color: isActive
-                        ? "#8FE388"
-                        : "rgba(255,255,255,0.5)",
+                        ? "rgba(166,242,158,0.92)"
+                        : "rgba(255,255,255,0.42)",
                     }}
                   >
                     {item.label}
