@@ -1,31 +1,43 @@
-import { Play } from "lucide-react";
+import { Megaphone, Sparkles } from "lucide-react";
+
+const DEFAULT_BILLBOARD = {
+  title: "TRY YOUR ADS",
+  subtitle: "Now!",
+  cta_text: "Feature your message\ninside CLARA.",
+  media_url: "",
+  cta_url: "",
+};
 
 function isVideoUrl(url = "") {
   return /\.(mp4|webm|ogg|mov)(\?.*)?$/i.test(url);
 }
 
 export default function DashboardBillboard({ billboard, onClick }) {
-  if (!billboard) return null;
+  const source = billboard || DEFAULT_BILLBOARD;
 
-  const mediaUrl = billboard.media_url || "";
-  const title = billboard.title || "";
-  const subtitle = billboard.subtitle || "";
-  const caption = billboard.cta_text || "";
-  const ctaUrl = billboard.cta_url || "";
+  const mediaUrl = source.media_url || "";
+  const title = source.title || DEFAULT_BILLBOARD.title;
+  const subtitle = source.subtitle || DEFAULT_BILLBOARD.subtitle;
+  const caption = source.cta_text || DEFAULT_BILLBOARD.cta_text;
+  const ctaUrl = source.cta_url || "";
   const hasCta = Boolean(ctaUrl);
   const isVideo = isVideoUrl(mediaUrl);
 
   return (
     <section
       onClick={onClick}
-      className="group relative overflow-hidden rounded-[22px] transition-all duration-300 active:scale-[0.99]"
+      className="group relative overflow-hidden rounded-[24px] border transition-all duration-300 active:scale-[0.99]"
       style={{
-        background: "linear-gradient(135deg, rgba(4,22,16,0.92), rgba(4,14,18,0.96))",
+        background:
+          "linear-gradient(135deg, rgba(255,255,255,0.085), rgba(255,255,255,0.045))",
+        borderColor: "rgba(255,255,255,0.11)",
+        boxShadow:
+          "0 14px 34px rgba(0,0,0,0.32), inset 0 1px 0 rgba(255,255,255,0.09)",
       }}
     >
-      <div className="relative h-[clamp(90px,14svh,120px)] w-full">
-        {mediaUrl && (
-          isVideo ? (
+      <div className="relative h-[clamp(132px,18svh,160px)] w-full overflow-hidden">
+        {mediaUrl &&
+          (isVideo ? (
             <video
               src={mediaUrl}
               className="h-full w-full object-cover opacity-90 transition duration-500 group-hover:scale-[1.02]"
@@ -40,38 +52,67 @@ export default function DashboardBillboard({ billboard, onClick }) {
               className="h-full w-full object-cover opacity-90 transition duration-500 group-hover:scale-[1.02]"
               alt="billboard"
             />
-          )
-        )}
+          ))}
 
-        <div className="absolute inset-0 bg-gradient-to-r from-black/75 via-black/35 to-transparent" />
+        <div
+          className="absolute inset-0"
+          style={{
+            background:
+              "radial-gradient(circle at 88% 74%, rgba(160,238,147,0.26), transparent 34%), radial-gradient(circle at 30% 28%, rgba(130,165,220,0.14), transparent 34%), linear-gradient(135deg, rgba(8,17,27,0.78), rgba(15,28,34,0.72))",
+          }}
+        />
 
-        <div className="absolute left-4 top-4 max-w-[74%]">
-          {title && (
-            <p className="text-[10px] font-black uppercase tracking-[0.32em]" style={{ color: "#B9F632" }}>
-              {title}
-            </p>
-          )}
+        <div
+          className="pointer-events-none absolute inset-0 opacity-70"
+          style={{
+            background:
+              "linear-gradient(90deg, rgba(0,0,0,0.18), transparent 52%), radial-gradient(circle at 50% 110%, rgba(255,255,255,0.08), transparent 42%)",
+          }}
+        />
 
-          {subtitle && (
-            <h2 className="mt-1 truncate text-[clamp(1rem,3.2svh,1.25rem)] font-black leading-none tracking-tight text-white">
-              {subtitle}
-            </h2>
-          )}
+        <div className="absolute left-5 top-5 max-w-[58%]">
+          <p className="text-[10px] font-black uppercase tracking-[0.32em]" style={{ color: "#A8ED9E" }}>
+            {title}
+          </p>
 
-          {caption && (
-            <p className="mt-1 line-clamp-1 text-[clamp(0.68rem,1.7svh,0.75rem)] font-medium leading-tight text-white/75">
-              {caption}
-            </p>
-          )}
+          <h2 className="mt-3 text-[clamp(2rem,6svh,2.8rem)] font-black leading-[0.92] tracking-tight text-white">
+            {subtitle}
+          </h2>
+
+          <p className="mt-4 whitespace-pre-line text-[clamp(0.78rem,1.8svh,0.9rem)] font-medium leading-relaxed text-white/70">
+            {caption}
+          </p>
         </div>
 
+        <div
+          className="absolute right-5 top-6 grid h-[86px] w-[86px] rotate-[24deg] place-items-center rounded-[28px] border backdrop-blur-[18px] transition duration-500 group-hover:scale-[1.03]"
+          style={{
+            background: "rgba(255,255,255,0.095)",
+            borderColor: "rgba(255,255,255,0.12)",
+            boxShadow:
+              "0 16px 34px rgba(0,0,0,0.24), inset 0 1px 0 rgba(255,255,255,0.11)",
+          }}
+        >
+          <Megaphone
+            className="h-11 w-11 -rotate-[24deg] text-white/55"
+            strokeWidth={1.55}
+          />
+        </div>
+
+        <Sparkles className="absolute right-[84px] top-10 h-3.5 w-3.5 text-white/25" strokeWidth={1.6} />
+        <Sparkles className="absolute right-[58px] bottom-9 h-3 w-3 text-white/20" strokeWidth={1.6} />
+
         {hasCta && (
-          <div className="absolute right-4 top-4">
-            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 backdrop-blur-md transition-all duration-300 group-hover:scale-105">
-              <Play className="ml-0.5 h-3.5 w-3.5 text-white" fill="currentColor" strokeWidth={1.8} />
-            </div>
+          <div className="absolute right-4 bottom-4 rounded-full bg-white/10 px-3 py-1 text-[10px] font-semibold text-white/80 backdrop-blur-md">
+            View
           </div>
         )}
+
+        <div className="absolute bottom-4 left-1/2 flex -translate-x-1/2 items-center gap-2">
+          <span className="h-1.5 w-5 rounded-full" style={{ background: "#A8ED9E" }} />
+          <span className="h-1.5 w-2 rounded-full bg-white/15" />
+          <span className="h-1.5 w-2 rounded-full bg-white/10" />
+        </div>
       </div>
     </section>
   );
