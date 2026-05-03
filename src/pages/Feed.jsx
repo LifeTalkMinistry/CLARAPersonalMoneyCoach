@@ -23,9 +23,9 @@ import {
   Play,
   FileVideo,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
-import { Input } from "@/components/ui/input";
+import { Button } from "../components/ui/button";
+import { Textarea } from "../components/ui/textarea";
+import { Input } from "../components/ui/input";
 import EmptyState from "../components/EmptyState";
 import { supabase, isSupabaseConfigured } from "../lib/supabaseClient";
 
@@ -47,7 +47,8 @@ const POST_CATEGORIES = [
     icon: MessageSquareQuote,
     pickerClass:
       "border-white/12 bg-white/[0.05] text-[color:var(--theme-primary)] hover:bg-white/[0.08]",
-    badgeClass: "border-white/12 bg-white/[0.05] text-[color:var(--theme-primary)]",
+    badgeClass:
+      "border-white/12 bg-white/[0.05] text-[color:var(--theme-primary)]",
   },
   {
     key: "advice",
@@ -55,8 +56,7 @@ const POST_CATEGORIES = [
     icon: HandHelping,
     pickerClass:
       "border-white/12 bg-white/[0.05] text-white/80 hover:bg-white/[0.08]",
-    badgeClass:
-      "border-white/12 bg-white/[0.05] text-white/80",
+    badgeClass: "border-white/12 bg-white/[0.05] text-white/80",
   },
   {
     key: "question",
@@ -64,7 +64,8 @@ const POST_CATEGORIES = [
     icon: HelpCircle,
     pickerClass:
       "border-white/12 bg-white/[0.05] text-[color:var(--theme-warning)] hover:bg-white/[0.08]",
-    badgeClass: "border-white/12 bg-white/[0.05] text-[color:var(--theme-warning)]",
+    badgeClass:
+      "border-white/12 bg-white/[0.05] text-[color:var(--theme-warning)]",
   },
   {
     key: "motivation",
@@ -72,7 +73,8 @@ const POST_CATEGORIES = [
     icon: Flame,
     pickerClass:
       "border-white/12 bg-white/[0.05] text-[color:var(--theme-danger)] hover:bg-white/[0.08]",
-    badgeClass: "border-white/12 bg-white/[0.05] text-[color:var(--theme-danger)]",
+    badgeClass:
+      "border-white/12 bg-white/[0.05] text-[color:var(--theme-danger)]",
   },
   {
     key: "thought",
@@ -1065,11 +1067,17 @@ export default function Feed() {
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div
           className="absolute -top-8 left-1/2 h-40 w-40 -translate-x-1/2 rounded-full blur-3xl"
-          style={{ background: "color-mix(in srgb, var(--theme-accent) 8%, transparent)" }}
+          style={{
+            background:
+              "color-mix(in srgb, var(--theme-accent) 8%, transparent)",
+          }}
         />
         <div
           className="absolute right-0 top-28 h-32 w-32 rounded-full blur-3xl"
-          style={{ background: "color-mix(in srgb, var(--theme-primary) 8%, transparent)" }}
+          style={{
+            background:
+              "color-mix(in srgb, var(--theme-primary) 8%, transparent)",
+          }}
         />
       </div>
 
