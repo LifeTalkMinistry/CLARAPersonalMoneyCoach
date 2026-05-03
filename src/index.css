@@ -1,267 +1,288 @@
-@import "tailwindcss";
+/* ✅ Google Fonts (safe) */
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700;800&display=swap");
 
-:root {
-  color-scheme: dark;
-  --clara-ink: #061221;
-  --clara-forest: #123329;
-  --clara-growth: #2F7A4F;
-  --clara-lime: #C7E23A;
-  --clara-gold: #D6B84F;
-  --clara-blue: #1C4E8A;
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
-  --clara-bg-base: #041019;
-  --clara-bg: url("/src/assets/clara-bg.png");
+/* ================= BASE ================= */
+@layer base {
+  :root {
+    --font-heading: "Space Grotesk", sans-serif;
+    --font-body: "Inter", sans-serif;
+    --theme-background: #071412;
+    --theme-surface: #0b1b1a;
+    --theme-card: #102322;
+    --theme-card-alt: #16302d;
+    --theme-primary: #5ea894;
+    --theme-secondary: #245e60;
+    --theme-accent: #82d4bf;
+    --theme-danger: #d77d8d;
+    --theme-success: #77c9a4;
+    --theme-warning: #c7ae73;
+    --theme-text: #f4fbf8;
+    --theme-muted-text: #a6bbb5;
+    --theme-border: #4c7d73;
+    --theme-glow: #7dc9b6;
+    --theme-bottom-nav: linear-gradient(180deg, rgba(12, 27, 25, 0.90) 0%, rgba(7, 15, 16, 0.84) 100%);
+    --theme-top-nav: linear-gradient(135deg, rgba(16, 40, 38, 0.94) 0%, rgba(10, 28, 29, 0.92) 52%, rgba(7, 17, 18, 0.92) 100%);
+    --theme-gradient-hero: linear-gradient(135deg, rgba(18, 43, 41, 0.95) 0%, rgba(11, 31, 31, 0.93) 48%, rgba(7, 17, 18, 0.95) 100%);
+    --theme-gradient-card: linear-gradient(135deg, rgba(23, 47, 45, 0.76) 0%, rgba(17, 34, 35, 0.72) 52%, rgba(10, 19, 21, 0.78) 100%);
+    --theme-gradient-expense: linear-gradient(135deg, rgba(19, 39, 43, 0.78) 0%, rgba(15, 31, 39, 0.74) 52%, rgba(10, 18, 24, 0.80) 100%);
+    --theme-gradient-money: linear-gradient(135deg, rgba(21, 48, 43, 0.78) 0%, rgba(18, 39, 39, 0.74) 52%, rgba(10, 19, 20, 0.80) 100%);
+    --theme-gradient-emergency: linear-gradient(135deg, rgba(18, 43, 47, 0.80) 0%, rgba(14, 33, 37, 0.76) 48%, rgba(9, 19, 22, 0.82) 100%);
 
-  --clara-panel: linear-gradient(145deg, rgba(17, 42, 30, 0.84), rgba(10, 30, 24, 0.88) 44%, rgba(7, 23, 32, 0.92) 100%);
-  --clara-panel-strong: linear-gradient(145deg, rgba(16, 40, 29, 0.92), rgba(9, 27, 22, 0.95) 46%, rgba(6, 22, 33, 0.98) 100%);
-  --clara-card: linear-gradient(152deg, rgba(64, 112, 49, 0.20) 0%, rgba(18, 61, 40, 0.16) 20%, rgba(10, 37, 28, 0.90) 46%, rgba(8, 25, 22, 0.94) 72%, rgba(7, 25, 40, 0.92) 100%);
-  --clara-card-strong: linear-gradient(150deg, rgba(95, 150, 57, 0.24) 0%, rgba(28, 83, 48, 0.20) 18%, rgba(10, 42, 30, 0.95) 45%, rgba(7, 28, 25, 0.98) 74%, rgba(9, 33, 56, 0.96) 100%);
-  --clara-glass: linear-gradient(145deg, rgba(20, 47, 34, 0.74), rgba(11, 31, 24, 0.78) 46%, rgba(8, 24, 35, 0.84) 100%);
+    /* CLARA THEME */
+    --background: 222 84% 5%;
+    --foreground: 0 0% 100%;
 
-  --clara-border: rgba(255, 255, 255, 0.10);
-  --clara-border-strong: rgba(201, 232, 65, 0.28);
-  --clara-border-soft: rgba(255, 255, 255, 0.06);
+    --card: 220 39% 11%;
+    --card-foreground: 0 0% 100%;
 
-  --clara-text: rgba(255, 255, 255, 0.96);
-  --clara-text-soft: rgba(255, 255, 255, 0.74);
-  --clara-text-muted: rgba(255, 255, 255, 0.52);
-  --clara-text-faint: rgba(255, 255, 255, 0.30);
+    --popover: 220 39% 11%;
+    --popover-foreground: 0 0% 100%;
 
-  --clara-accent: #5a9334;
-  --clara-accent-soft: rgba(199, 226, 58, 0.13);
-  --clara-accent-border: rgba(199, 226, 58, 0.30);
-  --clara-accent-text: #d7ef59;
-  --clara-secondary: #e6c548;
-  --clara-secondary-soft: rgba(230, 197, 72, 0.16);
-  --clara-highlight: #1f4f8a;
-  --clara-highlight-soft: rgba(31, 79, 138, 0.20);
+    --primary: 142 71% 45%;
+    --primary-foreground: 0 0% 100%;
 
-  --clara-glow: rgba(207, 232, 74, 0.10);
-  --clara-glow-soft: rgba(230, 197, 72, 0.06);
-  --clara-glow-blue: rgba(58, 116, 214, 0.10);
-  --clara-surface-glow: radial-gradient(circle at 16% 8%, rgba(207, 232, 74, 0.14), transparent 26%),
-    radial-gradient(circle at 72% 100%, rgba(52, 108, 196, 0.12), transparent 32%),
-    radial-gradient(circle at 100% 38%, rgba(230, 197, 72, 0.08), transparent 22%);
-  --clara-gradient: linear-gradient(135deg, rgba(69, 121, 48, 0.18), rgba(12, 42, 32, 0.94) 48%, rgba(10, 34, 54, 0.92) 100%);
+    --secondary: 48 96% 53%;
+    --secondary-foreground: 220 30% 10%;
 
-  --clara-modal-backdrop: rgba(3, 9, 14, 0.60);
-  --clara-modal-surface: linear-gradient(155deg, rgba(42, 78, 48, 0.24) 0%, rgba(14, 40, 30, 0.92) 36%, rgba(8, 27, 25, 0.96) 68%, rgba(9, 29, 43, 0.96) 100%);
-  --clara-input-surface: linear-gradient(145deg, rgba(255, 255, 255, 0.055), rgba(255, 255, 255, 0.03));
-  --clara-input-border: rgba(255, 255, 255, 0.08);
-  --clara-input-focus-ring: 0 0 0 1px rgba(207, 232, 74, 0.22), 0 0 0 6px rgba(207, 232, 74, 0.06);
-  --clara-button-primary: linear-gradient(135deg, rgba(112, 160, 55, 0.96), rgba(191, 215, 74, 0.92));
-  --clara-button-primary-shadow: 0 16px 34px rgba(114, 152, 46, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.22);
-  --clara-button-secondary: linear-gradient(145deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
-  --clara-button-secondary-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 12px 28px rgba(0, 0, 0, 0.18);
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%;
 
-  --clara-status-good: #d7ef59;
-  --clara-status-caution: #e7c85d;
-  --clara-status-risk: #d78a6c;
+    --accent: 199 89% 48%;
+    --accent-foreground: 0 0% 100%;
 
-  --clara-success: #2F7A4F;
-  --clara-warning: #D6B84F;
+    --destructive: 0 84% 58%;
+    --destructive-foreground: 0 0% 98%;
 
-  --clara-shadow-soft: 0 14px 34px rgba(0, 0, 0, 0.26), 0 28px 68px rgba(0, 0, 0, 0.22);
-  --clara-shadow-elevated: 0 18px 40px rgba(0, 0, 0, 0.28), 0 34px 80px rgba(0, 0, 0, 0.24);
-  --clara-glow-premium: 0 18px 40px rgba(0, 0, 0, 0.26), 0 32px 76px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    --border: 217 33% 22%;
+    --input: 217 33% 18%;
+    --ring: 142 71% 45%;
 
-  --clara-theme-transition: 180ms ease;
+    --radius: 0.875rem;
+
+    --yellow: 48 96% 53%;
+    --navy: 222 84% 5%;
+  }
+
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  html, body {
+    height: 100%;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+    font-family: var(--font-body);
+
+    /* ✅ CLEAN GRADIENT (no weird black artifacts) */
+    background:
+      radial-gradient(circle at top, color-mix(in srgb, var(--theme-accent) 9%, transparent), transparent 32%),
+      radial-gradient(circle at 85% 18%, color-mix(in srgb, var(--theme-primary) 8%, transparent), transparent 24%),
+      linear-gradient(180deg, color-mix(in srgb, var(--theme-background) 96%, black 4%) 0%, var(--theme-background) 52%, color-mix(in srgb, var(--theme-surface) 78%, black 22%) 100%);
+    
+    min-height: 100vh;
+    color: var(--theme-text);
+    overflow-x: hidden; /* ✅ prevent side scroll bug */
+  }
 }
 
-/* RESET */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+/* ================= SCROLLBAR ================= */
+::-webkit-scrollbar {
+  width: 4px;
 }
-
-/* ROOT */
-html,
-body,
-#root {
-  margin: 0;
-  min-height: 100%;
-  width: 100%;
-  max-width: none;
-  overflow-x: hidden;
-  background: var(--clara-bg-base);
-  color: var(--clara-text);
-}
-
-html {
-  min-width: 100%;
-  background: var(--clara-bg-base);
-}
-
-/* 🌌 CLARA GLOBAL BACKGROUND */
-body {
-  min-height: 100vh;
-  min-height: 100dvh;
-  width: 100%;
-  min-width: 100%;
-
-  background-image: var(--clara-bg);
-  background-color: var(--clara-bg-base);
-  background-attachment: fixed;
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: center top;
-
-  color: var(--clara-text);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
-
-#root {
-  min-height: 100vh;
-  min-height: 100dvh;
-  width: 100%;
+::-webkit-scrollbar-track {
   background: transparent;
 }
-
-/* TRANSITIONS */
-:where(
-  body,
-  main,
-  section,
-  article,
-  header,
-  nav,
-  aside,
-  footer,
-  div,
-  button,
-  a,
-  input,
-  textarea,
-  select,
-  span,
-  p,
-  h1,
-  h2,
-  h3,
-  h4,
-  h5,
-  h6
-) {
-  transition-property: background-color, background, border-color, color, box-shadow,
-    text-shadow, fill, stroke, opacity;
-  transition-duration: var(--clara-theme-transition);
-  transition-timing-function: ease;
+::-webkit-scrollbar-thumb {
+  background: hsl(145 60% 36% / 0.25);
+  border-radius: 4px;
 }
 
-/* UTILITIES */
-.clara-glass-panel {
-  position: relative;
-  border-color: var(--clara-border);
-  background: var(--clara-glass);
-  color: var(--clara-text);
-  box-shadow: var(--clara-shadow-soft),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+/* ================= CARD GLOW ================= */
+.card-glow-green {
+  box-shadow: 0 4px 24px hsl(142 71% 45% / 0.18),
+              0 1px 4px hsl(142 71% 45% / 0.1);
 }
 
-.clara-card-surface {
-  position: relative;
-  border: 1px solid var(--clara-border);
-  background: var(--clara-card);
-  color: var(--clara-text);
-  box-shadow: var(--clara-shadow-soft),
-    inset 0 1px 0 rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(16px);
-  -webkit-backdrop-filter: blur(16px);
+.card-glow-yellow {
+  box-shadow: 0 4px 24px hsl(48 96% 53% / 0.22),
+              0 1px 4px hsl(48 96% 53% / 0.12);
 }
 
-.clara-accent-surface {
-  border: 1px solid var(--clara-accent-border);
-  background: var(--clara-card-strong);
-  color: var(--clara-accent-text);
-  box-shadow: var(--clara-shadow-soft),
-    inset 0 1px 0 rgba(255, 255, 255, 0.045);
+.card-glow-blue {
+  box-shadow: 0 4px 24px hsl(199 89% 48% / 0.18),
+              0 1px 4px hsl(199 89% 48% / 0.1);
 }
 
-.clara-glass-panel::before,
-.clara-card-surface::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  background: var(--clara-surface-glow);
-  opacity: 0.9;
-  pointer-events: none;
+/* ================= GRADIENTS ================= */
+.grad-green {
+  background: linear-gradient(135deg, #020617 0%, #15803d 55%, #0ea5e9 100%);
 }
 
-.clara-glass-panel::after,
-.clara-card-surface::after {
-  content: "";
-  position: absolute;
-  inset: 1px;
-  border-radius: inherit;
-  background: linear-gradient(180deg, rgba(255, 255, 255, 0.06), transparent 18%, transparent 82%, rgba(255, 255, 255, 0.02));
-  pointer-events: none;
+.grad-yellow {
+  background: linear-gradient(135deg, #facc15 0%, #d9f99d 100%);
 }
 
-button,
-input,
-textarea,
-select {
-  font: inherit;
+.grad-lime {
+  background: linear-gradient(135deg, #d9f99d 0%, #22c55e 100%);
 }
 
-input,
-textarea,
-select {
-  border: 1px solid var(--clara-input-border);
-  background: var(--clara-input-surface);
-  color: var(--clara-text);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+.grad-blue {
+  background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%);
 }
 
-input::placeholder,
-textarea::placeholder {
-  color: var(--clara-text-faint);
+.grad-green-blue {
+  background: linear-gradient(135deg, #15803d 0%, #0ea5e9 100%);
 }
 
-input:focus,
-textarea:focus,
-select:focus {
-  outline: none;
-  border-color: var(--clara-accent-border);
-  box-shadow: var(--clara-input-focus-ring);
+/* ================= CARD SURFACES ================= */
+.grad-card {
+  background: linear-gradient(
+    180deg,
+    rgba(15, 23, 42, 0.92) 0%,
+    rgba(10, 15, 28, 0.98) 100%
+  );
+  border: 1px solid hsl(217 33% 22%);
+  color: white;
 }
 
-.clara-modal-backdrop {
-  background: var(--clara-modal-backdrop);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+.clara-card {
+  background: linear-gradient(
+    180deg,
+    rgba(15, 23, 42, 0.9) 0%,
+    rgba(2, 6, 23, 0.96) 100%
+  );
+  border: 1px solid rgba(34, 197, 94, 0.14);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.28);
+  color: white;
 }
 
-.clara-modal-surface {
-  border: 1px solid var(--clara-border);
-  background: var(--clara-modal-surface);
-  color: var(--clara-text);
-  box-shadow: var(--clara-shadow-elevated), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+.clara-card-soft {
+  background: rgba(15, 23, 42, 0.72);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(8px);
+  color: white;
+}
+
+/* ================= INPUT ================= */
+.clara-input {
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid hsl(217 33% 22%);
+  color: white;
+}
+
+.clara-input::placeholder {
+  color: rgba(255, 255, 255, 0.45);
+}
+
+/* ================= PROGRESS ================= */
+.progress-bar {
+  transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.theme-page-shell {
+  background:
+    radial-gradient(circle at top left, color-mix(in srgb, var(--theme-accent) 10%, transparent), transparent 28%),
+    radial-gradient(circle at top right, color-mix(in srgb, var(--theme-primary) 9%, transparent), transparent 26%),
+    radial-gradient(circle at bottom, color-mix(in srgb, var(--theme-secondary) 7%, transparent), transparent 34%),
+    linear-gradient(180deg, color-mix(in srgb, var(--theme-background) 95%, black 5%) 0%, var(--theme-background) 48%, color-mix(in srgb, var(--theme-surface) 76%, black 24%) 100%);
+}
+
+.theme-shell-card {
+  border: 1px solid color-mix(in srgb, white 16%, transparent);
+  background: color-mix(in srgb, var(--theme-card) 78%, transparent);
+  box-shadow:
+    0 22px 58px rgba(0, 0, 0, 0.24),
+    0 1px 0 rgba(255, 255, 255, 0.07) inset;
+  backdrop-filter: blur(24px);
+}
+
+.theme-panel-card {
+  border: 1px solid color-mix(in srgb, white 14%, transparent);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--theme-card) 76%, transparent) 0%,
+    color-mix(in srgb, var(--theme-card-alt) 74%, transparent) 100%
+  );
+  box-shadow:
+    0 18px 44px rgba(0, 0, 0, 0.20),
+    0 1px 0 rgba(255, 255, 255, 0.06) inset;
+  backdrop-filter: blur(22px);
+}
+
+.theme-soft-card {
+  border: 1px solid color-mix(in srgb, white 12%, transparent);
+  background: color-mix(in srgb, var(--theme-card-alt) 62%, transparent);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    0 10px 24px rgba(0, 0, 0, 0.10);
   backdrop-filter: blur(18px);
-  -webkit-backdrop-filter: blur(18px);
 }
 
-.clara-button-primary {
-  border: 1px solid var(--clara-accent-border);
-  background: var(--clara-button-primary);
-  color: #10230f;
-  box-shadow: var(--clara-button-primary-shadow);
+.theme-modal-card {
+  border: 1px solid color-mix(in srgb, white 16%, transparent);
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--theme-card) 82%, black 18%) 0%,
+    color-mix(in srgb, var(--theme-card-alt) 78%, black 22%) 100%
+  );
+  box-shadow:
+    0 28px 72px rgba(0, 0, 0, 0.34),
+    0 1px 0 rgba(255, 255, 255, 0.06) inset;
+  backdrop-filter: blur(26px);
 }
 
-.clara-button-secondary {
-  border: 1px solid var(--clara-border);
-  background: var(--clara-button-secondary);
-  color: var(--clara-text);
-  box-shadow: var(--clara-button-secondary-shadow);
+.theme-glass-button {
+  border: 1px solid color-mix(in srgb, white 14%, transparent);
+  background: color-mix(in srgb, var(--theme-card-alt) 68%, white 10%);
+  color: var(--theme-text);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    0 10px 24px rgba(0, 0, 0, 0.14);
+  transition:
+    transform 0.18s ease,
+    background-color 0.18s ease,
+    border-color 0.18s ease,
+    box-shadow 0.18s ease;
 }
 
-.clara-pill-panel {
-  border: 1px solid var(--clara-border);
-  background: var(--clara-glass);
-  box-shadow: var(--clara-glow-premium);
+.theme-glass-button:hover {
+  background: color-mix(in srgb, var(--theme-card-alt) 58%, white 16%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.10),
+    0 14px 28px rgba(0, 0, 0, 0.18);
+}
+
+.theme-glass-button:active {
+  transform: scale(0.985);
+}
+
+.theme-gradient-button {
+  background: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--theme-primary) 70%, white 14%) 0%,
+    color-mix(in srgb, var(--theme-secondary) 86%, black 4%) 100%
+  );
+  color: white;
+  box-shadow:
+    0 14px 28px rgba(0, 0, 0, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.theme-input {
+  border: 1px solid color-mix(in srgb, white 12%, transparent);
+  background: color-mix(in srgb, var(--theme-card-alt) 62%, transparent);
+  color: var(--theme-text);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04);
+  backdrop-filter: blur(16px);
+}
+
+.theme-input::placeholder {
+  color: color-mix(in srgb, var(--theme-muted-text) 88%, transparent);
 }
