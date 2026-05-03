@@ -1,6 +1,6 @@
 import { Routes, Route } from "react-router-dom";
 
-import Dashboard from "./pages/Dashboard";
+import Dashboard from "./pages/fresh/dashboard/Dashboard";
 import HomeV2 from "./pages/HomeV2";
 import Feed from "./pages/Feed";
 import Messages from "./pages/Messages";
