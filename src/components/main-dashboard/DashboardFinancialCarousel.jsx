@@ -141,9 +141,9 @@ export default function DashboardFinancialCarousel({
               className="h-1.5 rounded-full transition-all duration-300 active:scale-90"
               style={{
                 width: isActive ? "0.95rem" : "0.36rem",
-                background: isActive ? "#B9F632" : "rgba(255,255,255,0.20)",
-                opacity: isActive ? 1 : 0.42,
-                boxShadow: isActive ? "0 0 10px rgba(166,232,18,0.4)" : "none",
+                background: isActive ? "var(--clara-accent)" : "rgba(255,255,255,0.18)",
+                opacity: isActive ? 1 : 0.45,
+                boxShadow: isActive ? "inset 0 0 6px rgba(143,227,136,0.18)" : "none",
               }}
             />
           );
