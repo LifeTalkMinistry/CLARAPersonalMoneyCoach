@@ -5,34 +5,17 @@ export default function TopNavigationBar({ compact = false }) {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const activeIndex = Math.max(
-    0,
-    topNavItems.findIndex((item) => item.path === location.pathname)
-  );
-
   return (
     <header style={{ marginBottom: "clamp(0.25rem, 1svh, 0.5rem)" }}>
       <div
-        className="relative overflow-hidden rounded-[28px] border"
+        className="relative overflow-hidden rounded-[28px] border px-3 py-3 backdrop-blur-[24px]"
         style={{
-          padding: "clamp(6px, 1.4svh, 10px)",
-          background:
-            "linear-gradient(180deg, rgba(10,40,34,0.95), rgba(4,18,22,0.96))",
-          borderColor: "rgba(166,232,18,0.45)",
+          background: "rgba(255,255,255,0.06)",
+          borderColor: "rgba(255,255,255,0.08)",
+          boxShadow: "0 8px 30px rgba(0,0,0,0.35)",
         }}
       >
-        <nav className="relative grid grid-cols-4" style={{ gap: "clamp(4px, 1vw, 8px)" }}>
-          <div
-            className="pointer-events-none absolute bottom-0 top-0 rounded-[22px]"
-            style={{
-              width: "calc((100% - 0.75rem) / 4)",
-              transform: `translateX(calc(${activeIndex} * (100% + 0.25rem)))`,
-              background:
-                "linear-gradient(180deg, rgba(166,232,18,0.45), rgba(255,255,255,0.06))",
-              border: "1px solid rgba(166,232,18,0.55)",
-            }}
-          />
-
+        <nav className="relative flex items-center justify-between gap-2">
           {topNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
@@ -40,34 +23,39 @@ export default function TopNavigationBar({ compact = false }) {
             return (
               <button
                 key={item.path}
+                type="button"
                 onClick={() => navigate(item.path)}
-                className="flex flex-col items-center justify-center rounded-[22px]"
-                style={{
-                  paddingTop: "clamp(6px, 1.5svh, 10px)",
-                  paddingBottom: "clamp(6px, 1.5svh, 10px)",
-                }}
+                className="flex min-h-[64px] flex-1 items-center justify-center rounded-2xl border-0 bg-transparent transition-all duration-300 active:scale-[0.97]"
+                aria-current={isActive ? "page" : undefined}
               >
                 <span
-                  className="flex items-center justify-center rounded-full border"
-                  style={{
-                    height: "clamp(30px, 4.5svh, 36px)",
-                    width: "clamp(30px, 4.5svh, 36px)",
-                    color: isActive ? "#F5FF9C" : "rgba(255,255,255,0.55)",
-                    borderColor: isActive ? "rgba(166,232,18,0.6)" : "rgba(255,255,255,0.08)",
-                    background: isActive ? "rgba(166,232,18,0.22)" : "transparent",
-                  }}
+                  className="flex h-full w-full flex-col items-center justify-center gap-1.5 rounded-2xl transition-all duration-300"
+                  style={
+                    isActive
+                      ? {
+                          padding: compact ? "0.65rem 0.75rem" : "0.75rem 1rem",
+                          color: "#8FE388",
+                          background: "rgba(255,255,255,0.12)",
+                          boxShadow: "inset 0 0 10px rgba(143,227,136,0.15)",
+                        }
+                      : {
+                          padding: compact ? "0.65rem 0.75rem" : "0.75rem 1rem",
+                          color: "rgba(255,255,255,0.50)",
+                          background: "transparent",
+                          boxShadow: "none",
+                        }
+                  }
                 >
-                  <Icon size={16} />
-                </span>
+                  <Icon size={20} strokeWidth={2.1} />
 
-                <span
-                  style={{
-                    fontSize: "clamp(8px, 1.2svh, 10px)",
-                    opacity: isActive ? 1 : 0.5,
-                    color: isActive ? "#F0FFAA" : "rgba(255,255,255,0.55)",
-                  }}
-                >
-                  {item.label}
+                  <span
+                    className="text-[11px] font-medium leading-none tracking-[-0.01em]"
+                    style={{
+                      color: isActive ? "#8FE388" : "rgba(255,255,255,0.50)",
+                    }}
+                  >
+                    {item.label}
+                  </span>
                 </span>
               </button>
             );
