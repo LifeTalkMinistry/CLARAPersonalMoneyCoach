@@ -1,950 +1,1015 @@
-import { useEffect, useMemo, useState } from "react";
+import { useState, useEffect, useCallback, useMemo, useRef } from "react";
+import { supabase } from "@/lib/supabaseClient";
+import { getWalletBalance } from "@/utils/financialEngine";
 
-import { getMoneyLeft } from "../lib/dashboard/financeUtils";
-
-const FALLBACK_WALLETS = [];
-const FALLBACK_EXPENSES = [];
-const FALLBACK_BUDGETS = [];
-const FALLBACK_SAVINGS_GOALS = [];
-const FALLBACK_EMERGENCY_FUND = {
-  id: "emergency-fund",
-  target: 0,
-  current: 0,
-  updated_at: "",
-};
-const PRIMARY_FINANCE_DB = "clara_finance_db";
-
-const FINANCE_DB_CANDIDATES = [
-  PRIMARY_FINANCE_DB,
-  "CLARA_FINANCE_DB",
-  "claraFinanceDB",
-  "localFinanceDB",
-  "financeDB",
-  "clara-db",
-];
-
-const STORE_CANDIDATES = {
-  wallets: ["wallets"],
-  expenses: ["expenses"],
-  budgets: ["budgets", "monthly_budgets", "budget_categories"],
-  savingsGoals: ["savings_goals", "savingsGoals", "goals"],
-  emergencyFund: ["emergency_fund", "emergencyFund"],
+const toNumber = (value) => {
+  if (typeof value === "number") return Number.isFinite(value) ? value : 0;
+  if (typeof value === "string") {
+    const cleaned = value.replace(/[₱,\s]/g, "");
+    const num = Number(cleaned);
+    return Number.isFinite(num) ? num : 0;
+  }
+  const num = Number(value);
+  return Number.isFinite(num) ? num : 0;
 };
 
-function safeNumber(value, fallback = 0) {
-  const numeric = Number(value);
-  return Number.isFinite(numeric) ? numeric : fallback;
-}
-
-function normalizeText(value) {
-  return String(value || "").trim().toLowerCase();
-}
-
-function normalizeKey(value) {
-  return normalizeText(value).replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
-}
-
-function makeId(prefix) {
-  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-}
-
-function getCurrentMonthKey() {
-  const now = new Date();
-  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-}
-
-function getDateMonthKey(value) {
-  if (!value) return "";
+const getSafeDate = (value) => {
   const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return new Date().toISOString();
+  return date.toISOString();
+};
+
+const normalizeString = (value) => String(value ?? "").trim().toLowerCase();
+
+const normalizePlanningStatus = (value) => {
+  const normalized = String(value || "planned").trim().toLowerCase();
+  return ["planned", "unplanned", "undocumented"].includes(normalized)
+    ? normalized
+    : "planned";
+};
+
+const generateId = () => {
+  if (typeof crypto !== "undefined" && crypto.randomUUID) {
+    return crypto.randomUUID();
+  }
+  return `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+};
+
+const getMonthKey = (value = new Date()) => {
+  const date = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(date.getTime())) return "";
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
-}
 
-function getExpenseDate(expense) {
-  return (
-    expense?.created_at ||
-    expense?.createdAt ||
-    expense?.date ||
-    expense?.expense_date ||
-    expense?.transaction_date ||
-    expense?.timestamp ||
-    ""
-  );
-}
-
-function getExpenseCategory(expense) {
-  return expense?.category || expense?.category_name || expense?.budget_category || "";
-}
-
-function getBudgetCategory(budget) {
-  return budget?.category || budget?.category_name || budget?.name || budget?.title || "";
-}
-
-function getBudgetAllocated(budget) {
-  return safeNumber(
-    budget?.allocated_amount ??
-      budget?.allocated ??
-      budget?.amount ??
-      budget?.limit ??
-      budget?.budget_amount
-  );
-}
-
-function getExpenseAmount(expense) {
-  return safeNumber(expense?.amount ?? expense?.value ?? expense?.total);
-}
-
-function getBudgetMonthKey(budget) {
-  const directMonth = budget?.month || budget?.month_key || budget?.monthKey;
-  if (directMonth) return String(directMonth).slice(0, 7);
-  return getDateMonthKey(
-    budget?.created_at ||
-      budget?.createdAt ||
-      budget?.date ||
-      budget?.start_date ||
-      budget?.updated_at
-  );
-}
-
-function isBudgetForMonth(budget, monthKey) {
-  return getBudgetMonthKey(budget) === monthKey;
-}
-
-function getUsagePercentage(spent, allocated) {
-  const cleanSpent = safeNumber(spent);
-  const cleanAllocated = safeNumber(allocated);
-  if (cleanAllocated <= 0) return cleanSpent > 0 ? 1.01 : 0;
-  return cleanSpent / cleanAllocated;
-}
-
-function getBudgetRiskLevel(usagePercentage) {
-  if (usagePercentage > 1) return "overspent";
-  if (usagePercentage >= 0.85) return "risk";
-  if (usagePercentage >= 0.6) return "warning";
-  return "safe";
-}
-
-function getWalletBalance(wallet) {
-  return safeNumber(
-    wallet?.balance ?? wallet?.current_balance ?? wallet?.amount ?? wallet?.available_balance
-  );
-}
-
-function getWalletName(wallet, index = 0) {
-  return wallet?.name || wallet?.wallet_name || wallet?.title || `Wallet ${index + 1}`;
-}
-
-function normalizeWalletRecord(wallet = {}, index = 0) {
-  return {
-    ...wallet,
-    id: wallet?.id || makeId("wallet"),
-    name: getWalletName(wallet, index),
-    balance: getWalletBalance(wallet),
-    updated_at: wallet?.updated_at || new Date().toISOString(),
-  };
-}
-
-function normalizeSavingsGoal(goal = {}, index = 0) {
-  const target = safeNumber(goal?.target ?? goal?.targetAmount ?? goal?.target_amount);
-  const saved = safeNumber(goal?.saved ?? goal?.savedAmount ?? goal?.saved_amount);
-  return {
-    ...goal,
-    id: goal?.id || makeId("savings-goal"),
-    name: goal?.name || goal?.goalName || goal?.title || `Savings Goal ${index + 1}`,
-    target,
-    targetAmount: target,
-    target_amount: target,
-    saved,
-    savedAmount: saved,
-    saved_amount: saved,
-    updated_at: goal?.updated_at || new Date().toISOString(),
-  };
-}
-
-function normalizeEmergencyFund(record = {}) {
-  return {
-    id: record?.id || "emergency-fund",
-    target: safeNumber(record?.target ?? record?.targetAmount),
-    targetAmount: safeNumber(record?.target ?? record?.targetAmount),
-    current: safeNumber(record?.current ?? record?.currentAmount ?? record?.saved),
-    currentAmount: safeNumber(record?.current ?? record?.currentAmount ?? record?.saved),
-    updated_at: record?.updated_at || "",
-  };
-}
-
-function normalizeBudgetRecord(budget, fallbackMonth = getCurrentMonthKey()) {
-  const category = String(getBudgetCategory(budget)).trim();
-  const month = String(getBudgetMonthKey(budget) || fallbackMonth).slice(0, 7);
-  const allocatedAmount = getBudgetAllocated(budget);
-
-  if (!category || allocatedAmount < 0) return null;
-
-  return {
-    id: budget?.id || `budget-${month}-${normalizeKey(category)}`,
-    month,
-    category,
-    allocated_amount: allocatedAmount,
-    created_at: budget?.created_at || budget?.createdAt || new Date().toISOString(),
-    updated_at: budget?.updated_at || new Date().toISOString(),
-  };
-}
-
-function mergeBudgetRecords(records = [], monthKey = getCurrentMonthKey()) {
-  const mergedMap = new Map();
-
-  (Array.isArray(records) ? records : []).forEach((record) => {
-    const normalized = normalizeBudgetRecord(record, monthKey);
-    if (!normalized || normalized.month !== monthKey) return;
-
-    const key = normalizeText(normalized.category);
-    const existing = mergedMap.get(key);
-
-    if (!existing) {
-      mergedMap.set(key, normalized);
-      return;
-    }
-
-    mergedMap.set(key, {
-      ...existing,
-      allocated_amount:
-        safeNumber(existing.allocated_amount) + safeNumber(normalized.allocated_amount),
-      created_at: existing.created_at || normalized.created_at,
-      updated_at: normalized.updated_at || existing.updated_at,
-    });
+  const formatter = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Manila",
+    year: "numeric",
+    month: "2-digit",
   });
 
-  return Array.from(mergedMap.values()).map((record) => ({
-    ...record,
-    id: `budget-${record.month}-${normalizeKey(record.category)}`,
-  }));
-}
-
-function normalizeExpenseRecord(expense = {}) {
-  const now = new Date().toISOString();
-  const createdAt = getExpenseDate(expense) || now;
-  const amount = getExpenseAmount(expense);
-  const category = String(getExpenseCategory(expense) || "").trim();
-
-  return {
-    ...expense,
-    id: expense?.id || makeId("expense"),
-    amount,
-    category,
-    created_at: createdAt,
-  };
-}
-
-function attachBudgetSummary(categories, summary) {
-  const budgetArray = [...categories];
-  budgetArray.month = summary.month;
-  budgetArray.monthKey = summary.monthKey;
-  budgetArray.total = summary.total;
-  budgetArray.spent = summary.spent;
-  budgetArray.remaining = summary.remaining;
-  budgetArray.totalExpenses = summary.totalExpenses;
-  budgetArray.unplannedSpent = summary.unplannedSpent;
-  budgetArray.undocumentedSpent = summary.undocumentedSpent;
-  budgetArray.budgetRiskLevel = summary.budgetRiskLevel;
-  budgetArray.highRiskCategories = summary.highRiskCategories;
-  budgetArray.topSpendingCategory = summary.topSpendingCategory;
-  budgetArray.categories = budgetArray;
-  budgetArray.summary = summary;
-  return budgetArray;
-}
-
-function buildBudgetFromExpenses(rawBudgets = [], rawExpenses = []) {
-  const monthKey = getCurrentMonthKey();
-  const currentMonthBudgets = mergeBudgetRecords(rawBudgets, monthKey);
-  const currentMonthExpenses = (Array.isArray(rawExpenses) ? rawExpenses : [])
-    .map((expense) => normalizeExpenseRecord(expense))
-    .filter((expense) => getDateMonthKey(getExpenseDate(expense)) === monthKey);
-
-  const categories = currentMonthBudgets.map((budget) => ({
-    ...budget,
-    spent: 0,
-    remaining: safeNumber(budget.allocated_amount),
-    usagePercentage: 0,
-    riskLevel: "safe",
-  }));
-
-  const categoryMap = new Map(
-    categories
-      .map((category) => [normalizeText(category.category), category])
-      .filter(([key]) => Boolean(key))
-  );
-
-  let spent = 0;
-  let unplannedSpent = 0;
-  let undocumentedSpent = 0;
-
-  currentMonthExpenses.forEach((expense) => {
-    const amount = getExpenseAmount(expense);
-    if (amount <= 0) return;
-
-    const key = normalizeText(getExpenseCategory(expense));
-    spent += amount;
-
-    if (!key) {
-      undocumentedSpent += amount;
-      return;
-    }
-
-    const matchedCategory = categoryMap.get(key);
-
-    if (!matchedCategory) {
-      unplannedSpent += amount;
-      return;
-    }
-
-    matchedCategory.spent = safeNumber(matchedCategory.spent) + amount;
-    matchedCategory.remaining =
-      safeNumber(matchedCategory.allocated_amount) - safeNumber(matchedCategory.spent);
-  });
-
-  const enrichedCategories = categories.map((category) => {
-    const allocatedAmount = safeNumber(category.allocated_amount);
-    const categorySpent = safeNumber(category.spent);
-    const usagePercentage = getUsagePercentage(categorySpent, allocatedAmount);
-
-    return {
-      ...category,
-      allocated_amount: allocatedAmount,
-      spent: categorySpent,
-      remaining: allocatedAmount - categorySpent,
-      usagePercentage,
-      riskLevel: getBudgetRiskLevel(usagePercentage),
-    };
-  });
-
-  const total = enrichedCategories.reduce(
-    (sum, category) => sum + safeNumber(category.allocated_amount),
-    0
-  );
-  const remaining = total - spent;
-  const overallUsagePercentage = getUsagePercentage(spent, total);
-
-  const summary = {
-    month: monthKey,
-    monthKey,
-    total,
-    spent,
-    remaining,
-    totalExpenses: spent,
-    unplannedSpent,
-    undocumentedSpent,
-    budgetRiskLevel: getBudgetRiskLevel(overallUsagePercentage),
-    highRiskCategories: enrichedCategories.filter(
-      (category) => category.riskLevel === "risk" || category.riskLevel === "overspent"
-    ),
-    topSpendingCategory: enrichedCategories.length
-      ? enrichedCategories.reduce((top, category) =>
-          safeNumber(category?.spent) > safeNumber(top?.spent) ? category : top
-        )
-      : null,
-    categories: enrichedCategories,
-  };
-
-  return attachBudgetSummary(enrichedCategories, summary);
-}
-
-function openIndexedDb(dbName, version) {
-  return new Promise((resolve) => {
-    if (typeof window === "undefined" || !window.indexedDB) return resolve(null);
-    try {
-      const request = version
-        ? window.indexedDB.open(dbName, version)
-        : window.indexedDB.open(dbName);
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => resolve(null);
-      request.onblocked = () => resolve(null);
-      request.onupgradeneeded = () => {
-        const db = request.result;
-        Array.from(new Set(Object.values(STORE_CANDIDATES).flat())).forEach((storeName) => {
-          if (!db.objectStoreNames.contains(storeName)) {
-            db.createObjectStore(storeName, { keyPath: "id" });
-          }
-        });
-      };
-    } catch (error) {
-      console.warn(`CLARA IndexedDB open skipped for ${dbName}:`, error);
-      resolve(null);
-    }
-  });
-}
-
-function openDbWithStores(dbName, requiredStores = []) {
-  return new Promise((resolve, reject) => {
-    if (typeof window === "undefined" || !window.indexedDB) {
-      reject(new Error("IndexedDB is not available"));
-      return;
-    }
-
-    const firstOpen = window.indexedDB.open(dbName);
-
-    firstOpen.onerror = () =>
-      reject(firstOpen.error || new Error("Unable to open finance DB"));
-    firstOpen.onblocked = () => reject(new Error("Finance DB is blocked"));
-
-    firstOpen.onsuccess = () => {
-      const existingDb = firstOpen.result;
-      const missingStores = requiredStores.filter(
-        (storeName) => !existingDb.objectStoreNames.contains(storeName)
-      );
-
-      if (missingStores.length === 0) {
-        resolve(existingDb);
-        return;
-      }
-
-      const nextVersion = existingDb.version + 1;
-      existingDb.close();
-
-      const upgradeOpen = window.indexedDB.open(dbName, nextVersion);
-
-      upgradeOpen.onupgradeneeded = () => {
-        const upgradedDb = upgradeOpen.result;
-        missingStores.forEach((storeName) => {
-          if (!upgradedDb.objectStoreNames.contains(storeName)) {
-            upgradedDb.createObjectStore(storeName, { keyPath: "id" });
-          }
-        });
-      };
-
-      upgradeOpen.onsuccess = () => resolve(upgradeOpen.result);
-      upgradeOpen.onerror = () =>
-        reject(upgradeOpen.error || new Error("Unable to create finance stores"));
-      upgradeOpen.onblocked = () => reject(new Error("Finance store upgrade is blocked"));
-    };
-  });
-}
-
-function pickExistingStoreName(db, candidates) {
-  if (!db?.objectStoreNames) return undefined;
-  return candidates.find((storeName) => db.objectStoreNames.contains(storeName));
-}
-
-function readObjectStore(db, storeName) {
-  return new Promise((resolve) => {
-    if (!db?.objectStoreNames?.contains(storeName)) return resolve([]);
-    try {
-      const transaction = db.transaction(storeName, "readonly");
-      const request = transaction.objectStore(storeName).getAll();
-      request.onsuccess = () =>
-        resolve(Array.isArray(request.result) ? request.result : []);
-      request.onerror = () => resolve([]);
-      transaction.onerror = () => resolve([]);
-    } catch (error) {
-      console.warn(`CLARA finance store read skipped for ${storeName}:`, error);
-      resolve([]);
-    }
-  });
-}
-
-function replaceMonthBudgets(db, storeName, monthKey, rows) {
-  return new Promise((resolve, reject) => {
-    try {
-      const transaction = db.transaction(storeName, "readwrite");
-      const store = transaction.objectStore(storeName);
-      const request = store.openCursor();
-
-      request.onsuccess = (event) => {
-        const cursor = event.target.result;
-        if (!cursor) {
-          rows.forEach((row) => store.put(row));
-          return;
-        }
-        if (isBudgetForMonth(cursor.value, monthKey)) cursor.delete();
-        cursor.continue();
-      };
-
-      request.onerror = () => reject(request.error || new Error("Unable to scan budgets"));
-      transaction.oncomplete = () => resolve(rows);
-      transaction.onerror = () =>
-        reject(transaction.error || new Error("Unable to save budgets"));
-      transaction.onabort = () =>
-        reject(transaction.error || new Error("Budget save aborted"));
-    } catch (error) {
-      reject(error);
-    }
-  });
-}
-
-function putRecords(db, storeName, records) {
-  return new Promise((resolve, reject) => {
-    try {
-      const transaction = db.transaction(storeName, "readwrite");
-      const store = transaction.objectStore(storeName);
-      (Array.isArray(records) ? records : [records]).forEach((record) => store.put(record));
-      transaction.oncomplete = () => resolve(records);
-      transaction.onerror = () =>
-        reject(transaction.error || new Error(`Unable to save ${storeName}`));
-      transaction.onabort = () =>
-        reject(transaction.error || new Error(`${storeName} save aborted`));
-    } catch (error) {
-      reject(error);
-    }
-  });
-}
-
-function deleteRecord(db, storeName, id) {
-  return new Promise((resolve, reject) => {
-    try {
-      const transaction = db.transaction(storeName, "readwrite");
-      transaction.objectStore(storeName).delete(id);
-      transaction.oncomplete = () => resolve(id);
-      transaction.onerror = () =>
-        reject(transaction.error || new Error(`Unable to delete ${storeName}`));
-      transaction.onabort = () =>
-        reject(transaction.error || new Error(`${storeName} delete aborted`));
-    } catch (error) {
-      reject(error);
-    }
-  });
-}
-
-async function readFinanceDataFromIndexedDb() {
-  if (typeof window === "undefined" || !window.indexedDB) return null;
-
-  for (const dbName of FINANCE_DB_CANDIDATES) {
-    const db = await openIndexedDb(dbName);
-    if (!db) continue;
-
-    try {
-      const walletStore = pickExistingStoreName(db, STORE_CANDIDATES.wallets);
-      const expenseStore = pickExistingStoreName(db, STORE_CANDIDATES.expenses);
-      const budgetStore = pickExistingStoreName(db, STORE_CANDIDATES.budgets);
-      const savingsGoalStore = pickExistingStoreName(db, STORE_CANDIDATES.savingsGoals);
-      const emergencyFundStore = pickExistingStoreName(db, STORE_CANDIDATES.emergencyFund);
-
-      const [wallets, expenses, budgets, savingsGoals, emergencyFundRecords] =
-        await Promise.all([
-          walletStore ? readObjectStore(db, walletStore) : Promise.resolve([]),
-          expenseStore ? readObjectStore(db, expenseStore) : Promise.resolve([]),
-          budgetStore ? readObjectStore(db, budgetStore) : Promise.resolve([]),
-          savingsGoalStore ? readObjectStore(db, savingsGoalStore) : Promise.resolve([]),
-          emergencyFundStore ? readObjectStore(db, emergencyFundStore) : Promise.resolve([]),
-        ]);
-
-      db.close?.();
-      if (
-        walletStore ||
-        expenseStore ||
-        budgetStore ||
-        savingsGoalStore ||
-        emergencyFundStore
-      ) {
-        return {
-          wallets,
-          expenses,
-          budgets,
-          savingsGoals,
-          emergencyFund: Array.isArray(emergencyFundRecords)
-            ? emergencyFundRecords[0] || null
-            : null,
-        };
-      }
-    } catch (error) {
-      console.warn(`CLARA IndexedDB load skipped for ${dbName}:`, error);
-      db.close?.();
-    }
+  const parts = formatter.formatToParts(date);
+  const map = {};
+  for (const part of parts) {
+    if (part.type !== "literal") map[part.type] = part.value;
   }
 
-  return null;
-}
+  return `${map.year || "0000"}-${map.month || "00"}`;
+};
 
-function buildBudgetRows({ month, categories }) {
-  const monthKey = String(month || getCurrentMonthKey()).slice(0, 7);
-  const now = new Date().toISOString();
-  const cleanCategories = Array.isArray(categories) ? categories : [];
+const isOwnedByUser = (item, user) => {
+  if (!user || !item) return false;
 
-  return mergeBudgetRecords(
-    cleanCategories.map((item) => ({
-      id: item?.id,
-      month: monthKey,
-      category: getBudgetCategory(item),
-      allocated_amount: getBudgetAllocated(item),
-      created_at: item?.created_at || now,
-      updated_at: now,
-    })),
-    monthKey
-  );
-}
+  const userId = String(user?.id ?? "").trim();
+  const userEmail = normalizeString(user?.email);
 
-async function saveBudgetRowsToIndexedDb(monthKey, rows) {
-  const db = await openDbWithStores(PRIMARY_FINANCE_DB, ["budgets"]);
-  try {
-    await replaceMonthBudgets(db, "budgets", monthKey, rows);
-    return rows;
-  } finally {
-    db.close?.();
-  }
-}
+  const itemIds = [item?.user_id, item?.owner_id, item?.profile_id]
+    .map((v) => String(v ?? "").trim())
+    .filter(Boolean);
 
-async function saveRecordsToStore(storeName, records) {
-  const db = await openDbWithStores(PRIMARY_FINANCE_DB, [storeName]);
-  try {
-    await putRecords(db, storeName, records);
-    return records;
-  } finally {
-    db.close?.();
-  }
-}
+  const itemEmails = [
+    item?.created_by,
+    item?.user_email,
+    item?.owner_email,
+    item?.email,
+  ]
+    .map(normalizeString)
+    .filter(Boolean);
 
-async function deleteRecordFromStore(storeName, id) {
-  const db = await openDbWithStores(PRIMARY_FINANCE_DB, [storeName]);
-  try {
-    await deleteRecord(db, storeName, id);
-    return id;
-  } finally {
-    db.close?.();
-  }
-}
+  if (userId && itemIds.includes(userId)) return true;
+  if (userEmail && itemEmails.includes(userEmail)) return true;
 
-export default function useFinancialData() {
-  const [wallets, setWallets] = useState(FALLBACK_WALLETS);
-  const [expenses, setExpenses] = useState(FALLBACK_EXPENSES);
-  const [rawBudgets, setRawBudgets] = useState(FALLBACK_BUDGETS);
-  const [savingsGoals, setSavingsGoals] = useState(FALLBACK_SAVINGS_GOALS);
-  const [emergencyFund, setEmergencyFund] = useState(FALLBACK_EMERGENCY_FUND);
-  const [loading, setLoading] = useState(true);
+  return false;
+};
 
-  async function applyFinanceSnapshot() {
-    const localData = await readFinanceDataFromIndexedDb();
-    setWallets(
-      Array.isArray(localData?.wallets)
-        ? localData.wallets.map((wallet, index) => normalizeWalletRecord(wallet, index))
-        : FALLBACK_WALLETS
-    );
-    setExpenses(
-      Array.isArray(localData?.expenses)
-        ? localData.expenses.map((item) => normalizeExpenseRecord(item))
-        : FALLBACK_EXPENSES
-    );
-    setRawBudgets(Array.isArray(localData?.budgets) ? localData.budgets : FALLBACK_BUDGETS);
-    setSavingsGoals(
-      Array.isArray(localData?.savingsGoals)
-        ? localData.savingsGoals.map((goal, index) => normalizeSavingsGoal(goal, index))
-        : FALLBACK_SAVINGS_GOALS
-    );
-    setEmergencyFund(
-      localData?.emergencyFund
-        ? normalizeEmergencyFund(localData.emergencyFund)
-        : FALLBACK_EMERGENCY_FUND
-    );
-  }
+const safeSelect = async (table, user, options = {}) => {
+  if (!user?.id && !user?.email) return [];
 
-  async function refreshFinanceData() {
-    try {
-      await applyFinanceSnapshot();
-    } catch (error) {
-      console.warn("CLARA finance data refresh skipped:", error);
-    }
-  }
+  let query = supabase.from(table).select("*");
 
-  async function saveBudget({ month, categories }) {
-    const monthKey = String(month || getCurrentMonthKey()).slice(0, 7);
-    const rows = buildBudgetRows({ month: monthKey, categories });
-
-    setRawBudgets((currentRows) => {
-      const existingRows = Array.isArray(currentRows) ? currentRows : [];
-      return [...existingRows.filter((budget) => !isBudgetForMonth(budget, monthKey)), ...rows];
-    });
-
-    await saveBudgetRowsToIndexedDb(monthKey, rows);
-    return rows;
-  }
-
-  async function saveBudgetCategory({
-    month = getCurrentMonthKey(),
-    category,
-    allocated_amount,
-  }) {
-    const monthKey = String(month || getCurrentMonthKey()).slice(0, 7);
-    const nextCategory = String(category || "").trim();
-    const nextAmount = Math.max(0, safeNumber(allocated_amount));
-
-    const sourceRows = Array.isArray(rawBudgets) ? rawBudgets : [];
-    const monthRows = mergeBudgetRecords(sourceRows, monthKey);
-    const existing = monthRows.find(
-      (budget) => normalizeText(budget.category) === normalizeText(nextCategory)
-    );
-    const remainingRows = monthRows.filter(
-      (budget) => normalizeText(budget.category) !== normalizeText(nextCategory)
-    );
-
-    const nextRows =
-      nextCategory && nextAmount > 0
-        ? [
-            ...remainingRows,
-            {
-              id: existing?.id || `budget-${monthKey}-${normalizeKey(nextCategory)}`,
-              month: monthKey,
-              category: nextCategory,
-              allocated_amount: nextAmount,
-              created_at: existing?.created_at || new Date().toISOString(),
-              updated_at: new Date().toISOString(),
-            },
-          ]
-        : remainingRows;
-
-    return saveBudget({ month: monthKey, categories: nextRows });
-  }
-
-  async function deleteBudgetCategory({
-    month = getCurrentMonthKey(),
-    category,
-  }) {
-    const monthKey = String(month || getCurrentMonthKey()).slice(0, 7);
-    const monthRows = mergeBudgetRecords(rawBudgets, monthKey).filter(
-      (budget) => normalizeText(budget.category) !== normalizeText(category)
-    );
-    return saveBudget({ month: monthKey, categories: monthRows });
-  }
-
-  async function resetBudgetCategories(month = getCurrentMonthKey()) {
-    return saveBudget({ month, categories: [] });
-  }
-
-  async function addExpense(expense) {
-    const normalizedExpense = normalizeExpenseRecord(expense);
-
-    setExpenses((currentRows) => {
-      const existingRows = Array.isArray(currentRows) ? currentRows : [];
-      return [...existingRows, normalizedExpense];
-    });
-
-    await saveRecordsToStore("expenses", normalizedExpense);
-    return normalizedExpense;
-  }
-
-  async function addWallet(wallet) {
-    const nextWallet = normalizeWalletRecord(wallet, wallets.length);
-    setWallets((current) => [...(Array.isArray(current) ? current : []), nextWallet]);
-    await saveRecordsToStore("wallets", nextWallet);
-    return nextWallet;
-  }
-
-  async function updateWallet(id, updates) {
-    const sourceRows = Array.isArray(wallets) ? wallets : [];
-    const nextRows = sourceRows.map((wallet, index) =>
-      String(wallet.id) === String(id)
-        ? normalizeWalletRecord({ ...wallet, ...updates, id }, index)
-        : normalizeWalletRecord(wallet, index)
-    );
-    setWallets(nextRows);
-    const nextWallet = nextRows.find((wallet) => String(wallet.id) === String(id));
-    if (nextWallet) {
-      await saveRecordsToStore("wallets", nextWallet);
-    }
-    return nextWallet;
-  }
-
-  async function deleteWallet(id) {
-    setWallets((current) =>
-      (Array.isArray(current) ? current : []).filter((wallet) => String(wallet.id) !== String(id))
-    );
-    await deleteRecordFromStore("wallets", id);
-    return id;
-  }
-
-  async function saveSavingsGoal(goal) {
-    const sourceRows = Array.isArray(savingsGoals) ? savingsGoals : [];
-    const existingIndex = sourceRows.findIndex(
-      (item) => String(item.id) === String(goal?.id || "")
-    );
-    const nextGoal = normalizeSavingsGoal(
-      existingIndex >= 0 ? { ...sourceRows[existingIndex], ...goal } : goal,
-      existingIndex >= 0 ? existingIndex : sourceRows.length
-    );
-
-    const nextRows =
-      existingIndex >= 0
-        ? sourceRows.map((item, index) =>
-            index === existingIndex ? nextGoal : normalizeSavingsGoal(item, index)
-          )
-        : [...sourceRows, nextGoal];
-
-    setSavingsGoals(nextRows);
-    await saveRecordsToStore("savings_goals", nextGoal);
-    return nextGoal;
-  }
-
-  async function deleteSavingsGoal(id) {
-    setSavingsGoals((current) =>
-      (Array.isArray(current) ? current : []).filter((goal) => String(goal.id) !== String(id))
-    );
-    await deleteRecordFromStore("savings_goals", id);
-    return id;
-  }
-
-  async function addSavings(goalId, amount) {
-    const sourceRows = Array.isArray(savingsGoals) ? savingsGoals : [];
-    const match = sourceRows.find((goal) => String(goal.id) === String(goalId));
-    if (!match) return null;
-
-    const nextGoal = normalizeSavingsGoal({
-      ...match,
-      saved: safeNumber(match.saved) + Math.max(0, safeNumber(amount)),
-      updated_at: new Date().toISOString(),
-    });
-
-    setSavingsGoals((current) =>
-      (Array.isArray(current) ? current : []).map((goal, index) =>
-        String(goal.id) === String(goalId) ? nextGoal : normalizeSavingsGoal(goal, index)
-      )
-    );
-    await saveRecordsToStore("savings_goals", nextGoal);
-    return nextGoal;
-  }
-
-  async function saveEmergencyFund(updates) {
-    const nextFund = normalizeEmergencyFund({
-      ...emergencyFund,
-      ...updates,
-      id: "emergency-fund",
-      updated_at: new Date().toISOString(),
-    });
-    setEmergencyFund(nextFund);
-    await saveRecordsToStore("emergency_fund", nextFund);
-    return nextFund;
-  }
-
-  async function setEmergencyFundTarget(targetAmount) {
-    return saveEmergencyFund({
-      target: Math.max(0, safeNumber(targetAmount)),
-      targetAmount: Math.max(0, safeNumber(targetAmount)),
+  if (options.orderBy) {
+    query = query.order(options.orderBy.column, {
+      ascending: options.orderBy.ascending ?? true,
     });
   }
 
-  async function addEmergencyFund(amount) {
-    return saveEmergencyFund({
-      current: safeNumber(emergencyFund.current) + Math.max(0, safeNumber(amount)),
-      currentAmount:
-        safeNumber(emergencyFund.currentAmount) + Math.max(0, safeNumber(amount)),
-    });
+  const { data, error } = await query;
+
+  if (error) {
+    console.warn(`Failed loading ${table}`, error);
+    return [];
   }
 
-  useEffect(() => {
-    let mounted = true;
+  return (data || []).filter((item) => isOwnedByUser(item, user));
+};
 
-    async function loadData() {
-      try {
-        const localData = await readFinanceDataFromIndexedDb();
-        if (!mounted) return;
-        setWallets(
-          Array.isArray(localData?.wallets)
-            ? localData.wallets.map((wallet, index) => normalizeWalletRecord(wallet, index))
-            : FALLBACK_WALLETS
-        );
-        setExpenses(
-          Array.isArray(localData?.expenses)
-            ? localData.expenses.map((item) => normalizeExpenseRecord(item))
-            : FALLBACK_EXPENSES
-        );
-        setRawBudgets(Array.isArray(localData?.budgets) ? localData.budgets : FALLBACK_BUDGETS);
-        setSavingsGoals(
-          Array.isArray(localData?.savingsGoals)
-            ? localData.savingsGoals.map((goal, index) => normalizeSavingsGoal(goal, index))
-            : FALLBACK_SAVINGS_GOALS
-        );
-        setEmergencyFund(
-          localData?.emergencyFund
-            ? normalizeEmergencyFund(localData.emergencyFund)
-            : FALLBACK_EMERGENCY_FUND
-        );
-      } catch (error) {
-        console.warn("CLARA finance data fallback used:", error);
-        if (!mounted) return;
-        setWallets(FALLBACK_WALLETS);
-        setExpenses(FALLBACK_EXPENSES);
-        setRawBudgets(FALLBACK_BUDGETS);
-        setSavingsGoals(FALLBACK_SAVINGS_GOALS);
-        setEmergencyFund(FALLBACK_EMERGENCY_FUND);
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    }
+const createEmptyFinancialCache = (key = null) => ({
+  key,
+  loaded: false,
+  expenses: [],
+  incomes: [],
+  wallets: [],
+  budgets: [],
+  walletTransactions: [],
+  transfers: [],
+  savingsGoals: [],
+  profile: null,
+  survivalExpense: 0,
+  retentionRate: 0,
+});
 
-    loadData();
-    return () => {
-      mounted = false;
-    };
+let financialDataCache = createEmptyFinancialCache();
+let financialDataInFlight = null;
+
+export default function useFinancialData(user) {
+  const userId = user?.id || null;
+  const userEmail = user?.email || null;
+  const cacheKey = userId || userEmail || null;
+  const initialCache =
+    financialDataCache.loaded && financialDataCache.key === cacheKey
+      ? financialDataCache
+      : createEmptyFinancialCache(cacheKey);
+
+  const [expenses, setExpenses] = useState(initialCache.expenses);
+  const [incomes, setIncomes] = useState(initialCache.incomes);
+  const [wallets, setWallets] = useState(initialCache.wallets);
+  const [budgets, setBudgets] = useState(initialCache.budgets);
+  const [walletTransactions, setWalletTransactions] = useState(
+    initialCache.walletTransactions
+  );
+  const [transfers, setTransfers] = useState(initialCache.transfers);
+  const [savingsGoals, setSavingsGoals] = useState(initialCache.savingsGoals);
+  const [profile, setProfile] = useState(initialCache.profile);
+  const [survivalExpense, setSurvivalExpense] = useState(
+    initialCache.survivalExpense
+  );
+  const [retentionRate, setRetentionRate] = useState(initialCache.retentionRate);
+  const [loading, setLoading] = useState(!initialCache.loaded);
+  const hasLoadedRef = useRef(false);
+  const refreshTimeoutRef = useRef(null);
+
+  const hydrateFromCache = useCallback((nextCache) => {
+    setExpenses(nextCache.expenses);
+    setIncomes(nextCache.incomes);
+    setWallets(nextCache.wallets);
+    setBudgets(nextCache.budgets);
+    setWalletTransactions(nextCache.walletTransactions);
+    setTransfers(nextCache.transfers);
+    setSavingsGoals(nextCache.savingsGoals);
+    setProfile(nextCache.profile);
+    setSurvivalExpense(nextCache.survivalExpense);
+    setRetentionRate(nextCache.retentionRate);
+    hasLoadedRef.current = nextCache.loaded;
+    setLoading(!nextCache.loaded);
   }, []);
 
-  const budgets = useMemo(() => buildBudgetFromExpenses(rawBudgets, expenses), [rawBudgets, expenses]);
+  useEffect(() => {
+    if (!cacheKey) {
+      const emptyCache = createEmptyFinancialCache();
+      financialDataCache = emptyCache;
+      hydrateFromCache(emptyCache);
+      return;
+    }
+
+    if (financialDataCache.loaded && financialDataCache.key === cacheKey) {
+      hydrateFromCache(financialDataCache);
+      return;
+    }
+
+    hasLoadedRef.current = false;
+    setLoading(true);
+  }, [cacheKey, hydrateFromCache]);
+
+  const loadAll = useCallback(
+    async ({ background = false } = {}) => {
+      const currentUser = { id: userId, email: userEmail };
+
+      if (!currentUser.id && !currentUser.email) {
+        const emptyCache = createEmptyFinancialCache();
+        financialDataCache = emptyCache;
+        hydrateFromCache(emptyCache);
+        return emptyCache;
+      }
+
+      if (financialDataInFlight?.key === cacheKey) {
+        return financialDataInFlight.promise;
+      }
+
+      if (!hasLoadedRef.current && !background) {
+        setLoading(true);
+      }
+
+      const promise = (async () => {
+        const [
+          nextExpenses,
+          nextWallets,
+          nextBudgets,
+          nextWalletTransactions,
+          nextTransfers,
+          nextSavingsGoals,
+          profiles,
+        ] = await Promise.all([
+          safeSelect("expenses", currentUser, {
+            orderBy: { column: "created_at", ascending: false },
+          }),
+          safeSelect("wallets", currentUser),
+          safeSelect("budgets", currentUser, {
+            orderBy: { column: "created_at", ascending: false },
+          }),
+          safeSelect("wallet_transactions", currentUser, {
+            orderBy: { column: "created_at", ascending: false },
+          }),
+          safeSelect("transfers", currentUser),
+          safeSelect("savings_goals", currentUser, {
+            orderBy: { column: "created_date", ascending: false },
+          }),
+          safeSelect("profiles", currentUser),
+        ]);
+
+        const nextProfile = profiles[0] || null;
+        const hydratedWallets = (nextWallets || []).map((wallet) => {
+          const balance = getWalletBalance(
+            wallet,
+            nextWalletTransactions || [],
+            nextTransfers || []
+          );
+
+          return {
+            ...wallet,
+            balance,
+            derived_balance: balance,
+          };
+        });
+
+        const totalIncome = (nextWalletTransactions || [])
+          .filter((transaction) => {
+            const type = String(transaction?.type || "")
+              .trim()
+              .toLowerCase();
+            return ["income", "add", "cash_in", "deposit", "credit"].includes(type);
+          })
+          .reduce((sum, transaction) => sum + toNumber(transaction?.amount), 0);
+
+        const currentMonthKey = getMonthKey();
+        const currentMonthExpenses = (nextExpenses || []).reduce((sum, expense) => {
+          const date = expense?.date || expense?.created_at || expense?.updated_at;
+          if (getMonthKey(date) !== currentMonthKey) return sum;
+          return sum + toNumber(expense?.amount);
+        }, 0);
+
+        const remainingIncome = totalIncome - currentMonthExpenses;
+        const nextRetentionRate =
+          totalIncome > 0
+            ? Math.max(0, Math.min((remainingIncome / totalIncome) * 100, 100))
+            : 0;
+
+        const nextCache = {
+          key: cacheKey,
+          loaded: true,
+          expenses: nextExpenses || [],
+          incomes: [],
+          wallets: hydratedWallets,
+          budgets: nextBudgets || [],
+          walletTransactions: nextWalletTransactions || [],
+          transfers: nextTransfers || [],
+          savingsGoals: nextSavingsGoals || [],
+          profile: nextProfile,
+          survivalExpense: toNumber(
+            nextProfile?.monthly_survival_expense ??
+              nextProfile?.survival_expense ??
+              nextProfile?.clara_survival_expense
+          ),
+          retentionRate: nextRetentionRate,
+        };
+
+        financialDataCache = nextCache;
+        hydrateFromCache(nextCache);
+        return nextCache;
+      })()
+        .catch((error) => {
+          console.error("loadAll error:", error);
+          throw error;
+        })
+        .finally(() => {
+          if (financialDataInFlight?.key === cacheKey) {
+            financialDataInFlight = null;
+          }
+          setLoading(false);
+        });
+
+      financialDataInFlight = {
+        key: cacheKey,
+        promise,
+      };
+
+      return promise;
+    },
+    [cacheKey, hydrateFromCache, userEmail, userId]
+  );
+
+  useEffect(() => {
+    loadAll();
+  }, [loadAll]);
+
+  useEffect(() => {
+    if (!userId && !userEmail) return;
+
+    const scheduleRefresh = () => {
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current);
+      }
+
+      refreshTimeoutRef.current = setTimeout(() => {
+        loadAll({ background: true });
+      }, 150);
+    };
+
+    const channel = supabase
+      .channel(`finance-${userId || userEmail}`)
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "expenses" },
+        scheduleRefresh
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "wallets" },
+        scheduleRefresh
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "wallet_transactions" },
+        scheduleRefresh
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "transfers" },
+        scheduleRefresh
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "budgets" },
+        scheduleRefresh
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "savings_goals" },
+        scheduleRefresh
+      )
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "profiles" },
+        scheduleRefresh
+      )
+      .subscribe();
+
+    return () => {
+      if (refreshTimeoutRef.current) {
+        clearTimeout(refreshTimeoutRef.current);
+      }
+      supabase.removeChannel(channel);
+    };
+  }, [userEmail, userId, loadAll]);
+
+  const refreshData = useCallback((options) => loadAll(options), [loadAll]);
+
+  const updateWalletBalance = async (walletId, amountChange) => {
+    const wallet = wallets.find((item) => String(item.id) === String(walletId));
+    if (!wallet) return;
+
+    const updated =
+      toNumber(wallet?.derived_balance ?? wallet?.balance) + toNumber(amountChange);
+
+    const { error } = await supabase
+      .from("wallets")
+      .update({ balance: updated, updated_at: new Date().toISOString() })
+      .eq("id", walletId);
+
+    if (error) throw error;
+  };
+
+  const insertWalletTransaction = async (payload) => {
+    const now = new Date().toISOString();
+    const { error } = await supabase.from("wallet_transactions").insert([
+      {
+        id: payload.id || generateId(),
+        wallet_id: payload.wallet_id ? String(payload.wallet_id) : null,
+        amount: toNumber(payload.amount),
+        type: payload.type,
+        category: payload.category || null,
+        need_type: payload.need_type || null,
+        planning_status: payload.planning_status || null,
+        unplanned_reason: payload.unplanned_reason || null,
+        expense_id: payload.expense_id || null,
+        transfer_group_id: payload.transfer_group_id || null,
+        related_wallet_id: payload.related_wallet_id || null,
+        source_type: payload.source_type || null,
+        tag: payload.tag || null,
+        notes: payload.notes || "",
+        created_at: payload.created_at || now,
+        updated_at: now,
+        user_id: user?.id || null,
+        user_email: user?.email || null,
+        created_by: user?.email || null,
+      },
+    ]);
+
+    if (error) throw error;
+  };
+
+  const addExpense = async (expense) => {
+    const amount = toNumber(expense.amount);
+    const planningStatus = normalizePlanningStatus(expense.planning_status);
+
+    if (
+      planningStatus === "unplanned" &&
+      !String(expense.unplanned_reason || "").trim()
+    ) {
+      throw new Error("Reason is required for unplanned expenses.");
+    }
+
+    const payload = {
+      ...expense,
+      id: expense.id || generateId(),
+      user_id: user?.id || null,
+      user_email: user?.email || null,
+      created_by: user?.email || null,
+      amount,
+      date: getSafeDate(expense.date),
+      planning_status: planningStatus,
+      unplanned_reason:
+        planningStatus === "unplanned"
+          ? String(expense.unplanned_reason || "").trim()
+          : null,
+    };
+
+    const { error } = await supabase.from("expenses").insert([payload]);
+    if (error) throw error;
+
+    if (expense.wallet_id) {
+      await updateWalletBalance(expense.wallet_id, -amount);
+      await insertWalletTransaction({
+        wallet_id: expense.wallet_id,
+        amount,
+        type: "expense",
+        category: expense.category,
+        need_type: expense.need_type,
+        planning_status: planningStatus,
+        unplanned_reason: payload.unplanned_reason,
+        expense_id: payload.id,
+        notes: expense.notes,
+        created_at: payload.date,
+      });
+    }
+
+    await loadAll();
+  };
+
+  const updateExpense = async (id, updates) => {
+    const oldExpense = expenses.find((expense) => String(expense.id) === String(id));
+    const normalizedUpdates = { ...updates };
+
+    if (updates.amount !== undefined) {
+      normalizedUpdates.amount = toNumber(updates.amount);
+    }
+
+    if (updates.date !== undefined) {
+      normalizedUpdates.date = getSafeDate(updates.date);
+    }
+
+    if (updates.planning_status !== undefined) {
+      normalizedUpdates.planning_status = normalizePlanningStatus(
+        updates.planning_status
+      );
+    }
+
+    const nextPlanningStatus =
+      normalizedUpdates.planning_status || oldExpense?.planning_status || "planned";
+
+    if (nextPlanningStatus === "unplanned") {
+      const reason = String(
+        normalizedUpdates.unplanned_reason ?? oldExpense?.unplanned_reason ?? ""
+      ).trim();
+      if (!reason) throw new Error("Reason is required for unplanned expenses.");
+      normalizedUpdates.unplanned_reason = reason;
+    } else if (updates.planning_status !== undefined) {
+      normalizedUpdates.unplanned_reason = null;
+    }
+
+    const { error } = await supabase
+      .from("expenses")
+      .update(normalizedUpdates)
+      .eq("id", id);
+
+    if (error) throw error;
+
+    if (oldExpense?.wallet_id) {
+      await updateWalletBalance(oldExpense.wallet_id, toNumber(oldExpense.amount));
+    }
+
+    const nextWalletId = normalizedUpdates.wallet_id ?? oldExpense?.wallet_id;
+    const nextAmount =
+      normalizedUpdates.amount !== undefined
+        ? toNumber(normalizedUpdates.amount)
+        : toNumber(oldExpense?.amount);
+
+    if (nextWalletId) {
+      await updateWalletBalance(nextWalletId, -nextAmount);
+    }
+
+    const linkedTxn = walletTransactions.find(
+      (transaction) =>
+        String(transaction?.expense_id || "") === String(id) ||
+        (String(transaction?.type || "").toLowerCase() === "expense" &&
+          String(transaction?.wallet_id || "") ===
+            String(oldExpense?.wallet_id || "") &&
+          toNumber(transaction?.amount) === toNumber(oldExpense?.amount))
+    );
+
+    const transactionPayload = {
+      wallet_id: nextWalletId,
+      amount: nextAmount,
+      category: normalizedUpdates.category ?? oldExpense?.category,
+      need_type: normalizedUpdates.need_type ?? oldExpense?.need_type,
+      planning_status: nextPlanningStatus,
+      unplanned_reason:
+        nextPlanningStatus === "unplanned"
+          ? normalizedUpdates.unplanned_reason ?? oldExpense?.unplanned_reason
+          : null,
+      notes: normalizedUpdates.notes ?? oldExpense?.notes ?? "",
+      updated_at: new Date().toISOString(),
+    };
+
+    if (linkedTxn?.id) {
+      const { error: transactionError } = await supabase
+        .from("wallet_transactions")
+        .update(transactionPayload)
+        .eq("id", linkedTxn.id);
+
+      if (transactionError) throw transactionError;
+    } else if (nextWalletId) {
+      await insertWalletTransaction({
+        ...transactionPayload,
+        type: "expense",
+        expense_id: id,
+        created_at:
+          normalizedUpdates.date || oldExpense?.date || new Date().toISOString(),
+      });
+    }
+
+    await loadAll();
+  };
+
+  const deleteExpense = async (id) => {
+    const expense = expenses.find((item) => String(item.id) === String(id));
+
+    const { error } = await supabase.from("expenses").delete().eq("id", id);
+    if (error) throw error;
+
+    if (expense?.wallet_id) {
+      await updateWalletBalance(expense.wallet_id, toNumber(expense.amount));
+    }
+
+    const linkedTxn = walletTransactions.find(
+      (transaction) =>
+        String(transaction?.expense_id || "") === String(id) ||
+        (String(transaction?.type || "").toLowerCase() === "expense" &&
+          String(transaction?.wallet_id || "") ===
+            String(expense?.wallet_id || "") &&
+          toNumber(transaction?.amount) === toNumber(expense?.amount))
+    );
+
+    if (linkedTxn?.id) {
+      const { error: transactionError } = await supabase
+        .from("wallet_transactions")
+        .delete()
+        .eq("id", linkedTxn.id);
+
+      if (transactionError) throw transactionError;
+    }
+
+    await loadAll();
+  };
+
+  const addWallet = async (wallet) => {
+    const starting = toNumber(wallet.balance ?? wallet.starting_balance ?? 0);
+
+    const { error } = await supabase.from("wallets").insert([
+      {
+        ...wallet,
+        balance: starting,
+        starting_balance: starting,
+        user_id: user?.id || null,
+        user_email: user?.email || null,
+        created_by: user?.email || null,
+      },
+    ]);
+
+    if (error) throw error;
+    await loadAll();
+  };
+
+  const updateWallet = async (id, updates) => {
+    const normalizedUpdates = { ...updates };
+
+    if (updates.balance !== undefined) {
+      normalizedUpdates.balance = toNumber(updates.balance);
+    }
+
+    if (updates.starting_balance !== undefined) {
+      normalizedUpdates.starting_balance = toNumber(updates.starting_balance);
+    }
+
+    const { error } = await supabase
+      .from("wallets")
+      .update(normalizedUpdates)
+      .eq("id", id);
+
+    if (error) throw error;
+    await loadAll();
+  };
+
+  const deleteWallet = async (id) => {
+    const { error } = await supabase.from("wallets").delete().eq("id", id);
+    if (error) throw error;
+
+    await loadAll();
+  };
+
+  const reorderWallets = async (orderedWalletIds) => {
+    const walletIds = Array.isArray(orderedWalletIds) ? orderedWalletIds : [];
+    if (!walletIds.length) return;
+
+    const results = await Promise.all(
+      walletIds.map((walletId, index) =>
+        supabase
+          .from("wallets")
+          .update({ sort_order: index, updated_at: new Date().toISOString() })
+          .eq("id", String(walletId))
+      )
+    );
+
+    const failed = results.find((result) => result?.error);
+    if (failed?.error) throw failed.error;
+
+    await loadAll();
+  };
+
+  const addIncome = async (income) => {
+    const amount = toNumber(income.amount);
+
+    if (income.wallet_id) {
+      await updateWalletBalance(income.wallet_id, amount);
+      await insertWalletTransaction({
+        wallet_id: income.wallet_id,
+        amount,
+        type: "income",
+        source_type: income.source_type || income.source,
+        tag: income.tag,
+        notes: income.notes,
+        created_at: getSafeDate(income.date),
+      });
+    }
+
+    await loadAll();
+  };
+
+  const transferBetweenWallets = async ({
+    from_wallet_id,
+    to_wallet_id,
+    amount,
+    notes = "",
+  }) => {
+    const parsedAmount = toNumber(amount);
+    const fromWallet = wallets.find(
+      (wallet) => String(wallet.id) === String(from_wallet_id)
+    );
+    const toWallet = wallets.find(
+      (wallet) => String(wallet.id) === String(to_wallet_id)
+    );
+
+    if (!fromWallet || !toWallet) throw new Error("Wallet not found.");
+    if (String(fromWallet.id) === String(toWallet.id)) {
+      throw new Error("Source and destination wallets must be different.");
+    }
+    if (parsedAmount <= 0) throw new Error("Enter a valid transfer amount.");
+
+    const fromBalance = toNumber(fromWallet.balance ?? fromWallet.current_balance);
+    if (fromBalance < parsedAmount) {
+      throw new Error("Insufficient balance in source wallet.");
+    }
+
+    const transferGroupId = generateId();
+
+    await insertWalletTransaction({
+      wallet_id: fromWallet.id,
+      amount: parsedAmount,
+      type: "transfer_out",
+      transfer_group_id: transferGroupId,
+      related_wallet_id: toWallet.id,
+      notes,
+    });
+
+    await insertWalletTransaction({
+      wallet_id: toWallet.id,
+      amount: parsedAmount,
+      type: "transfer_in",
+      transfer_group_id: transferGroupId,
+      related_wallet_id: fromWallet.id,
+      notes,
+    });
+
+    await loadAll();
+  };
+
+  const saveBudget = async ({
+    id = null,
+    totalBudget,
+    needsPct,
+    wantsPct,
+    otherPct,
+    month = getMonthKey(),
+    trackingStartDate = null,
+  }) => {
+    const total = toNumber(totalBudget);
+    const needs = toNumber(needsPct);
+    const wants = toNumber(wantsPct);
+    const other = toNumber(otherPct);
+
+    if (total <= 0) throw new Error("Please enter a valid total budget.");
+    if (needs + wants + other !== 100) {
+      throw new Error("Needs, Wants, and Other must total exactly 100%.");
+    }
+
+    const now = new Date().toISOString();
+    const payload = {
+      is_active: true,
+      status: "active",
+      month,
+      total_budget: total,
+      needs_pct: needs,
+      wants_pct: wants,
+      other_pct: other,
+      needs_percent: needs,
+      wants_percent: wants,
+      other_percent: other,
+      savings_pct: other,
+      savings_percent: other,
+      updated_at: now,
+    };
+
+    if (user?.id || user?.email) {
+      await supabase
+        .from("budgets")
+        .update({ is_active: false, status: "inactive", updated_at: now })
+        .or(
+          [
+            user?.id ? `user_id.eq.${user.id}` : null,
+            user?.email ? `user_email.eq.${user.email}` : null,
+            user?.email ? `email.eq.${user.email}` : null,
+            user?.email ? `created_by.eq.${user.email}` : null,
+          ]
+            .filter(Boolean)
+            .join(",")
+        );
+    }
+
+    if (id) {
+      const { error } = await supabase
+        .from("budgets")
+        .update(payload)
+        .eq("id", String(id));
+      if (error) throw error;
+    } else {
+      const { error } = await supabase.from("budgets").insert([
+        {
+          ...payload,
+          tracking_start_date: trackingStartDate || now,
+          range_start: trackingStartDate || now,
+          created_at: now,
+          created_by: user?.email || null,
+          email: user?.email || null,
+          user_id: user?.id || null,
+        },
+      ]);
+      if (error) throw error;
+    }
+
+    await loadAll();
+  };
+
+  const resetBudgetTracking = async (id, timestamp = new Date().toISOString()) => {
+    const { error } = await supabase
+      .from("budgets")
+      .update({
+        tracking_start_date: timestamp,
+        range_start: timestamp,
+        updated_at: timestamp,
+      })
+      .eq("id", String(id));
+
+    if (error) throw error;
+    await loadAll();
+  };
+
+  const deleteBudget = async (id) => {
+    const { error } = await supabase.from("budgets").delete().eq("id", String(id));
+    if (error) throw error;
+    await loadAll();
+  };
+
+  const saveSavingsGoal = async (goal) => {
+    const targetAmount = toNumber(goal?.target_amount ?? goal?.targetAmount);
+    const savedAmount = Math.max(
+      0,
+      toNumber(
+        goal?.saved_amount ?? goal?.current_amount ?? goal?.saved ?? goal?.amount
+      )
+    );
+    const reasons = Array.isArray(goal?.reasons)
+      ? goal.reasons
+      : [goal?.reason_one, goal?.reason_two, goal?.reason_three].filter(Boolean);
+
+    const payload = {
+      title: String(goal?.title || "").trim(),
+      category: goal?.category || "",
+      subcategory: goal?.subcategory || "",
+      target_amount: targetAmount,
+      saved_amount: savedAmount,
+      current_amount: savedAmount,
+      planned_use_date: goal?.planned_use_date || goal?.plannedUseDate || null,
+      deadline: goal?.planned_use_date || goal?.plannedUseDate || null,
+      reasons: reasons.length ? reasons : ["", "", ""],
+      reason_one: goal?.reason_one ?? reasons?.[0] ?? "",
+      reason_two: goal?.reason_two ?? reasons?.[1] ?? "",
+      reason_three: goal?.reason_three ?? reasons?.[2] ?? "",
+      emotional_value: goal?.emotional_value || goal?.emotionalValue || "joy",
+      flexibility: goal?.flexibility || "flexible",
+      priority: goal?.priority || "medium",
+      notes: goal?.notes || "",
+      wallet_id: goal?.wallet_id || goal?.walletId || null,
+      created_by: user?.email || null,
+      user_email: user?.email || null,
+      user_id: user?.id || null,
+      updated_date: new Date().toISOString(),
+    };
+
+    if (!payload.title) throw new Error("Please enter a goal title.");
+    if (payload.target_amount <= 0) {
+      throw new Error("Please enter a valid target amount.");
+    }
+
+    if (goal?.id) {
+      const { error } = await supabase
+        .from("savings_goals")
+        .update(payload)
+        .eq("id", String(goal.id));
+      if (error) throw error;
+    } else {
+      const { error } = await supabase.from("savings_goals").insert([
+        {
+          id: goal?.id || `goal_${Date.now()}_${Math.random().toString(36).slice(2, 9)}`,
+          ...payload,
+          created_date: new Date().toISOString(),
+        },
+      ]);
+      if (error) throw error;
+    }
+
+    await loadAll();
+  };
+
+  const deleteSavingsGoal = async (id) => {
+    const { error } = await supabase
+      .from("savings_goals")
+      .delete()
+      .eq("id", String(id));
+
+    if (error) throw error;
+    await loadAll();
+  };
+
+  const addSavingsToGoal = async ({ goalId, walletId, amount, notes = "" }) => {
+    const goal = savingsGoals.find((item) => String(item.id) === String(goalId));
+    const sourceWallet = wallets.find(
+      (wallet) => String(wallet.id) === String(walletId)
+    );
+    const parsedAmount = toNumber(amount);
+
+    if (!goal) throw new Error("Savings goal not found.");
+    if (!sourceWallet) throw new Error("Source wallet not found.");
+    if (parsedAmount <= 0) throw new Error("Please enter a valid amount.");
+
+    const currentSaved = toNumber(goal?.saved_amount ?? goal?.current_amount);
+    const target = toNumber(goal?.target_amount);
+    const remaining = Math.max(target - currentSaved, 0);
+
+    if (remaining <= 0) throw new Error("This goal is already fully funded.");
+
+    const finalAmount = Math.min(parsedAmount, remaining);
+
+    if (toNumber(sourceWallet?.balance) < finalAmount) {
+      throw new Error("Not enough balance in the selected wallet.");
+    }
+
+    await insertWalletTransaction({
+      wallet_id: sourceWallet.id,
+      amount: finalAmount,
+      type: "savings_goal",
+      notes: notes || `Moved to savings goal: ${goal.title || "Savings Goal"}`,
+    });
+
+    const { error } = await supabase
+      .from("savings_goals")
+      .update({
+        saved_amount: Math.min(currentSaved + finalAmount, target),
+        current_amount: Math.min(currentSaved + finalAmount, target),
+        wallet_id: sourceWallet.id,
+        updated_date: new Date().toISOString(),
+      })
+      .eq("id", String(goal.id));
+
+    if (error) throw error;
+    await loadAll();
+  };
+
+  const updateSurvivalExpense = async (amount) => {
+    const nextAmount = Math.max(0, toNumber(amount));
+
+    if (!user?.id) {
+      throw new Error("User not found.");
+    }
+
+    const { error } = await supabase
+      .from("profiles")
+      .update({
+        monthly_survival_expense: nextAmount,
+        survival_setup_done: nextAmount > 0,
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", user.id);
+
+    if (error) throw error;
+    await loadAll();
+  };
+
+  const totalExpenses = useMemo(
+    () => expenses.reduce((sum, expense) => sum + toNumber(expense.amount), 0),
+    [expenses]
+  );
+
+  const totalIncome = useMemo(() => {
+    return walletTransactions
+      .filter((transaction) => {
+        const type = String(transaction?.type || "").trim().toLowerCase();
+        return type === "income" || type === "add";
+      })
+      .reduce((sum, transaction) => sum + toNumber(transaction.amount), 0);
+  }, [walletTransactions]);
 
   const totalWalletBalance = useMemo(
     () =>
-      (Array.isArray(wallets) ? wallets : []).reduce(
-        (sum, wallet) => sum + getWalletBalance(wallet),
-        0
-      ),
+      wallets.reduce((sum, wallet) => {
+        const value =
+          wallet.balance ??
+          wallet.current_balance ??
+          wallet.wallet_balance ??
+          wallet.starting_balance ??
+          0;
+
+        return sum + toNumber(value);
+      }, 0),
     [wallets]
   );
 
-  const currentMonthExpenses = useMemo(() => {
-    const monthKey = getCurrentMonthKey();
-    return (Array.isArray(expenses) ? expenses : []).reduce((sum, expense) => {
-      return getDateMonthKey(getExpenseDate(expense)) === monthKey
-        ? sum + getExpenseAmount(expense)
-        : sum;
-    }, 0);
-  }, [expenses]);
-
-  const moneyLeft = useMemo(
-    () => getMoneyLeft(totalWalletBalance, currentMonthExpenses),
-    [currentMonthExpenses, totalWalletBalance]
-  );
-
-  const totalSavingsSaved = useMemo(
-    () =>
-      (Array.isArray(savingsGoals) ? savingsGoals : []).reduce(
-        (sum, goal) => sum + safeNumber(goal.saved),
-        0
-      ),
-    [savingsGoals]
-  );
-
-  const totalSavingsTarget = useMemo(
-    () =>
-      (Array.isArray(savingsGoals) ? savingsGoals : []).reduce(
-        (sum, goal) => sum + safeNumber(goal.target),
-        0
-      ),
-    [savingsGoals]
-  );
-
-  const primarySavingsGoal = useMemo(
-    () => (Array.isArray(savingsGoals) ? savingsGoals[0] || null : null),
-    [savingsGoals]
-  );
-
   return {
-    wallets,
-    expenses,
-    budgets,
-    savingsGoals,
-    emergencyFund,
     loading,
+    expenses,
+    incomes,
+    wallets,
+    budgets,
+    walletTransactions,
+    transfers,
+    savingsGoals,
+    profile,
+    survivalExpense,
+    retentionRate,
+    totalExpenses,
+    totalIncome,
     totalWalletBalance,
-    currentMonthExpenses,
-    moneyLeft,
-    totalSavingsSaved,
-    totalSavingsTarget,
-    primarySavingsGoal,
-    refreshFinanceData,
-    saveBudget,
-    saveBudgetCategory,
-    deleteBudgetCategory,
-    resetBudgetCategories,
+    refreshData,
     addExpense,
+    updateExpense,
+    deleteExpense,
     addWallet,
     updateWallet,
     deleteWallet,
+    reorderWallets,
+    addIncome,
+    transferBetweenWallets,
+    saveBudget,
+    resetBudgetTracking,
+    deleteBudget,
     saveSavingsGoal,
     deleteSavingsGoal,
-    addSavings,
-    setEmergencyFundTarget,
-    addEmergencyFund,
+    addSavingsToGoal,
+    updateSurvivalExpense,
   };
 }
