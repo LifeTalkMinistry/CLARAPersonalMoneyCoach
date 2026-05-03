@@ -1,4 +1,6 @@
-export default function ClaraPageShell() {
+import TopNavigationBar from "../navigation/TopNavigationBar";
+
+export default function ClaraPageShell({ compactHeader = true, hideTopNav = false }) {
   return (
     <main
       className="relative min-h-[100svh] w-full overflow-x-hidden"
@@ -15,6 +17,18 @@ export default function ClaraPageShell() {
         backgroundAttachment: "fixed",
         backgroundBlendMode: "screen",
       }}
-    />
+    >
+      <div
+        className="relative z-10 mx-auto flex min-h-[100svh] w-full max-w-[430px] flex-col"
+        style={{
+          paddingLeft: "clamp(0.625rem, 3.2vw, 0.875rem)",
+          paddingRight: "clamp(0.625rem, 3.2vw, 0.875rem)",
+          paddingTop: "max(env(safe-area-inset-top), clamp(0.5rem, 1.2svh, 0.75rem))",
+          paddingBottom: "max(env(safe-area-inset-bottom), clamp(0.75rem, 1.8svh, 1rem))",
+        }}
+      >
+        {!hideTopNav && <TopNavigationBar compact={compactHeader} />}
+      </div>
+    </main>
   );
 }
