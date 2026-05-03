@@ -16,22 +16,14 @@ export default function BottomNav() {
     <div className="w-full mt-1 px-1">
       <nav
         aria-label="Primary navigation"
-        className="relative overflow-hidden rounded-[32px] border px-2.5 py-2.5 backdrop-blur-xl"
+        className="relative overflow-hidden rounded-[28px] border px-3 py-3 backdrop-blur-[24px]"
         style={{
-          borderColor: "var(--clara-border)",
-          background: "var(--clara-glass)",
-          boxShadow: "var(--clara-glow-premium)",
+          borderColor: "rgba(255,255,255,0.08)",
+          background: "rgba(255,255,255,0.06)",
+          boxShadow: "0 8px 30px rgba(0,0,0,0.35)",
         }}
       >
-        <div
-          className="pointer-events-none absolute inset-x-7 top-0 h-px opacity-70"
-          style={{
-            background:
-              "linear-gradient(90deg, transparent, rgba(215,239,89,0.34), rgba(255,255,255,0.14), transparent)",
-          }}
-        />
-
-        <div className="relative z-10 flex items-center justify-between gap-1">
+        <div className="relative z-10 flex items-center justify-between gap-2">
           {navItems.map(({ icon: Icon, label, path }) => {
             const isActive = pathname === path;
 
@@ -40,53 +32,32 @@ export default function BottomNav() {
                 key={path}
                 type="button"
                 onClick={() => navigate(path)}
-                className="relative flex min-h-[72px] flex-1 items-center justify-center rounded-[24px] transition-all duration-300 active:scale-[0.97]"
+                className="relative flex min-h-[64px] flex-1 items-center justify-center rounded-2xl border-0 bg-transparent transition-all duration-300 active:scale-[0.97]"
                 aria-current={isActive ? "page" : undefined}
               >
-                {isActive && (
-                  <span
-                    className="absolute inset-0 rounded-[24px]"
-                    style={{
-                      border: "1px solid var(--clara-accent-border)",
-                      background:
-                        "linear-gradient(145deg, rgba(101,149,53,0.46), rgba(34,84,46,0.42) 58%, rgba(12,50,76,0.34))",
-                      boxShadow:
-                        "inset 0 1px 0 rgba(255,255,255,0.14), inset 0 -18px 30px rgba(0,0,0,0.12), 0 12px 28px rgba(0,0,0,0.20)",
-                    }}
-                  />
-                )}
-
                 <span
-                  className={`relative z-10 flex flex-col items-center justify-center gap-2 transition-colors duration-300 ${
-                    isActive ? "" : "hover:text-white/82"
-                  }`}
-                  style={{
-                    color: isActive ? "var(--clara-accent-text)" : "var(--clara-text-muted)",
-                  }}
+                  className="relative z-10 flex h-full w-full flex-col items-center justify-center gap-1.5 rounded-2xl transition-all duration-300"
+                  style={
+                    isActive
+                      ? {
+                          padding: "0.75rem 1rem",
+                          color: "#8FE388",
+                          background: "rgba(255,255,255,0.12)",
+                          boxShadow: "inset 0 0 10px rgba(143,227,136,0.15)",
+                        }
+                      : {
+                          color: "rgba(255,255,255,0.50)",
+                          background: "transparent",
+                          boxShadow: "none",
+                        }
+                  }
                 >
-                  <span
-                    className="flex h-10 w-10 items-center justify-center rounded-full border transition-all duration-300"
-                    style={
-                      isActive
-                        ? {
-                            borderColor: "var(--clara-accent-border)",
-                            background: "linear-gradient(145deg, rgba(202,230,77,0.14), rgba(0,0,0,0.16))",
-                            boxShadow: "0 0 0 1px rgba(230,255,72,0.04), inset 0 1px 0 rgba(255,255,255,0.10)",
-                          }
-                        : {
-                            borderColor: "var(--clara-border-soft)",
-                            background: "rgba(0,0,0,0.12)",
-                            boxShadow: "inset 0 1px 0 rgba(255,255,255,0.06)",
-                          }
-                    }
-                  >
-                    <Icon className="h-[20px] w-[20px]" strokeWidth={2.1} />
-                  </span>
+                  <Icon className="h-[20px] w-[20px]" strokeWidth={2.1} />
 
                   <span
-                    className="text-[11px] font-semibold leading-none tracking-[-0.01em]"
+                    className="text-[11px] font-medium leading-none tracking-[-0.01em]"
                     style={{
-                      color: isActive ? "var(--clara-text)" : "var(--clara-text-muted)",
+                      color: isActive ? "#8FE388" : "rgba(255,255,255,0.50)",
                     }}
                   >
                     {label}
