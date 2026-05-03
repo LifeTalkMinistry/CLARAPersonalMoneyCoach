@@ -7,27 +7,34 @@ export default function TopNavigationBar({ compact = false }) {
 
   return (
     <header
-      className="w-full px-2 pt-3"
-      style={{ marginBottom: "clamp(0.25rem, 1svh, 0.5rem)" }}
+      className="w-full px-4 pt-4"
+      style={{ marginBottom: "clamp(0.35rem, 1.2svh, 0.75rem)" }}
     >
       <div
-        className="relative mx-auto max-w-[360px] overflow-hidden rounded-[30px] border px-3 py-3 backdrop-blur-[24px]"
+        className="relative mx-auto w-full max-w-[340px] overflow-hidden rounded-[30px] border px-3 py-2.5 backdrop-blur-[26px]"
         style={{
-          background: "rgba(255,255,255,0.065)",
-          borderColor: "rgba(255,255,255,0.09)",
+          background: "rgba(255,255,255,0.07)",
+          borderColor: "rgba(255,255,255,0.10)",
           boxShadow:
-            "0 10px 30px rgba(0,0,0,0.34), inset 0 1px 0 rgba(255,255,255,0.08)",
+            "0 12px 32px rgba(0,0,0,0.38), inset 0 1px 0 rgba(255,255,255,0.10), inset 0 -1px 0 rgba(255,255,255,0.035)",
         }}
       >
         <div
           className="pointer-events-none absolute inset-0 rounded-[30px]"
           style={{
             background:
-              "radial-gradient(circle at 18% 18%, rgba(255,255,255,0.09), transparent 32%), radial-gradient(circle at 82% 0%, rgba(120,165,255,0.055), transparent 38%)",
+              "radial-gradient(circle at 16% 18%, rgba(255,255,255,0.13), transparent 30%), radial-gradient(circle at 82% 0%, rgba(130,170,255,0.07), transparent 38%)",
           }}
         />
 
-        <nav className="relative z-10 flex min-h-[58px] items-center justify-between gap-1.5">
+        <div
+          className="pointer-events-none absolute inset-[1px] rounded-[29px]"
+          style={{
+            border: "1px solid rgba(255,255,255,0.045)",
+          }}
+        />
+
+        <nav className="relative z-10 flex min-h-[58px] items-center justify-between gap-1">
           {topNavItems.map((item) => {
             const Icon = item.icon;
             const isActive = location.pathname === item.path;
@@ -37,7 +44,7 @@ export default function TopNavigationBar({ compact = false }) {
                 key={item.path}
                 type="button"
                 onClick={() => navigate(item.path)}
-                className="m-0 flex min-w-0 flex-1 appearance-none items-center justify-center rounded-[22px] border-0 bg-transparent p-0 outline-none ring-0 transition-transform duration-200 ease-out active:scale-[0.96] focus:outline-none focus:ring-0"
+                className="m-0 flex min-w-0 flex-1 appearance-none items-center justify-center rounded-[24px] border-0 bg-transparent p-0 outline-none ring-0 transition-transform duration-200 ease-out active:scale-[0.96] focus:outline-none focus:ring-0"
                 style={{
                   WebkitTapHighlightColor: "transparent",
                   boxShadow: "none",
@@ -45,33 +52,33 @@ export default function TopNavigationBar({ compact = false }) {
                 aria-current={isActive ? "page" : undefined}
               >
                 <span
-                  className="flex w-full flex-col items-center justify-center gap-1.5 rounded-[22px] transition-all duration-200 ease-out"
+                  className="flex w-full flex-col items-center justify-center gap-1.5 rounded-[24px] transition-all duration-200 ease-out"
                   style={{
-                    minHeight: compact ? "52px" : "56px",
-                    padding: compact ? "0.55rem 0.45rem" : "0.62rem 0.5rem",
+                    minHeight: compact ? "50px" : "54px",
+                    padding: compact ? "0.48rem 0.35rem" : "0.58rem 0.38rem",
                     color: isActive
-                      ? "rgba(152,235,146,0.95)"
-                      : "rgba(255,255,255,0.50)",
+                      ? "rgba(164,242,157,0.96)"
+                      : "rgba(255,255,255,0.46)",
                     background: isActive
-                      ? "rgba(255,255,255,0.09)"
+                      ? "rgba(255,255,255,0.105)"
                       : "transparent",
                     border: isActive
-                      ? "1px solid rgba(255,255,255,0.075)"
+                      ? "1px solid rgba(255,255,255,0.085)"
                       : "1px solid transparent",
                     boxShadow: isActive
-                      ? "inset 0 1px 0 rgba(255,255,255,0.08), 0 8px 18px rgba(0,0,0,0.16), 0 0 14px rgba(74,222,128,0.08)"
+                      ? "inset 0 1px 0 rgba(255,255,255,0.11), inset 0 -1px 0 rgba(255,255,255,0.035), 0 8px 18px rgba(0,0,0,0.18), 0 0 16px rgba(74,222,128,0.075)"
                       : "none",
-                    transform: isActive ? "scale(1.03)" : "scale(1)",
+                    transform: isActive ? "scale(1.025)" : "scale(1)",
                   }}
                 >
-                  <Icon size={19} strokeWidth={2} />
+                  <Icon size={18.5} strokeWidth={2} />
 
                   <span
-                    className="text-[10.5px] font-medium leading-none tracking-[-0.01em] transition-colors duration-200 ease-out"
+                    className="text-[10px] font-medium leading-none tracking-[-0.01em] transition-colors duration-200 ease-out"
                     style={{
                       color: isActive
-                        ? "rgba(166,242,158,0.92)"
-                        : "rgba(255,255,255,0.42)",
+                        ? "rgba(175,246,168,0.92)"
+                        : "rgba(255,255,255,0.38)",
                     }}
                   >
                     {item.label}
