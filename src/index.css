@@ -1,4 +1,3 @@
-/* FIXED VERSION */
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700;800&display=swap");
 
 @tailwind base;
@@ -9,21 +8,210 @@
   :root {
     --font-heading: "Space Grotesk", sans-serif;
     --font-body: "Inter", sans-serif;
+
+    --clara-bg: radial-gradient(circle at 18% 8%, rgba(143,227,136,.12), transparent 34%), radial-gradient(circle at 86% 18%, rgba(46,92,104,.14), transparent 38%), radial-gradient(circle at 88% 92%, rgba(143,227,136,.08), transparent 42%), linear-gradient(180deg, #071018 0%, #08131a 42%, #050b10 100%);
+    --clara-panel: rgba(255,255,255,.06);
+    --clara-panel-strong: rgba(255,255,255,.08);
+    --clara-card: rgba(255,255,255,.055);
+    --clara-card-strong: rgba(255,255,255,.075);
+    --clara-glass: rgba(255,255,255,.06);
+    --clara-border: rgba(255,255,255,.085);
+    --clara-border-strong: rgba(255,255,255,.13);
+    --clara-border-soft: rgba(255,255,255,.055);
+    --clara-text: #ffffff;
+    --clara-text-soft: rgba(255,255,255,.62);
+    --clara-text-muted: rgba(255,255,255,.45);
+    --clara-text-faint: rgba(255,255,255,.28);
+    --clara-accent: #8FE388;
+    --clara-accent-soft: rgba(143,227,136,.12);
+    --clara-accent-border: rgba(143,227,136,.2);
+    --clara-accent-text: #A9F2A2;
+    --clara-secondary: #8FE388;
+    --clara-secondary-soft: rgba(143,227,136,.1);
+    --clara-highlight: #2A6F68;
+    --clara-highlight-soft: rgba(42,111,104,.13);
+    --clara-glow: rgba(143,227,136,.1);
+    --clara-glow-soft: rgba(143,227,136,.055);
+    --clara-glow-blue: rgba(48,83,104,.08);
+    --clara-surface-glow: none;
+    --clara-glow-premium: 0 10px 30px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.075);
+    --clara-gradient: rgba(255,255,255,.055);
+    --clara-modal-surface: rgba(255,255,255,.07);
+    --clara-modal-backdrop: rgba(0,0,0,.7);
+    --clara-input-surface: rgba(255,255,255,.05);
+    --clara-input-border: rgba(255,255,255,.085);
+    --clara-button-primary: rgba(143,227,136,.18);
+    --clara-button-secondary: rgba(255,255,255,.055);
+
+    --theme-background: #071018;
+    --theme-surface: #0b151c;
+    --theme-card: rgba(255,255,255,.055);
+    --theme-card-alt: rgba(255,255,255,.075);
+    --theme-primary: #8FE388;
+    --theme-secondary: #8FE388;
+    --theme-accent: #8FE388;
+    --theme-danger: #f29a9a;
+    --theme-success: #8FE388;
+    --theme-warning: #d8bd7a;
+    --theme-text: #ffffff;
+    --theme-muted-text: rgba(255,255,255,.58);
+    --theme-border: rgba(255,255,255,.085);
+    --theme-glow: rgba(143,227,136,.1);
+    --theme-bottom-nav: var(--clara-panel);
+    --theme-top-nav: var(--clara-panel);
+    --theme-gradient-hero: var(--clara-card);
+    --theme-gradient-card: var(--clara-card);
+    --theme-gradient-expense: var(--clara-card);
+    --theme-gradient-money: var(--clara-card);
+    --theme-gradient-emergency: var(--clara-card);
   }
 
   * {
     @apply border outline-none;
   }
 
-  html, body {
-    height: 100%;
+  html, body, #root {
+    min-height: 100%;
   }
 
   body {
     font-family: var(--font-body);
     background: var(--clara-bg);
+    background-attachment: fixed;
     color: var(--clara-text);
     min-height: 100vh;
     overflow-x: hidden;
   }
+
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    background: radial-gradient(circle at 50% 0%, rgba(255,255,255,.035), transparent 32%), radial-gradient(circle at 14% 86%, rgba(75,108,120,.08), transparent 34%);
+    filter: blur(2px);
+  }
+
+  ::selection {
+    background: rgba(143,227,136,.28);
+    color: #fff;
+  }
+}
+
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(143,227,136,.24); border-radius: 999px; }
+
+.clara-card,
+.clara-card-soft,
+.grad-card,
+.theme-shell-card,
+.theme-panel-card,
+.theme-soft-card,
+.theme-modal-card,
+.theme-page-shell,
+.theme-glass-button,
+.theme-input,
+.clara-input {
+  border-color: var(--clara-border) !important;
+  color: var(--clara-text);
+}
+
+.clara-card,
+.grad-card,
+.theme-shell-card,
+.theme-panel-card,
+.theme-modal-card {
+  background: var(--clara-card) !important;
+  border: 1px solid var(--clara-border) !important;
+  border-radius: 24px;
+  backdrop-filter: blur(24px) saturate(130%);
+  -webkit-backdrop-filter: blur(24px) saturate(130%);
+  box-shadow: var(--clara-glow-premium) !important;
+}
+
+.clara-card-soft,
+.theme-soft-card,
+.clara-input,
+.theme-input {
+  background: var(--clara-input-surface) !important;
+  border: 1px solid var(--clara-border-soft) !important;
+  border-radius: 20px;
+  backdrop-filter: blur(18px) saturate(125%);
+  -webkit-backdrop-filter: blur(18px) saturate(125%);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.05), 0 8px 20px rgba(0,0,0,.18) !important;
+}
+
+.theme-page-shell {
+  background: transparent !important;
+}
+
+.theme-glass-button,
+.theme-gradient-button {
+  background: var(--clara-button-secondary) !important;
+  border: 1px solid var(--clara-border) !important;
+  color: var(--clara-text) !important;
+  border-radius: 18px;
+  backdrop-filter: blur(20px) saturate(130%);
+  -webkit-backdrop-filter: blur(20px) saturate(130%);
+  box-shadow: 0 10px 24px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.07) !important;
+}
+
+.theme-gradient-button,
+button[data-primary="true"] {
+  background: var(--clara-button-primary) !important;
+  border-color: var(--clara-accent-border) !important;
+  color: var(--clara-accent-text) !important;
+}
+
+.progress-bar,
+[role="progressbar"] > div,
+.bg-emerald-500,
+.bg-green-500,
+.bg-lime-500 {
+  background: linear-gradient(90deg, var(--clara-accent), rgba(143,227,136,.64)) !important;
+  box-shadow: inset 0 0 8px rgba(143,227,136,.22) !important;
+}
+
+.card-glow-green,
+.card-glow-yellow,
+.card-glow-blue {
+  box-shadow: 0 10px 30px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.075) !important;
+}
+
+.grad-green,
+.grad-yellow,
+.grad-lime,
+.grad-blue,
+.grad-green-blue {
+  background: var(--clara-card) !important;
+}
+
+.text-muted-foreground,
+.text-white\/60,
+.text-white\/50,
+.text-white\/40 {
+  color: var(--clara-text-soft) !important;
+}
+
+.text-emerald-300,
+.text-emerald-400,
+.text-green-300,
+.text-green-400,
+.text-lime-300,
+.text-lime-400 {
+  color: var(--clara-accent-text) !important;
+}
+
+.border-emerald-500\/20,
+.border-green-500\/20,
+.border-lime-500\/20 {
+  border-color: var(--clara-accent-border) !important;
+}
+
+.bg-emerald-500\/15,
+.bg-green-500\/15,
+.bg-lime-500\/15 {
+  background: var(--clara-accent-soft) !important;
 }
