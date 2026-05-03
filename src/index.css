@@ -9,58 +9,67 @@
     --font-heading: "Space Grotesk", sans-serif;
     --font-body: "Inter", sans-serif;
 
+    /* CLARA Refined Glassmorphism Premium Dark Theme */
     --clara-bg:
-      radial-gradient(circle at 85% 18%, rgba(94, 122, 132, 0.18), transparent 30%),
-      radial-gradient(circle at 80% 66%, rgba(120, 171, 117, 0.14), transparent 34%),
-      radial-gradient(circle at 18% 76%, rgba(48, 70, 92, 0.22), transparent 34%),
-      linear-gradient(180deg, #0a1219 0%, #071018 46%, #050b10 100%);
-    --clara-panel: linear-gradient(145deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.035));
-    --clara-panel-strong: linear-gradient(145deg, rgba(255, 255, 255, 0.095), rgba(255, 255, 255, 0.045));
-    --clara-card: linear-gradient(150deg, rgba(255, 255, 255, 0.078), rgba(255, 255, 255, 0.04));
-    --clara-card-strong: linear-gradient(150deg, rgba(255, 255, 255, 0.10), rgba(255, 255, 255, 0.05));
-    --clara-glass: rgba(255, 255, 255, 0.06);
-    --clara-border: rgba(207, 225, 230, 0.18);
-    --clara-border-strong: rgba(220, 240, 245, 0.26);
-    --clara-border-soft: rgba(255, 255, 255, 0.10);
+      radial-gradient(circle at 18% 12%, rgba(28, 86, 91, 0.24), transparent 32%),
+      radial-gradient(circle at 82% 20%, rgba(143, 227, 136, 0.105), transparent 34%),
+      radial-gradient(circle at 72% 78%, rgba(106, 85, 58, 0.085), transparent 36%),
+      radial-gradient(circle at 20% 82%, rgba(37, 69, 92, 0.18), transparent 36%),
+      linear-gradient(180deg, #071019 0%, #050c13 46%, #03070c 100%);
+
+    --clara-panel: linear-gradient(145deg, rgba(255, 255, 255, 0.07), rgba(255, 255, 255, 0.04));
+    --clara-panel-strong: linear-gradient(145deg, rgba(255, 255, 255, 0.085), rgba(255, 255, 255, 0.05));
+    --clara-card: linear-gradient(150deg, rgba(255, 255, 255, 0.072), rgba(255, 255, 255, 0.042));
+    --clara-card-strong: linear-gradient(150deg, rgba(255, 255, 255, 0.09), rgba(255, 255, 255, 0.052));
+    --clara-glass: rgba(255, 255, 255, 0.065);
+
+    --clara-border: rgba(255, 255, 255, 0.08);
+    --clara-border-strong: rgba(255, 255, 255, 0.13);
+    --clara-border-soft: rgba(255, 255, 255, 0.075);
+
     --clara-text: #ffffff;
-    --clara-text-soft: rgba(255, 255, 255, 0.66);
-    --clara-text-muted: rgba(255, 255, 255, 0.48);
+    --clara-text-soft: rgba(255, 255, 255, 0.60);
+    --clara-text-muted: rgba(255, 255, 255, 0.45);
     --clara-text-faint: rgba(255, 255, 255, 0.30);
-    --clara-accent: #a7ee9e;
-    --clara-accent-soft: rgba(167, 238, 158, 0.13);
-    --clara-accent-border: rgba(167, 238, 158, 0.28);
-    --clara-accent-text: #b9f7ae;
-    --clara-secondary: #a7ee9e;
-    --clara-secondary-soft: rgba(167, 238, 158, 0.10);
-    --clara-highlight: #6f9f91;
-    --clara-highlight-soft: rgba(111, 159, 145, 0.14);
-    --clara-glow: rgba(167, 238, 158, 0.10);
-    --clara-glow-soft: rgba(167, 238, 158, 0.06);
-    --clara-glow-blue: rgba(80, 110, 132, 0.10);
+
+    --clara-accent: #8fe388;
+    --clara-accent-soft: rgba(143, 227, 136, 0.12);
+    --clara-accent-border: rgba(143, 227, 136, 0.22);
+    --clara-accent-text: #a9eea3;
+    --clara-secondary: #78c985;
+    --clara-secondary-soft: rgba(120, 201, 133, 0.10);
+    --clara-highlight: #8fe388;
+    --clara-highlight-soft: rgba(143, 227, 136, 0.11);
+
+    --clara-glow: rgba(143, 227, 136, 0.10);
+    --clara-glow-soft: rgba(143, 227, 136, 0.055);
+    --clara-glow-blue: rgba(44, 96, 118, 0.08);
     --clara-surface-glow: none;
-    --clara-glow-premium: 0 18px 42px rgba(0, 0, 0, 0.34), inset 0 1px 0 rgba(255, 255, 255, 0.11);
+    --clara-glow-premium: 0 10px 30px rgba(0, 0, 0, 0.40), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    --clara-depth-soft: 0 8px 22px rgba(0, 0, 0, 0.30), inset 0 1px 0 rgba(255, 255, 255, 0.065);
+
     --clara-gradient: var(--clara-card);
     --clara-modal-surface: var(--clara-panel-strong);
-    --clara-modal-backdrop: rgba(3, 8, 12, 0.72);
-    --clara-input-surface: linear-gradient(145deg, rgba(255, 255, 255, 0.075), rgba(255, 255, 255, 0.035));
-    --clara-input-border: rgba(255, 255, 255, 0.12);
-    --clara-button-primary: linear-gradient(145deg, rgba(167, 238, 158, 0.22), rgba(255, 255, 255, 0.055));
-    --clara-button-secondary: linear-gradient(145deg, rgba(255, 255, 255, 0.085), rgba(255, 255, 255, 0.038));
+    --clara-modal-backdrop: rgba(3, 8, 12, 0.74);
+    --clara-input-surface: linear-gradient(145deg, rgba(255, 255, 255, 0.062), rgba(255, 255, 255, 0.032));
+    --clara-input-border: rgba(255, 255, 255, 0.08);
+    --clara-button-primary: linear-gradient(145deg, rgba(143, 227, 136, 0.18), rgba(255, 255, 255, 0.045));
+    --clara-button-secondary: linear-gradient(145deg, rgba(255, 255, 255, 0.068), rgba(255, 255, 255, 0.035));
 
-    --theme-background: #071018;
-    --theme-surface: #0b151c;
-    --theme-card: rgba(255, 255, 255, 0.06);
-    --theme-card-alt: rgba(255, 255, 255, 0.075);
-    --theme-primary: #a7ee9e;
-    --theme-secondary: #a7ee9e;
-    --theme-accent: #a7ee9e;
-    --theme-danger: #f0a09a;
-    --theme-success: #a7ee9e;
+    --theme-background: #050c13;
+    --theme-surface: rgba(255, 255, 255, 0.055);
+    --theme-card: rgba(255, 255, 255, 0.065);
+    --theme-card-alt: rgba(255, 255, 255, 0.08);
+    --theme-primary: #8fe388;
+    --theme-secondary: #78c985;
+    --theme-accent: #8fe388;
+    --theme-danger: #efa29c;
+    --theme-success: #8fe388;
     --theme-warning: #d7bf86;
     --theme-text: #ffffff;
     --theme-muted-text: rgba(255, 255, 255, 0.60);
-    --theme-border: rgba(207, 225, 230, 0.18);
-    --theme-glow: rgba(167, 238, 158, 0.10);
+    --theme-border: rgba(255, 255, 255, 0.08);
+    --theme-glow: rgba(143, 227, 136, 0.10);
     --theme-bottom-nav: var(--clara-panel);
     --theme-top-nav: var(--clara-panel);
     --theme-gradient-hero: var(--clara-card);
@@ -88,18 +97,22 @@
     color: var(--clara-text);
     min-height: 100vh;
     overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: geometricPrecision;
   }
 
   body::before {
     content: "";
     position: fixed;
-    inset: 0;
+    inset: -18%;
     z-index: -1;
     pointer-events: none;
     background:
-      radial-gradient(circle at 52% 18%, rgba(255, 255, 255, 0.035), transparent 30%),
-      radial-gradient(circle at 70% 48%, rgba(166, 201, 183, 0.06), transparent 34%);
-    filter: blur(3px);
+      radial-gradient(circle at 50% 20%, rgba(255, 255, 255, 0.03), transparent 28%),
+      radial-gradient(circle at 70% 48%, rgba(143, 227, 136, 0.055), transparent 32%),
+      radial-gradient(circle at 34% 70%, rgba(31, 81, 95, 0.12), transparent 38%);
+    filter: blur(24px);
+    opacity: 0.9;
   }
 
   button,
@@ -110,7 +123,7 @@
   }
 
   ::selection {
-    background: rgba(167, 238, 158, 0.25);
+    background: rgba(143, 227, 136, 0.22);
     color: #fff;
   }
 }
@@ -124,7 +137,7 @@
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(167, 238, 158, 0.26);
+  background: rgba(143, 227, 136, 0.22);
   border-radius: 999px;
 }
 
@@ -137,8 +150,8 @@
   border: 1px solid var(--clara-border) !important;
   border-radius: 26px;
   color: var(--clara-text);
-  backdrop-filter: blur(26px) saturate(125%);
-  -webkit-backdrop-filter: blur(26px) saturate(125%);
+  backdrop-filter: blur(26px) saturate(118%);
+  -webkit-backdrop-filter: blur(26px) saturate(118%);
   box-shadow: var(--clara-glow-premium) !important;
 }
 
@@ -150,9 +163,9 @@
   border: 1px solid var(--clara-border-soft) !important;
   border-radius: 22px;
   color: var(--clara-text);
-  backdrop-filter: blur(20px) saturate(120%);
-  -webkit-backdrop-filter: blur(20px) saturate(120%);
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 10px 24px rgba(0, 0, 0, 0.22) !important;
+  backdrop-filter: blur(22px) saturate(112%);
+  -webkit-backdrop-filter: blur(22px) saturate(112%);
+  box-shadow: var(--clara-depth-soft) !important;
 }
 
 .theme-page-shell {
@@ -165,9 +178,9 @@
   border: 1px solid var(--clara-border-soft) !important;
   border-radius: 18px;
   color: var(--clara-text) !important;
-  backdrop-filter: blur(20px) saturate(120%);
-  -webkit-backdrop-filter: blur(20px) saturate(120%);
-  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.24), inset 0 1px 0 rgba(255, 255, 255, 0.09) !important;
+  backdrop-filter: blur(22px) saturate(112%);
+  -webkit-backdrop-filter: blur(22px) saturate(112%);
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.075) !important;
 }
 
 .theme-gradient-button,
@@ -193,8 +206,13 @@ button[data-primary="true"] {
 
 .progress-bar,
 [role="progressbar"] > div {
-  background: linear-gradient(90deg, var(--clara-accent), rgba(167, 238, 158, 0.58)) !important;
-  box-shadow: inset 0 0 7px rgba(167, 238, 158, 0.24) !important;
+  background: linear-gradient(90deg, var(--clara-accent), rgba(143, 227, 136, 0.62)) !important;
+  box-shadow: inset 0 0 8px rgba(143, 227, 136, 0.18) !important;
+}
+
+[role="progressbar"] {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border: 1px solid rgba(255, 255, 255, 0.045) !important;
 }
 
 .text-muted-foreground {
