@@ -1,38 +1,57 @@
-import { Play, Target, Camera, EyeOff, ChevronDown } from "lucide-react";
+import { useEffect, useState } from "react";
+import { Target, Camera, EyeOff, ChevronDown } from "lucide-react";
 import TopNav from "../../../components/fresh/shared/topnav";
+import DashboardBillboard from "../../../components/fresh/main-dashboard/DashboardBillboard";
+import { supabase } from "../../../lib/supabaseClient";
 
 export default function Dashboard() {
+  const [activeBillboard, setActiveBillboard] = useState(null);
+
+  useEffect(() => {
+    let mounted = true;
+
+    const fetchActiveBillboard = async () => {
+      try {
+        const { data, error } = await supabase
+          .from("dashboard_billboards")
+          .select("*")
+          .eq("is_active", true)
+          .limit(1)
+          .maybeSingle();
+
+        if (!mounted) return;
+        if (!error && data) setActiveBillboard(data);
+      } catch (error) {
+        console.warn("Dashboard billboard could not load:", error);
+      }
+    };
+
+    fetchActiveBillboard();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
+
+  const handleBillboardClick = () => {
+    const url = activeBillboard?.cta_url;
+    if (!url) return;
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
   return (
     <main className="min-h-screen bg-[#041a22] px-4 py-4 text-white">
       <div className="mx-auto max-w-[390px] space-y-4">
         <TopNav />
-        <Billboard />
+        <DashboardBillboard
+          billboard={activeBillboard}
+          onClick={handleBillboardClick}
+        />
         <SavingsGoalCard />
         <CarouselDots />
         <MoneySummary />
       </div>
     </main>
-  );
-}
-
-function Billboard() {
-  return (
-    <section className="relative h-[112px] overflow-hidden rounded-[20px] border border-white/15 bg-black/30 shadow-[0_16px_45px_rgba(0,0,0,0.35)]">
-      <img
-        src="https://images.unsplash.com/photo-1513104890138-7c749659a591?q=80&w=1200&auto=format&fit=crop"
-        alt="CLARA billboard"
-        className="h-full w-full object-cover opacity-65"
-      />
-      <div className="absolute inset-0 bg-gradient-to-r from-black/70 via-black/35 to-transparent" />
-      <div className="absolute left-4 top-7">
-        <p className="text-[10px] font-bold uppercase tracking-[0.28em] text-white/65">Try your</p>
-        <h2 className="mt-1 text-lg font-black leading-none text-white">ADS</h2>
-        <p className="mt-1 text-xs font-bold text-white">Now!</p>
-      </div>
-      <button type="button" className="absolute right-4 top-1/2 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-2xl bg-black/35 text-emerald-300 backdrop-blur-md">
-        <Play className="h-5 w-5 fill-emerald-300" />
-      </button>
-    </section>
   );
 }
 
